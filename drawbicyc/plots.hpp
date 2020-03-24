@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../cases/RICO11/plots.hpp"
-#include "../cases/Dycoms_RF02/plots.hpp"
-#include "../cases/moist_thermal/plots.hpp"
+#include "cases/RICO11/plots.hpp"
+#include "cases/Dycoms_RF02/plots.hpp"
+#include "cases/moist_thermal/plots.hpp"
 
 const std::vector<std::string> series_sgs({
 // "tot_tke"
