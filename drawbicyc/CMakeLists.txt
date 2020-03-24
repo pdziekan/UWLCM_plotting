@@ -4,9 +4,16 @@ find_package(Boost COMPONENTS thread iostreams system timer program_options file
 
 ############################################################################################
 #libcloudphxx
-find_package(libcloudph++)
-if (NOT libcloudph++_FOUND)
-  message(FATAL_ERROR "libclouphxx++ not found")
+#find_package(libcloudph++)
+#if (NOT libcloudph++_FOUND)
+#  message(FATAL_ERROR "libclouphxx++ not found")
+#endif()
+
+############################################################################################
+# UWLCM
+find_package(UWLCM)
+if (NOT UWLCM_FOUND)
+  message(FATAL_ERROR "UWLCM not found")
 endif()
 
 ############################################################################################
@@ -27,9 +34,15 @@ endif()
 
 foreach(exe drawbicyc plot_series_compare average)
   add_executable(${exe} ${exe}.cpp)
+  # pointing to drawbicyc headers
+  target_include_directories(${exe}
+    PUBLIC
+      $<INSTALL_INTERFACE:include>
+      $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+  )
   target_link_libraries(${exe} PRIVATE ${HDF5_LIBRARIES})
   target_include_directories(${exe} PUBLIC ${HDF5_INCLUDE_DIRS})
-  target_link_libraries(${exe} PRIVATE clphxx::cloudphxx_lgrngn)
+#  target_link_libraries(${exe} PRIVATE clphxx::cloudphxx_lgrngn)
   target_link_libraries(${exe} PRIVATE ${libmpdataxx_LIBRARIES})
   target_include_directories(${exe} PUBLIC ${libmpdataxx_INCLUDE_DIRS})
   target_link_libraries(${exe} PRIVATE ${BLITZ_LIBRARIES})
@@ -44,4 +57,37 @@ foreach(exe drawbicyc plot_series_compare average)
     target_include_directories(${exe} PUBLIC ${Boost_INCLUDE_DIRS})
   endif()
 endforeach()
+
+
+############################################################################################
+# installation
+
+install(
+  DIRECTORY
+    include/drawbicyc
+  DESTINATION
+    include
+)
+
+install(TARGETS drawbicyc EXPORT drawbicyc-targets DESTINATION bin)
+install(EXPORT drawbicyc-targets DESTINATION share/drawbicyc)
+
+# generate and install a config file
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+  drawbicyc-config.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/drawbicyc-config.cmake"
+  INSTALL_DESTINATION
+    share/drawbicyc
+)
+install(
+  FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/drawbicyc-config.cmake"
+  DESTINATION
+    share/drawbicyc
+)
+############################################################################################
+
+
 

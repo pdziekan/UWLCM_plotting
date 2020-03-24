@@ -1,8 +1,8 @@
 //#include <blitz/array.h>
 //#include <fstream>
-#include "common.hpp"
 //#include "PlotterMicro.hpp"
 #include <boost/tuple/tuple.hpp>
+#include <drawbicyc/common.hpp>
 #include <drawbicyc/plots.hpp>
 #include <drawbicyc/gnuplot_series_set_labels.hpp>
 #include <drawbicyc/gnuplot_profs_set_labels.hpp>
