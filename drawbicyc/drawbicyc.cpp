@@ -1,8 +1,8 @@
-#include"plot_series.hpp"
-#include"plot_prof.hpp"
-#include"plot_fields.hpp"
-#include"plot_qv_qc_2_6_10_min.hpp"
-#include"plot_lgrngn_spec.hpp"
+#include <drawbicyc/plot_series.hpp>
+#include <drawbicyc/plot_prof.hpp>
+#include <drawbicyc/plot_fields.hpp>
+#include <drawbicyc/plot_qv_qc_2_6_10_min.hpp>
+#include <drawbicyc/plot_lgrngn_spec.hpp>
 
 int main(int argc, char** argv)
 {

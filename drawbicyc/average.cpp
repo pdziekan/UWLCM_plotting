@@ -3,9 +3,9 @@
 #include "common.hpp"
 //#include "PlotterMicro.hpp"
 #include <boost/tuple/tuple.hpp>
-#include "plots.hpp"
-#include "gnuplot_series_set_labels.hpp"
-#include "gnuplot_profs_set_labels.hpp"
+#include <drawbicyc/plots.hpp>
+#include <drawbicyc/gnuplot_series_set_labels.hpp>
+#include <drawbicyc/gnuplot_profs_set_labels.hpp>
 
 using namespace blitz;
 
