@@ -3,6 +3,7 @@
 #include "cases/RICO11/plots.hpp"
 #include "cases/Dycoms_RF02/plots.hpp"
 #include "cases/moist_thermal/plots.hpp"
+#include "cases/PiChamber/plots.hpp"
 
 const std::vector<std::string> series_sgs({
 // "tot_tke"
@@ -43,6 +44,11 @@ class Plots
       profs.insert(profs.end(), profs_moist_thermal.begin(), profs_moist_thermal.end());
       series.insert(series.end(), series_moist_thermal.begin(), series_moist_thermal.end());
       fields.insert(fields.end(), fields_moist_thermal.begin(), fields_moist_thermal.end());
+    }
+    else if(type == "pi_chamber") { 
+      profs.insert(profs.end(), profs_PiChamber.begin(), profs_PiChamber.end());
+      series.insert(series.end(), series_PiChamber.begin(), series_PiChamber.end());
+      fields.insert(fields.end(), fields_PiChamber.begin(), fields_PiChamber.end());
     }
     /*
     else if(type == "base_prflux_vs_clhght") { 

@@ -33,8 +33,8 @@ int main(int argc, char** argv)
 
   // handling the "type" option
   std::string type = vm["type"].as<std::string>();
-  if(type != "dycoms" && type != "moist_thermal" && type != "rico")// && type != "base_prflux_vs_clhght")
-    throw std::runtime_error("Unrecognized 'type' option, only dycoms, rico, moist_thermal available now");//, base_prflux_vs_clhght available now");
+  if(type != "dycoms" && type != "moist_thermal" && type != "rico" && type != "pi_chamber")
+    throw std::runtime_error("Unrecognized 'type' option, only dycoms, rico, moist_thermal, pi_chamber available now");//, base_prflux_vs_clhght available now");
 
   // should profiles be normalized by inversion height
   const bool normalize_prof = type == "dycoms";

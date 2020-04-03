@@ -604,20 +604,31 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {;}
       }
-      else if (plt == "tot_tke")
+      else if (plt == "tot_tke" || plt == "tot_tke_nowall")
       {
+        double distance_from_walls = 0.1;
         try
         {
-          auto u = plotter.h5load_timestep("u", at * n["outfreq"]);
-          typename Plotter_t::arr_t snap(u);
+          typename Plotter_t::arr_t u(plotter.h5load_timestep("u", at * n["outfreq"]));
+          typename Plotter_t::arr_t snap;
+          if(plt == "tot_tke")
+            snap.reference(u);
+          else if(plt == "tot_tke_nowall")
+            snap.reference(typename Plotter_t::arr_t(plotter.nowall(u, distance_from_walls)));
+
           plotter.subtract_horizontal_mean(snap);
           snap = snap * snap;
           auto mean = plotter.horizontal_mean(snap);
           res_prof(at) = blitz::sum(mean);
 
           {
-            auto w = plotter.h5load_timestep("w", at * n["outfreq"]);
-            snap = w;
+            typename Plotter_t::arr_t w(plotter.h5load_timestep("w", at * n["outfreq"]));
+            typename Plotter_t::arr_t snap;
+            if(plt == "tot_tke")
+              snap.reference(w);
+            else if(plt == "tot_tke_nowall")
+              snap.reference(typename Plotter_t::arr_t(plotter.nowall(w, distance_from_walls)));
+
             plotter.subtract_horizontal_mean(snap);
             snap = snap * snap;
             auto mean = plotter.horizontal_mean(snap);
@@ -626,8 +637,13 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         
           if (Plotter_t::n_dims > 2)
           {
-            auto v = plotter.h5load_timestep("v", at * n["outfreq"]);
-            snap = v;
+            typename Plotter_t::arr_t v(plotter.h5load_timestep("v", at * n["outfreq"]));
+            typename Plotter_t::arr_t snap;
+            if(plt == "tot_tke")
+              snap.reference(v);
+            else if(plt == "tot_tke_nowall")
+              snap.reference(typename Plotter_t::arr_t(plotter.nowall(v, distance_from_walls)));
+
             plotter.subtract_horizontal_mean(snap);
             snap = snap * snap;
             auto mean = plotter.horizontal_mean(snap);

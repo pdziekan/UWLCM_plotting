@@ -88,6 +88,22 @@ class Plotter_t<2> : public PlotterCommon
     return blitz::RectDomain<2>( blitz::TinyVector<blitz::Range, 2>(blitz::Range(0, this->map["x"]-1), blitz::Range(z,z)));
   }
 
+  // returns a subset of data array away from walls, spacing is the distance from each wall that should be excluded
+  auto nowall(
+    const arr_t &data,
+    const double &spacing
+  ) -> decltype(blitz::safeToReturn(blitz::Array<float, 2>() + 0))
+  {
+    int ncell_xcluded_x = spacing / this->map["dx"] + 0.5;
+    int ncell_xcluded_z = spacing / this->map["dz"] + 0.5;
+    blitz::Array<float, 2> center(this->map["x"]-2*ncell_xcluded_x, this->map["z"]-2*ncell_xcluded_z);
+    center = data(
+      blitz::Range(ncell_xcluded_x+1, this->map["x"]-ncell_xcluded_x-1),
+      blitz::Range(ncell_xcluded_z+1, this->map["z"]-ncell_xcluded_z-1)
+    );
+    return blitz::safeToReturn(center + 0);
+  }
+
   auto get_value_at_hgt(
     const arr_t &data,
     const blitz::Array<int, 1> hgt_idx
