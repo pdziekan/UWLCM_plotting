@@ -511,8 +511,8 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
       }
       else if (plt == "00rtot")
       {
-        res = plotter.h5load_ra_timestep(at * n["outfreq"]) * 1e3; // aerosol
-        res += plotter.h5load_rc_timestep(at * n["outfreq"]) * 1e3; // cloud
+      //  res = plotter.h5load_ra_timestep(at * n["outfreq"]) * 1e3; // aerosol
+        res = plotter.h5load_rc_timestep(at * n["outfreq"]) * 1e3; // cloud
         res += plotter.h5load_rr_timestep(at * n["outfreq"]) * 1e3; // rain
         res += plotter.h5load_timestep("rv", at * n["outfreq"]) * 1e3; // vapour
 
