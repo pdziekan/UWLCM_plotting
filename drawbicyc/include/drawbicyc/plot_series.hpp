@@ -9,6 +9,7 @@ const double D = 3.75e-6; //[1/s], ugly, large-scale horizontal wind divergence 
 template<class Plotter_t>
 void plot_series(Plotter_t plotter, Plots plots, std::string type)
 {
+  const double distance_from_walls = 0.2; // for nowall statistics
 
   auto& n = plotter.map;
   for(auto elem : n)
@@ -606,57 +607,72 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "tot_tke" || plt == "tot_tke_nowall")
       {
-        double distance_from_walls = 0.1;
         try
         {
           typename Plotter_t::arr_t u(plotter.h5load_timestep("u", at * n["outfreq"]));
-          typename Plotter_t::arr_t snap;
+          plotter.subtract_horizontal_mean(u);
+          u = u * u;
           if(plt == "tot_tke")
-            snap.reference(u);
-          else if(plt == "tot_tke_nowall")
-            snap.reference(typename Plotter_t::arr_t(plotter.nowall(u, distance_from_walls)));
+            res_prof(at) = blitz::mean(plotter.horizontal_mean(u));
+          if(plt == "tot_tke_nowall")
+            res_prof(at) = blitz::mean(plotter.horizontal_mean(typename Plotter_t::arr_t(plotter.nowall(u, distance_from_walls))));
 
-          plotter.subtract_horizontal_mean(snap);
-          snap = snap * snap;
-          auto mean = plotter.horizontal_mean(snap);
-          res_prof(at) = blitz::sum(mean);
+          typename Plotter_t::arr_t w(plotter.h5load_timestep("w", at * n["outfreq"]));
+          plotter.subtract_horizontal_mean(w);
+          w = w * w;
+          if(plt == "tot_tke")
+            res_prof(at) += blitz::mean(plotter.horizontal_mean(w));
+          if(plt == "tot_tke_nowall")
+            res_prof(at) += blitz::mean(plotter.horizontal_mean(typename Plotter_t::arr_t(plotter.nowall(w, distance_from_walls))));
 
-          {
-            typename Plotter_t::arr_t w(plotter.h5load_timestep("w", at * n["outfreq"]));
-            typename Plotter_t::arr_t snap;
-            if(plt == "tot_tke")
-              snap.reference(w);
-            else if(plt == "tot_tke_nowall")
-              snap.reference(typename Plotter_t::arr_t(plotter.nowall(w, distance_from_walls)));
-
-            plotter.subtract_horizontal_mean(snap);
-            snap = snap * snap;
-            auto mean = plotter.horizontal_mean(snap);
-            res_prof(at) += blitz::sum(mean);
-          }
-        
           if (Plotter_t::n_dims > 2)
           {
             typename Plotter_t::arr_t v(plotter.h5load_timestep("v", at * n["outfreq"]));
-            typename Plotter_t::arr_t snap;
+            plotter.subtract_horizontal_mean(v);
+            v = v * v;
             if(plt == "tot_tke")
-              snap.reference(v);
-            else if(plt == "tot_tke_nowall")
-              snap.reference(typename Plotter_t::arr_t(plotter.nowall(v, distance_from_walls)));
-
-            plotter.subtract_horizontal_mean(snap);
-            snap = snap * snap;
-            auto mean = plotter.horizontal_mean(snap);
-            res_prof(at) += blitz::sum(mean);
+              res_prof(at) += blitz::mean(plotter.horizontal_mean(v));
+            if(plt == "tot_tke_nowall")
+              res_prof(at) += blitz::mean(plotter.horizontal_mean(typename Plotter_t::arr_t(plotter.nowall(v, distance_from_walls))));
           }
           
-          res_prof(at) *= 0.5 * n["dz"];
+          res_prof(at) *= 0.5; // * n["dz"];
 
-          {
-            auto tke = plotter.h5load_timestep("tke", at * n["outfreq"]);
-            typename Plotter_t::arr_t snap(tke);
-            res_prof(at) += blitz::sum(plotter.horizontal_mean(snap));
-          }
+          typename Plotter_t::arr_t tke(plotter.h5load_timestep("tke", at * n["outfreq"]));
+          typename Plotter_t::arr_t snap;
+          if(plt == "tot_tke")
+            snap.reference(tke);
+          else if(plt == "tot_tke_nowall")
+            snap.reference(typename Plotter_t::arr_t(plotter.nowall(tke, distance_from_walls)));
+
+          res_prof(at) += blitz::mean(plotter.horizontal_mean(snap));
+        }
+        catch(...) {;}
+      }
+      else if (plt == "uw_resolved_tke") // As in the Thomas et al. 2019 paper about Pi chamber LES, resolved only as sgs tke is 3D. TODO: make it nowall?
+      {
+        try
+        {
+          typename Plotter_t::arr_t u(plotter.h5load_timestep("u", at * n["outfreq"]));
+          plotter.subtract_horizontal_mean(u);
+          u = u * u;
+          res_prof(at) = blitz::mean(plotter.horizontal_mean(u));
+
+          typename Plotter_t::arr_t w(plotter.h5load_timestep("w", at * n["outfreq"]));
+          plotter.subtract_horizontal_mean(w);
+          w = w * w;
+          res_prof(at) += blitz::mean(plotter.horizontal_mean(w));
+          
+          res_prof(at) *= 0.5;// * n["dz"];
+        }
+        catch(...) {;}
+      }
+      else if (plt == "sgs_tke") // TODO: make it nowall?
+      {
+        try
+        {
+          typename Plotter_t::arr_t tke(plotter.h5load_timestep("tke", at * n["outfreq"]));
+          res_prof(at) = blitz::mean(plotter.horizontal_mean(tke));
         }
         catch(...) {;}
       }
@@ -1027,6 +1043,10 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       res_pos *= 60.;
     }
     else if (plt == "RH_max")
+    {
+      res_pos *= 60.;
+    }
+    else if (plt == "tot_tke" || plt == "tot_tke_nowall" || plt == "sgs_tke" || plt == "uw_resolved_tke")
     {
       res_pos *= 60.;
     }

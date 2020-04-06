@@ -259,7 +259,25 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   {
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
-    gp << "set title 'turbulent kinetic energy (resolved + sgs) [m^3 / s^2]'\n";
+    gp << "set title 'TKE (resolved + sgs) [m^2 / s^2]'\n";
+  }
+  else if (plt == "tot_tke_nowall")
+  {
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+    gp << "set title 'TKE (resolved + sgs), more than 0.2m away from walls [m^2 / s^2]'\n";
+  }
+  else if (plt == "uw_resolved_tke")
+  {
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+    gp << "set title 'resolved TKE, only from u and w components [m^2 / s^2]'\n";
+  }
+  else if (plt == "sgs_tke")
+  {
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+    gp << "set title 'SGS TKE [m^2 / s^2]'\n";
   }
   else if (plt == "clb_bigrain_mean_inclt")
   {
