@@ -659,7 +659,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {;}
       }
-      else if (plt == "uw_resolved_tke") // As in the Thomas et al. 2019 paper about Pi chamber LES, resolved only as sgs tke is 3D. TODO: make it nowall?
+      else if (plt == "uw_tot_tke") // As in the Thomas et al. 2019 paper about Pi chamber LES. TODO: make it nowall?
       {
         try
         {
@@ -672,6 +672,17 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           plotter.subtract_horizontal_mean(w);
           w = w * w;
           res_prof(at) += blitz::mean(plotter.horizontal_mean(w));
+
+          typename Plotter_t::arr_t tke(plotter.h5load_timestep("tke", at * n["outfreq"]));
+          if (Plotter_t::n_dims == 3)
+          {
+            // assume that sgs tke is isotropic, hence 2/3 are in the uw plane
+            res_prof(at) += 2./3. * blitz::mean(plotter.horizontal_mean(tke));
+          }
+          if (Plotter_t::n_dims == 2)
+          {
+            res_prof(at) += blitz::mean(plotter.horizontal_mean(tke));
+          }
           
           res_prof(at) *= 0.5;// * n["dz"];
         }
