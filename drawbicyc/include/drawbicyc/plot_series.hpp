@@ -705,8 +705,6 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t u(plotter.h5load_timestep("u", at * n["outfreq"]));
           typename Plotter_t::arr_t w(plotter.h5load_timestep("w", at * n["outfreq"]));
           int step_no = at - first_timestep;
-          std::cerr << "step_no = " << step_no;
-          std::cerr << "run_avg_n_step = " << run_avg_n_step;
           if(step_no == 0) // the first step
           {
             prev_u_vec.push_back(u);
@@ -745,9 +743,6 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
               run_sum_w += w;
               // replace the oldest u with current
               prev_w_vec.at(oldest_position) = w;
-
-              std::cerr << "run avg u: " << typename Plotter_t::arr_t (run_sum_u / run_avg_n_step);
-              std::cerr << "run avg w: " << typename Plotter_t::arr_t (run_sum_w / run_avg_n_step);
             }
           }
 
