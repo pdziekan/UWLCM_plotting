@@ -39,7 +39,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
   run_sum_u = 0;
   run_sum_w = 0;
   // number of timesteps over which the running avg of u and w is calculated (1 min interval)
-  int run_avg_n_step = 60. / n["dt"] + 0.5;
+  int run_avg_n_step = 60. / (n["dt"] * n["outfreq"]) + 0.5;
 
 
   // read opts
