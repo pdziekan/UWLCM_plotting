@@ -31,8 +31,8 @@ const std::vector<std::string> series_PiChamber({
 "tot_tke_nowall"
 ,"uw_tot_tke"
 ,"sgs_tke"
-,"supersat_nowall"
-,"uw_tot_tke_running_avg"
+,"supersat_nowall",
+"uw_tot_tke_running_avg"
 });
 
 std::vector<std::string> profs_PiChamber({
