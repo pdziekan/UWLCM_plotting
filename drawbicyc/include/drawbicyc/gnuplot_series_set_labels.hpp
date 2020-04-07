@@ -266,19 +266,19 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
     gp << "set yrange[0:*]\n";
-    gp << "set title 'supersaturation, more than 0.125m away from walls [%]'\n";
+    gp << "set title 'supersaturation, >12.5 cm from walls [%]'\n";
   }
   else if (plt == "tot_tke_nowall")
   {
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
-    gp << "set title 'TKE (resolved + sgs), more than 0.125m away from walls [m^2 / s^2]'\n";
+    gp << "set title 'TKE (resolved + sgs), >12.5 cm from walls [m^2 / s^2]'\n";
   }
-  else if (plt == "uw_resolved_tke")
+  else if (plt == "uw_tot_tke")
   {
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
-    gp << "set title 'resolved TKE, only from u and w components [m^2 / s^2]'\n";
+    gp << "set title 'TKE from u and w components (resolved + 2/3 SGS) [m^2 / s^2]'\n";
   }
   else if (plt == "sgs_tke")
   {

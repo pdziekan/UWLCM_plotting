@@ -29,7 +29,7 @@ const std::vector<std::string> series_PiChamber({
 */
 "tot_tke",
 "tot_tke_nowall"
-,"uw_resolved_tke"
+,"uw_tot_tke"
 ,"sgs_tke"
 ,"supersat_nowall"
 });
