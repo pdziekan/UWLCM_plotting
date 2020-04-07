@@ -280,6 +280,12 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set ylabel ''\n";
     gp << "set title 'TKE from u and w components (resolved + 2/3 SGS) [m^2 / s^2]'\n";
   }
+  else if (plt == "uw_tot_tke_running_avg")
+  {
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+    gp << "set title 'TKE from u and w, turb vs running avg. (resolved + 2/3 SGS) [m^2 / s^2]'\n";
+  }
   else if (plt == "sgs_tke")
   {
     gp << "set xlabel ''\n";

@@ -32,6 +32,15 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
   typename Plotter_t::arr_t res_tmp(rhod.shape());
 
+  // for calculating running averages of u and w, needed in TKE calc in Pi chamber LES
+  std::vector<typename Plotter_t::arr_t> prev_u_vec, prev_w_vec;
+  // container for the running sum
+  typename Plotter_t::arr_t run_sum_u(rhod.shape()), run_sum_w(rhod.shape());
+  run_sum_u = 0;
+  run_sum_w = 0;
+  // number of timesteps over which the running avg of u and w is calculated (1 min interval)
+  int run_avg_n_step = 60. / n["dt"] + 0.5;
+
 
   // read opts
   po::options_description opts("profile plotting options");
@@ -659,7 +668,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {;}
       }
-      else if (plt == "uw_tot_tke") // As in the Thomas et al. 2019 paper about Pi chamber LES. TODO: make it nowall?
+      else if (plt == "uw_tot_tke") // As in the Thomas et al. 2019 paper about Pi chamber LES, but without substractin the running average. TODO: make it nowall?
       {
         try
         {
@@ -673,6 +682,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           w = w * w;
           res_prof(at) += blitz::mean(plotter.horizontal_mean(w));
 
+          res_prof(at) *= 0.5;// * n["dz"];
+
           typename Plotter_t::arr_t tke(plotter.h5load_timestep("tke", at * n["outfreq"]));
           if (Plotter_t::n_dims == 3)
           {
@@ -684,7 +695,74 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
             res_prof(at) += blitz::mean(plotter.horizontal_mean(tke));
           }
           
+        }
+        catch(...) {;}
+      }
+      else if (plt == "uw_tot_tke_running_avg") // As in the Thomas et al. 2019 paper about Pi chamber LES. TODO: make it nowall?
+      {
+        try
+        {
+          typename Plotter_t::arr_t u(plotter.h5load_timestep("u", at * n["outfreq"]));
+          typename Plotter_t::arr_t w(plotter.h5load_timestep("w", at * n["outfreq"]));
+          int step_no = at - first_timestep;
+          if(step_no == 0) // the first step
+          {
+            prev_u_vec.push_back(u);
+            run_sum_u += u;
+
+            prev_w_vec.push_back(w);
+            run_sum_w += w;
+          }
+          else // not the first step
+          {
+            if(step_no < run_avg_n_step) // less steps so far than the averaging window
+            {
+              u -= run_sum_u / step_no;
+              prev_u_vec.push_back(u); 
+              run_sum_u += u;
+
+              w -= run_sum_w / step_no;
+              prev_w_vec.push_back(w); 
+              run_sum_w += w;
+            }
+            else // full averaging window
+            {
+              u -= run_sum_u / run_avg_n_step;
+              // substract oldest u from the running sum
+              int oldest_position = step_no % run_avg_n_step;
+              run_sum_u -= prev_u_vec.at(oldest_position);
+              // add current u to the running sum
+              run_sum_u += u;
+              // replace the oldest u with current
+              prev_u_vec.at(oldest_position) = u;
+
+              w -= run_sum_w / run_avg_n_step;
+              // substract oldest u from the running sum
+              run_sum_w -= prev_w_vec.at(oldest_position);
+              // add current u to the running sum
+              run_sum_w += w;
+              // replace the oldest u with current
+              prev_w_vec.at(oldest_position) = w;
+            }
+          }
+
+          u = u * u;
+          u = w * w;
+          res_prof(at) = blitz::mean(plotter.horizontal_mean(u));
+          res_prof(at) = blitz::mean(plotter.horizontal_mean(w));
+
           res_prof(at) *= 0.5;// * n["dz"];
+
+          typename Plotter_t::arr_t tke(plotter.h5load_timestep("tke", at * n["outfreq"]));
+          if (Plotter_t::n_dims == 3)
+          {
+            // assume that sgs tke is isotropic, hence 2/3 are in the uw plane
+            res_prof(at) += 2./3. * blitz::mean(plotter.horizontal_mean(tke));
+          }
+          if (Plotter_t::n_dims == 2)
+          {
+            res_prof(at) += blitz::mean(plotter.horizontal_mean(tke));
+          }
         }
         catch(...) {;}
       }
