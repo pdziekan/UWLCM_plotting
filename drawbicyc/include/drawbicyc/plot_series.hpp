@@ -9,7 +9,7 @@ const double D = 3.75e-6; //[1/s], ugly, large-scale horizontal wind divergence 
 template<class Plotter_t>
 void plot_series(Plotter_t plotter, Plots plots, std::string type)
 {
-  const double distance_from_walls = 0.2; // for nowall statistics
+  const double distance_from_walls = 0.125; // for nowall statistics, distance taken from the Pi Chamber case description for ICMW2020, https://iccp2020.tropmet.res.in/Cloud-Modeling-Workshop-2020
 
   auto& n = plotter.map;
   for(auto elem : n)
@@ -117,6 +117,16 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
           typename Plotter_t::arr_t snap(tmp);
           res_prof(at) = blitz::max(snap);
+        }
+        catch(...) {;}
+      }
+      // supersaturation averaged away from walls
+      else if (plt == "supersat_nowall")
+      {
+        try
+        {
+          typename Plotter_t::arr_t RH(plotter.h5load_timestep("RH", at * n["outfreq"]));
+          res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(RH, distance_from_walls)));
         }
         catch(...) {;}
       }
@@ -1049,6 +1059,11 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     else if (plt == "tot_tke" || plt == "tot_tke_nowall" || plt == "sgs_tke" || plt == "uw_resolved_tke")
     {
       res_pos *= 60.;
+    }
+    else if (plt == "supersat_nowall")
+    {
+      res_pos *= 60.;
+      res_prof = (res_prof-1)*100;
     }
     else if (plt == "lwp")
     {

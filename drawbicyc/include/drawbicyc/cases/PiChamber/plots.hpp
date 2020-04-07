@@ -31,6 +31,7 @@ const std::vector<std::string> series_PiChamber({
 "tot_tke_nowall"
 ,"uw_resolved_tke"
 ,"sgs_tke"
+,"supersat_nowall"
 });
 
 std::vector<std::string> profs_PiChamber({

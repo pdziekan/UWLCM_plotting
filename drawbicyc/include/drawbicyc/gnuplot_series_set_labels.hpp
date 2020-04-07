@@ -261,11 +261,17 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set ylabel ''\n";
     gp << "set title 'TKE (resolved + sgs) [m^2 / s^2]'\n";
   }
+  else if (plt == "supersat_nowall")
+  {
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+    gp << "set title 'supersaturation, more than 0.125m away from walls [%]'\n";
+  }
   else if (plt == "tot_tke_nowall")
   {
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
-    gp << "set title 'TKE (resolved + sgs), more than 0.2m away from walls [m^2 / s^2]'\n";
+    gp << "set title 'TKE (resolved + sgs), more than 0.125m away from walls [m^2 / s^2]'\n";
   }
   else if (plt == "uw_resolved_tke")
   {
