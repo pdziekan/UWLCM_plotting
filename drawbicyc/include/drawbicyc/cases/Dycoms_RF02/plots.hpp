@@ -17,7 +17,7 @@ const std::vector<std::string> series_dycoms({
 // ,"cl_avg_cloud_rad"
 // ,"cl_gccn_conc", "gccn_conc"
 // ,"cl_non_gccn_conc", "non_gccn_conc", "cl_gccn_to_non_gccn_conc_ratio"
-// "sd_conc_avg", "sd_conc_std_dev",
+// "cl_sd_conc", "cl_sd_conc_std_dev",
 // "tot_water"
 });
 

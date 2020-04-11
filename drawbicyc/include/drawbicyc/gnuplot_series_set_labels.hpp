@@ -72,26 +72,17 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel 'time [min]'\n";
     gp << "set title 'average std dev of radius of activated droplets'\n";
   }
-  else if (plt == "sd_conc_avg")
+  else if (plt == "cl_sd_conc")
   {
     gp << "set ylabel '<N_{SD}>'\n";
     gp << "set xlabel 'time [min]'\n";
-    gp << "set title 'average SD number'\n";
+    gp << "set title 'average SD number (cloudy cells)'\n";
   }
-/*
-    else if (plt == "sd_conc_std_dev")
-    {
-      res_pos *= 60.;
-      gp << "set ylabel 'sigma(N_{SD}) / <N_{SD}>'\n";
-      gp << "set xlabel 'time [min]'\n";
-      gp << "set title 'relative std dev of N_{SD}'\n";
-    }
-*/
-  else if (plt == "sd_conc_act_avg")
+  else if (plt == "cl_sd_conc_act")
   {
     gp << "set ylabel '<N_{SD}^{act}>'\n";
     gp << "set xlabel 'time [min]'\n";
-    gp << "set title 'average activated SD number'\n";
+    gp << "set title 'average activated SD number (cloudy cells)'\n";
   }
   else if (plt == "tot_water")
   {
@@ -140,6 +131,12 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   else if (plt == "cl_nc")
   {
     gp << "set title 'average cloud drop conc [1/cm^3] in cloudy cells'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "nr")
+  {
+    gp << "set title 'average rain drop conc [1/cm^3]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }

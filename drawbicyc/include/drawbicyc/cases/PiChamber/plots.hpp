@@ -6,33 +6,35 @@ const std::vector<std::string> series_PiChamber({
 // "clb_bigrain_mean_conc",
 // "clb_bigrain_mean_inclt",
 //, "clb_bigrain_mean_gccn_fraction"
-/*
- "clfrac", "lwp",
- "rwp",
- "surf_precip",
- "acc_precip",
- "cl_nc",
- "cl_nr"
- */
-/*
- "cloud_base",
- "surf_flux_latent",
- "surf_flux_sensible"
- ,"sd_conc_avg"
+// "clfrac", 
+ "lwp"
+, "rwp"
+, "surf_precip"
+
+// "acc_precip",
+, "nc"
+, "nr"
+//, "cl_nr"
+ 
+
+// "cloud_base",
+// "surf_flux_latent",
+// "surf_flux_sensible"
+ ,"sd_conc"
 //"mass_dry",
- ,"cl_gccn_conc", "gccn_conc"
- ,"cl_non_gccn_conc", "non_gccn_conc", "cl_gccn_to_non_gccn_conc_ratio"
+// ,"cl_gccn_conc", "gccn_conc"
+// ,"cl_non_gccn_conc", "non_gccn_conc", "cl_gccn_to_non_gccn_conc_ratio"
 //, "cl_gccn_meanr"
 //,"cl_avg_cloud_rad"
-// "sd_conc_std_dev",
+//, "sd_conc_std_dev"
 // "tot_water"
-*/
-"tot_tke",
-"tot_tke_nowall"
+
+,"tot_tke"
+,"tot_tke_nowall"
 ,"uw_tot_tke"
 ,"sgs_tke"
-,"supersat_nowall",
-"uw_tot_tke_running_avg"
+,"supersat_nowall"
+,"uw_tot_tke_running_avg"
 });
 
 std::vector<std::string> profs_PiChamber({
