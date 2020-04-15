@@ -87,6 +87,7 @@ for lvl in levels:
   
   # read in nx, ny, nz
   for directory, lab in zip(directories, labels):
+    rhod = h5py.File(directory + "/const.h5", "r")["G"][:,:,:]
     w3d = h5py.File(directory + "/timestep" + str(time_start).zfill(10) + ".h5", "r")["u"][:,:,:]
     nx, ny, nz = w3d.shape
     plot_labels[lab] = lab
@@ -115,11 +116,11 @@ for lvl in levels:
         print 'cloud base lvl = ', cloud_base_lvl
 
         if lvl == "cloud_base":
-          total_arr[data][lab] = np.append(total_arr[data][lab], h5py.File(filename, "r")[data][:,:,cloud_base_lvl-layer_thickness : cloud_base_lvl])
+          total_arr[data][lab] = np.append(total_arr[data][lab], (h5py.File(filename, "r")[data]*rhod)[:,:,cloud_base_lvl-layer_thickness : cloud_base_lvl])
         if lvl == "ground":
-          total_arr[data][lab] = np.append(total_arr[data][lab], h5py.File(filename, "r")[data][:,:, 0 : layer_thickness ])
+          total_arr[data][lab] = np.append(total_arr[data][lab], (h5py.File(filename, "r")[data]*rhod)[:,:, 0 : layer_thickness ])
         if lvl == "all":
-          total_arr[data][lab] = np.append(total_arr[data][lab], h5py.File(filename, "r")[data][:,:,:])
+          total_arr[data][lab] = np.append(total_arr[data][lab], (h5py.File(filename, "r")[data]*rhod)[:,:,:])
   
   #    hists[lab] = np.hist(total_arr, bins=100)
   #    _ = plt.hist(total_arr, bins='auto')
@@ -160,7 +161,7 @@ for lvl in levels:
 #    data = total_arr["rain_rw_mom3"].values()
 
   plt.xlabel('radius [um]')
-  plt.ylabel('PDF of concentration')
+  plt.ylabel('PDF of concentration [cm^{-3} / um]')
   plt.xlim(r_min*1e6, r_max*1e6)
  # plt.xscale('log')
   plt.legend()
