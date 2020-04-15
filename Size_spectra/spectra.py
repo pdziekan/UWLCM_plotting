@@ -36,6 +36,7 @@ for i in np.arange(21):
   bin_centers["rd"][i] = 0.5 * (left_edges["rd"][i] + left_edges["rd"][i+1])
   bin_width["rd"][i] = (left_edges["rd"][i+1] - left_edges["rd"][i])
 
+
 print left_edges
 print bin_centers
 print bin_width
@@ -63,6 +64,18 @@ else:
   all_data_names = data_names["rw"]
 
 for lvl in levels:
+  # range of radii plotted
+  # full range
+  #if plot_dry == True:
+  #  r_min = min(left_edges["rw"][0], left_edges["rd"][0])
+  #  r_max = max(left_edges["rw"][29], left_edges["rd"][21])
+  #else:
+  #  r_min = left_edges["rw"][0]
+  #  r_max = left_edges["rw"][29]
+  # range adapted for nonzero values, init with some crazy values that will make any values found smaller/larger
+  r_min = 1000
+  r_max = -1000
+
   total_arr = OrderedDict()
   for data in all_data_names:
     total_arr[data] = OrderedDict()
@@ -131,6 +144,14 @@ for lvl in levels:
         avg_conc[name][lab] = np.average(total_arr[name][lab])
         avg_conc_arr[rwrd][lab][it] =  avg_conc[name][lab]
 
+    print avg_conc_arr[rwrd][lab]
+    nonzero_indices = [index for index, item in enumerate(avg_conc_arr[rwrd][lab]) if item != 0]
+    print nonzero_indices
+    first_nonzero_idx = nonzero_indices[0]
+    last_nonzero_idx = nonzero_indices[-1]
+    r_min = min(r_min, left_edges[rwrd][first_nonzero_idx])
+    r_max = max(r_max, left_edges[rwrd][last_nonzero_idx+1])
+
 # avg_conc should be divided by rhod?
 
     for lab in labels:
@@ -140,7 +161,8 @@ for lvl in levels:
 
   plt.xlabel('radius [um]')
   plt.ylabel('PDF of concentration')
-  plt.xscale('log')
+  plt.xlim(r_min*1e6, r_max*1e6)
+ # plt.xscale('log')
   plt.legend()
   plt.yscale('log')
   plt.savefig('size_spectra_' + lvl + '_' + str(time_start) + '_' + str(time_end) +'.png')
