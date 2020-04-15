@@ -151,7 +151,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         catch(...) {;}
       }
       // averagew sd_conc in clloudy cells
-      else if (plt == "sd_conc_avg")
+      else if (plt == "cl_sd_conc")
       {
         try
         {
@@ -162,7 +162,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         catch(...) {;}
       }
       // average activated sd_conc in clloudy cells
-      else if (plt == "sd_conc_act_avg")
+      else if (plt == "cl_sd_conc_act")
       {
         try
         {
@@ -385,6 +385,19 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         try
         {
           auto tmp = plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]);
+          typename Plotter_t::arr_t snap(tmp);
+          snap /= 1e6; // per cm^3
+          snap *= rhod; // b4 it was per milligram
+          res_prof(at) = blitz::mean(snap); 
+        }
+        catch(...) {;}
+      }
+      else if (plt == "nr")
+      {
+	// rain droplet ( r > 25 um) concentration
+        try
+        {
+          auto tmp = plotter.h5load_timestep("rain_rw_mom0", at * n["outfreq"]);
           typename Plotter_t::arr_t snap(tmp);
           snap /= 1e6; // per cm^3
           snap *= rhod; // b4 it was per milligram
@@ -1098,12 +1111,12 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     {
       res_pos *= 60.;
     }
-    else if (plt == "sd_conc_avg")
+    else if (plt == "cl_sd_conc")
     {
       plot_std_dev = true;
       res_pos *= 60.;
     }
-    else if (plt == "sd_conc_act_avg")
+    else if (plt == "cl_sd_conc_act")
     {
       plot_std_dev = true;
       res_pos *= 60.;
