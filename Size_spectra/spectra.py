@@ -155,7 +155,7 @@ for lvl in levels:
 # avg_conc should be divided by rhod?
 
     for lab in labels:
-      plt.plot(bin_centers[rwrd] * 1e6, avg_conc_arr[rwrd][lab] / bin_width[rwrd], label=rwrd + '_' + lab, linewidth=6)
+      plt.plot(bin_centers[rwrd] * 1e6, avg_conc_arr[rwrd][lab] / bin_width[rwrd] / 1e12, label=rwrd + '_' + lab, linewidth=6) # *1e6 to have microns on x, / 1e12 to adjust for width in microns and to have concentration per cm^3
 
 #    data = total_arr["rain_rw_mom3"].values()
 
