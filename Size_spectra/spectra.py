@@ -7,7 +7,17 @@ from collections import OrderedDict
 plt.rcParams.update({'font.size': 40})
 plt.figure(figsize=(40,40))
 
-size_data = {"rw" : 29, "rd" : 21}
+time_start = int(argv[1])
+time_end = int(argv[2])
+outfreq = int(argv[3])
+plot_dry = int(argv[4])
+#from_lvl = int(argv[4])
+#to_lvl = int(argv[5])
+
+if plot_dry == True:
+  size_data = {"rw" : 29, "rd" : 21}
+else:
+  size_data = {"rw" : 29}
 
 #hardcoded bin edges, need to match UWLCM
 left_edges = {"rw": np.zeros(30), "rd": np.zeros(22)}
@@ -42,21 +52,19 @@ print data_names
 layer_thickness = 10
 cloud_thresh = 1e-8
 
-time_start = int(argv[1])
-time_end = int(argv[2])
-outfreq = int(argv[3])
-#from_lvl = int(argv[4])
-#to_lvl = int(argv[5])
-
-directories = argv[4:len(argv):2]
-labels = argv[5:len(argv):2]
+directories = argv[5:len(argv):2]
+labels = argv[6:len(argv):2]
 print directories, labels
 
 levels = ["ground", "cloud_base"]
+if plot_dry == True:
+  all_data_names = np.append(data_names["rw"], data_names["rd"])
+else:
+  all_data_names = data_names["rw"]
 
 for lvl in levels:
   total_arr = OrderedDict()
-  for data in np.append(data_names["rw"], data_names["rd"]):
+  for data in all_data_names:
     total_arr[data] = OrderedDict()
   
   plot_labels = OrderedDict()
@@ -73,7 +81,7 @@ for lvl in levels:
   #  for data in data_names:
   #    Exy_avg[data] = np.zeros(((nx+1)/2))
   
-    for data in np.append(data_names["rw"], data_names["rd"]):
+    for data in all_data_names:
       total_arr[data][lab] = np.zeros(0)
   
       for t in range(time_start, time_end+1, outfreq):
@@ -123,9 +131,6 @@ for lvl in levels:
         avg_conc_arr[rwrd][lab][it] =  avg_conc[name][lab]
 
 # avg_conc should be divided by rhod?
-
-    print avg_conc
-    print avg_conc_arr[rwrd]
 
     for lab in labels:
       plt.plot(bin_centers[rwrd] * 1e6, avg_conc_arr[rwrd][lab] / bin_width[rwrd], label=rwrd + '_' + lab, linewidth=6)
