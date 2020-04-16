@@ -8,7 +8,7 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../Matplotlib_common/")
 #sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../Dycoms_RF02/")
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../RICO11/")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../cases/RICO11/")
 
 from plot_ranges import * 
 from plot_series import *
@@ -26,7 +26,7 @@ print 'axarr type: ', type(axarr)
 print 'axarr shape: ', axarr.shape
 plot_iter=0
 
-assert len(argv) == 14
+assert len(sys.argv) == 16
 
 
 xlimdict_series = {
@@ -42,16 +42,18 @@ ylimdict_series = {
 }
 
 
+n_plots = [2,3,2] # 2 lines on sc and cu no mix, 3 lines on cu
+n_plots_bfr = [0,2,5] # lazy partial sum :p
 
-for cusc_iter in [0,1,2]: # stratocumulus, cumulus, cumulus2,
+for cusc_iter in [0,1,2]: # stratocumulus, cumulus, cumulus no mix,
   file_names = []
   file_labels = []
-  file_no = np.arange(1 + 4 * cusc_iter, 1 + 4 * (cusc_iter+1) , 2)
+  file_no = np.arange(1 + 2 * n_plots_bfr[cusc_iter], 1 + 2 * (n_plots_bfr[cusc_iter] + n_plots[cusc_iter]) , 2) # 2* because for each line there is data file and label
   for no in file_no:
     print no
-    print argv[no]
-    file_names.append(argv[no] + "series.dat")
-    file_labels.append(argv[no+1])
+    print sys.argv[no]
+    file_names.append(sys.argv[no] + "series.dat")
+    file_labels.append(sys.argv[no+1])
   
   print file_names
   plot_iter = plot_series(series, plot_iter, nplotx, nploty, axarr, xscaledict, yscaledict, xlimdict_series[cusc_iter], ylimdict_series, xlabel='Time [h]', file_names=file_names, file_labels=file_labels)
@@ -92,7 +94,7 @@ axarr[0].xaxis.set_major_locator(MaxNLocator(integer=True))
 #    axarr[x,y].legend(loc="upper center")
 
 #single legend for the whole figure
-handles, labels = axarr[0].get_legend_handles_labels()
+handles, labels = axarr[1].get_legend_handles_labels()
 lgd = fig.legend(handles, labels, handlelength=4, loc='lower center', bbox_to_anchor=(0.45,0))
 
 
@@ -101,7 +103,7 @@ fig.set_size_inches(7.874, 2. + (len(labels) ) * 0.34)# 5.214)#20.75,13.74)
 #distances between subplots and from bottom of the plot
 #fig.subplots_adjust(bottom=0. + (len(labels) ) * 0.044, hspace=0, wspace=0.4)
 
-fig.tight_layout(pad=0, w_pad=1, h_pad=0, rect=(0,0.16,1,1))
+fig.tight_layout(pad=0, w_pad=1, h_pad=0, rect=(0,0.2,1,1))
 
 #figure size
 #fig.set_size_inches(7.874, 6 + (len(labels) - 2) * 0.2)# 5.214)#20.75,13.74)
@@ -115,5 +117,5 @@ fig.tight_layout(pad=0, w_pad=1, h_pad=0, rect=(0,0.16,1,1))
 
 
 #plt.show()
-fig.savefig(argv[len(sys.argv)-1], bbox_inches='tight', dpi=300)#, bbox_extra_artists=(lgd,))
+fig.savefig(sys.argv[len(sys.argv)-1], bbox_inches='tight', dpi=300)#, bbox_extra_artists=(lgd,))
 
