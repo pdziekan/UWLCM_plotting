@@ -72,6 +72,12 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel 'time [min]'\n";
     gp << "set title 'average std dev of radius of activated droplets'\n";
   }
+  else if (plt == "sd_conc")
+  {
+    gp << "set ylabel '<N_{SD}>'\n";
+    gp << "set xlabel 'time [min]'\n";
+    gp << "set title 'average SD number'\n";
+  }
   else if (plt == "cl_sd_conc")
   {
     gp << "set ylabel '<N_{SD}>'\n";

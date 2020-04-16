@@ -131,6 +131,16 @@ class PlotterMicro_t : public Plotter_t<NDims>
 
   // functions for diagnosing statistics
   
+  // helper function that calculates staistics (mean and std_dev) of a field
+  std::pair<double, double> hlpr(arr_t arr, int at)
+  {
+    std::pair<double, double> res;
+    res.first = blitz::mean(arr);
+    arr = pow(arr - res.first, 2); 
+    res.second = sqrt(blitz::mean(arr)); 
+    return res;
+  }
+   
   // helper function that calculates staistics (mean and std_dev) of a field only in cloudy cells
   std::pair<double, double> cloud_hlpr(arr_t arr, int at)
   {
@@ -154,7 +164,6 @@ class PlotterMicro_t : public Plotter_t<NDims>
 
     return res;
   }
-
   
   // height [m] of the center of mass of activated droplets
   double act_com_z_timestep(int at)
@@ -214,6 +223,14 @@ class PlotterMicro_t : public Plotter_t<NDims>
       res.second = 0.; 
 
     return res;
+  }
+
+  // mean and std_dev of number of SDs (characteristics of the spatial distribution at this timestep)
+  std::pair<double, double> sdconc_stats_timestep(int at)
+  {   
+    if(this->micro == "blk_1m") return {0,0};
+    arr_t sdconc(this->h5load_timestep("sd_conc", at));
+    return hlpr(sdconc, at);
   }
 
   // mean and std_dev of number of SDs in cloudy cells (characteristics of the spatial distribution at this timestep)

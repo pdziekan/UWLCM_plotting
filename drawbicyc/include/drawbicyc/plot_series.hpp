@@ -150,7 +150,18 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {;}
       }
-      // averagew sd_conc in clloudy cells
+      // average sd_conc
+      else if (plt == "sd_conc")
+      {
+        try
+        {
+          auto stats = plotter.sdconc_stats_timestep(at * n["outfreq"]);
+          res_prof(at) = stats.first;
+          res_prof_std_dev(at) = stats.second;
+        }
+        catch(...) {;}
+      }
+      // average sd_conc in cloudy cells
       else if (plt == "cl_sd_conc")
       {
         try
@@ -1109,6 +1120,11 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     }
     else if (plt == "cloud_avg_std_dev_act_rad")
     {
+      res_pos *= 60.;
+    }
+    else if (plt == "sd_conc")
+    {
+      plot_std_dev = true;
       res_pos *= 60.;
     }
     else if (plt == "cl_sd_conc")
