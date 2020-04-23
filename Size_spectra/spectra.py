@@ -11,6 +11,7 @@ time_start = int(argv[1])
 time_end = int(argv[2])
 outfreq = int(argv[3])
 plot_dry = int(argv[4])
+outfile = argv[5]
 #from_lvl = int(argv[4])
 #to_lvl = int(argv[5])
 
@@ -53,8 +54,8 @@ print data_names
 layer_thickness = 10
 cloud_thresh = 1e-8
 
-directories = argv[5:len(argv):2]
-labels = argv[6:len(argv):2]
+directories = argv[6:len(argv):2]
+labels = argv[7:len(argv):2]
 print directories, labels
 
 levels = ["ground", "cloud_base", "all"]
@@ -166,5 +167,5 @@ for lvl in levels:
  # plt.xscale('log')
   plt.legend()
   plt.yscale('log')
-  plt.savefig('size_spectra_' + lvl + '_' + str(time_start) + '_' + str(time_end) +'.png')
+  plt.savefig(outfile + '_size_spectra_' + lvl + '_' + str(time_start) + '_' + str(time_end) +'.png')
   
