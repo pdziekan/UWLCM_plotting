@@ -58,7 +58,9 @@ directories = argv[6:len(argv):2]
 labels = argv[7:len(argv):2]
 print directories, labels
 
-levels = ["ground", "cloud_base", "all"]
+#levels = ["ground", "cloud_base"]
+levels = ["all", "pi_chamber_measurement_location"]
+
 if plot_dry == True:
   all_data_names = np.append(data_names["rw"], data_names["rd"])
 else:
@@ -122,6 +124,8 @@ for lvl in levels:
           total_arr[data][lab] = np.append(total_arr[data][lab], (h5py.File(filename, "r")[data]*rhod)[:,:, 0 : layer_thickness ])
         if lvl == "all":
           total_arr[data][lab] = np.append(total_arr[data][lab], (h5py.File(filename, "r")[data]*rhod)[:,:,:])
+        if lvl == "pi_chamber_measurement_location":
+          total_arr[data][lab] = np.append(total_arr[data][lab], (h5py.File(filename, "r")[data]*rhod)[32:34,5:6,4:5]) # roughly + assuming dx=0.03125 m
   
   #    hists[lab] = np.hist(total_arr, bins=100)
   #    _ = plt.hist(total_arr, bins='auto')
