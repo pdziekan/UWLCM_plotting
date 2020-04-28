@@ -59,8 +59,8 @@ directories = argv[6:len(argv):2]
 labels = argv[7:len(argv):2]
 print directories, labels
 
-#levels = ["ground", "cloud_base"]
-levels = ["all", "pi_chamber_measurement_location"]
+levels = ["ground", "cloud_base"]
+#levels = ["all", "pi_chamber_measurement_location"]
 
 if plot_dry == True:
   all_data_names = np.append(data_names["rw"], data_names["rd"])
