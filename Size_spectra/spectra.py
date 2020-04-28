@@ -27,6 +27,7 @@ bin_width = {"rw": np.zeros(29), "rd": np.zeros(21)}
 
 for i in np.arange(30):
   left_edges["rw"][i] = 10**(-3 + i * .2) * 1e-6 # [m]
+
 for i in np.arange(29):
   bin_centers["rw"][i] = 0.5 * (left_edges["rw"][i] + left_edges["rw"][i+1])
   bin_width["rw"][i] = (left_edges["rw"][i+1] - left_edges["rw"][i])
@@ -103,22 +104,18 @@ for lvl in levels:
   
       for t in range(time_start, time_end+1, outfreq):
         filename = directory + "/timestep" + str(t).zfill(10) + ".h5"
-        print filename
-  
-        # find cloud base
-  
-        # based on cloud rw
-        w3d = h5py.File(filename, "r")["cloud_rw_mom3"][:,:,:] # * 4. / 3. * 3.1416 * 1e3 
-        cloud_base_lvl = np.argmax(np.average(w3d, axis=(0,1)) > cloud_thresh)
-        # based on RH
-  #      w3d = h5py.File(filename, "r")["RH"][:,:,:] # * 4. / 3. * 3.1416 * 1e3 
-  #      cloud_base_lvl = np.argmax(np.average(w3d, axis=(0,1)) > .99)
-  
-        tot_cloud_base_lvl[lab] = np.append(tot_cloud_base_lvl[lab], cloud_base_lvl) # done for each data, but we dont care - wont affect average
-  
-        print 'cloud base lvl = ', cloud_base_lvl
+        #print filename
 
         if lvl == "cloud_base":
+          # find cloud base
+          # based on cloud rw
+          w3d = h5py.File(filename, "r")["cloud_rw_mom3"][:,:,:] # * 4. / 3. * 3.1416 * 1e3 
+          cloud_base_lvl = np.argmax(np.average(w3d, axis=(0,1)) > cloud_thresh)
+          # based on RH
+    #      w3d = h5py.File(filename, "r")["RH"][:,:,:] # * 4. / 3. * 3.1416 * 1e3 
+    #      cloud_base_lvl = np.argmax(np.average(w3d, axis=(0,1)) > .99)
+          tot_cloud_base_lvl[lab] = np.append(tot_cloud_base_lvl[lab], cloud_base_lvl) # done for each data, but we dont care - wont affect average
+          print 'cloud base lvl = ', cloud_base_lvl
           total_arr[data][lab] = np.append(total_arr[data][lab], (h5py.File(filename, "r")[data]*rhod)[:,:,cloud_base_lvl-layer_thickness : cloud_base_lvl])
         if lvl == "ground":
           total_arr[data][lab] = np.append(total_arr[data][lab], (h5py.File(filename, "r")[data]*rhod)[:,:, 0 : layer_thickness ])
@@ -150,18 +147,16 @@ for lvl in levels:
         avg_conc[name][lab] = np.average(total_arr[name][lab])
         avg_conc_arr[rwrd][lab][it] =  avg_conc[name][lab]
 
-    print avg_conc_arr[rwrd][lab]
-    nonzero_indices = [index for index, item in enumerate(avg_conc_arr[rwrd][lab]) if item != 0]
-    print nonzero_indices
-    first_nonzero_idx = nonzero_indices[0]
-    last_nonzero_idx = nonzero_indices[-1]
-    r_min = min(r_min, left_edges[rwrd][first_nonzero_idx])
-    r_max = max(r_max, left_edges[rwrd][last_nonzero_idx+1])
-
-# avg_conc should be divided by rhod?
-
     for lab in labels:
-      plt.plot(bin_centers[rwrd] * 1e6 * 2, avg_conc_arr[rwrd][lab] / bin_width[rwrd] / 1e12 / 2, label=rwrd + '_' + lab, linewidth=6) # *1e6 to have microns on x, / 1e12 to adjust for width in microns and to have concentration per cm^3; *2 and /2 to get diameters
+      #print avg_conc_arr[rwrd][lab]
+      nonzero_indices = [index for index, item in enumerate(avg_conc_arr[rwrd][lab]) if item != 0]
+      print nonzero_indices
+      first_nonzero_idx = nonzero_indices[0]
+      last_nonzero_idx = nonzero_indices[-1]
+      r_min = min(r_min, left_edges[rwrd][first_nonzero_idx])
+      r_max = max(r_max, left_edges[rwrd][last_nonzero_idx+1])
+      print 'r_min = ', r_min, ' r_max = ', r_max
+      plt.step(bin_centers[rwrd] * 1e6 * 2, avg_conc_arr[rwrd][lab] / bin_width[rwrd] / 1e12 / 2, where='mid', label=rwrd + '_' + lab, linewidth=6) # *1e6 to have microns on x, / 1e12 to adjust for width in microns and to have concentration per cm^3; *2 and /2 to get diameters
 
 #    data = total_arr["rain_rw_mom3"].values()
 
