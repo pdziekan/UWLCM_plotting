@@ -403,6 +403,19 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {;}
       }
+      else if (plt == "ntot")
+      {
+        // concentration of all particles
+        try
+        {
+          auto tmp = plotter.h5load_timestep("all_rw_mom0", at * n["outfreq"]);
+          typename Plotter_t::arr_t snap(tmp);
+          snap /= 1e6; // per cm^3
+          snap *= rhod; // b4 it was per milligram
+          res_prof(at) = blitz::mean(snap); 
+        }
+        catch(...) {;}
+      }
       else if (plt == "nr")
       {
 	// rain droplet ( r > 25 um) concentration

@@ -134,6 +134,8 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   }
   else if (plt == "nc")
     gp << "set title 'average cloud drop conc [1/cm^3]'\n";
+  else if (plt == "ntot")
+    gp << "set title 'average particle conc [1/cm^3]'\n";
   else if (plt == "cl_nc")
   {
     gp << "set title 'average cloud drop conc [1/cm^3] in cloudy cells'\n";

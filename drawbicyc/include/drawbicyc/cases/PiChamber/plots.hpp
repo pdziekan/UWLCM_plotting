@@ -13,6 +13,7 @@ const std::vector<std::string> series_PiChamber({
 
 // "acc_precip",
 , "nc"
+, "ntot"
 , "nr"
 //, "cl_nr"
  
