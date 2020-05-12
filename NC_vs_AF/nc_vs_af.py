@@ -12,6 +12,8 @@ np.set_printoptions(threshold=maxsize)
 #plt.rcParams.update({'font.size': 40})
 #plt.figure(figsize=(40,40))
 
+evap_lat = 2.5e6 # [J/kg] latent heat of evaporation
+
 timestep = 72000
 
 input_dir = argv[1]
@@ -26,12 +28,31 @@ filename = input_dir + "/timestep" + str(timestep).zfill(10) + ".h5"
 rl = (h5py.File(filename, "r")["cloud_rw_mom3"][:,:,:] + h5py.File(filename, "r")["rain_rw_mom3"][:,:,:]) * 4. / 3. * 3.1416 * 1e3; # kg/kg
 nc = h5py.File(filename, "r")["cloud_rw_mom0"][:,:,:] * rhod / 1e6; # 1 / cm^3
 
+# cloudiness mask - as in DYCOMS paper
+cloudy_mask = nc
+cloudy_mask = np.where(nc > 20, 1, 0)
+
+print 'nc>20 cloudy cells: ', np.sum(cloudy_mask)
+print 'nc>20 mean nc in cloudy cells: ', np.sum(nc * cloudy_mask) / np.sum(cloudy_mask)
+
+# cloudiness mask - rl > 1e-4
+cloudy_mask = rl
+cloudy_mask = np.where(rl > 1e-4, 1, 0)
+
+print 'rl>1e-4 cloudy cells: ', np.sum(cloudy_mask)
+print 'rl>1e-4 mean nc in cloudy cells: ', np.sum(nc * cloudy_mask) / np.sum(cloudy_mask)
+
 # cloudiness mask - as in RICO paper
-#cloudy_mask = rl
-#cloudy_mask = np.where(rl > 1e-5, 1, 0)
+cloudy_mask = rl
+cloudy_mask = np.where(rl > 1e-5, 1, 0)
+
+print 'rl>1e-5 cloudy cells: ', np.sum(cloudy_mask)
+print 'rl>1e-5 mean nc in cloudy cells: ', np.sum(nc * cloudy_mask) / np.sum(cloudy_mask)
 
 # ---- adiabatic LWC ----
-adia_rl = np.zeros([nx, ny, nz])
+AF = np.zeros([nx, ny, nz])
+#adia_rl = np.zeros([nx, ny, nz])
+adia_rl = np.zeros([nz])
 # th and rv
 th = h5py.File(filename, "r")["th"][:,:,:];
 rv = h5py.File(filename, "r")["rv"][:,:,:];
@@ -50,36 +71,64 @@ clb_idx = np.argmax(RH > 1, axis=2)
 
 # clb condition per column
 clb_rv = np.zeros([nx, ny])
-#clb_th = np.zeros([nx, ny])
+clb_th = np.zeros([nx, ny])
 
-evap_lat = 2.5e6 # [J/kg] latent heat of evaporation
 for i, j in zip(np.arange(nx), np.arange(ny)):
-  parcel_rv = rv[i, j, clb_idx[i, j]]
-  parcel_th = th[i, j, clb_idx[i, j]]
-  for k in np.arange(nz):
-    if k < clb_idx[i, j]:
-      adia_rl[i,j,k] = 0
-    else:
-      parcel_T = parcel_th * lcmn.exner(p_e.astype(float)[k])
-      delta_rv = parcel_rv - lcmn.r_vs(parcel_T, p_e.astype(float)[k])
-      parcel_rv -= delta_rv
-      parcel_th += delta_rv * evap_lat / lcmn.c_pd / lcmn.exner(p_e.astype(float)[k])
-      adia_rl[i,j,k] = rl[i,j,k] / delta_rv
+  clb_rv = rv[i, j, clb_idx[i, j]]
+  clb_th = th[i, j, clb_idx[i, j]]
 
-#      adia_rl[i,j,k] = clb_rv[i,j] - r_vs[i,j,k]
+# model a parcel to get an adiabatic rl, assume a single parcel moving starting from mean rv and th at cloud base
+parcel_rv = np.mean(clb_rv)
+parcel_th = np.mean(clb_th)
+parcel_rl = 0
+
+for k in np.arange(nz):
+  parcel_T = parcel_th * lcmn.exner(p_e.astype(float)[k])
+  delta_rv = parcel_rv - lcmn.r_vs(parcel_T, p_e.astype(float)[k])
+  if delta_rv <= 0:
+    delta_rv = 0
+  parcel_rv -= delta_rv
+  parcel_th += delta_rv * evap_lat / lcmn.c_pd / lcmn.exner(p_e.astype(float)[k])
+  parcel_rl += delta_rv
+  adia_rl[k] = parcel_rl
+
+print adia_rl
+
+#for i, j in zip(np.arange(nx), np.arange(ny)):
+#  parcel_rv = rv[i, j, clb_idx[i, j]]
+#  parcel_th = th[i, j, clb_idx[i, j]]
+#  for k in np.arange(nz):
+#    if k < clb_idx[i, j]:
+#      adia_rl[i,j,k] = 0
+#    else:
+#      parcel_T = parcel_th * lcmn.exner(p_e.astype(float)[k])
+#      delta_rv = parcel_rv - lcmn.r_vs(parcel_T, p_e.astype(float)[k])
+#      parcel_rv -= delta_rv
+#      parcel_th += delta_rv * evap_lat / lcmn.c_pd / lcmn.exner(p_e.astype(float)[k])
+#      adia_rl[i,j,k] = rl[i,j,k] / delta_rv
+
 
 #adia_rl = np.where(adia_rl > 0., adia_rl, 0)
 #print adia_rl
 
 # translate rl to AF
-AF = np.where(adia_rl > 0., rl / adia_rl, 0)
+#AF = np.where(adia_rl > 0., rl / adia_rl, 0)
 #AF = np.where(adia_rl > 1e-5, rl / adia_rl, 0)
 
+for i, j, k in zip(np.arange(nx), np.arange(ny), np.arange(nz)):
+  if rl[i,j,k] > 0 and adia_rl[k] == 0:
+    print 'i: ',i, ' j: ',j, ' k: ',k, 'rl: ', rl[i,j,k], 'adia_rl: ', adia_rl[k], 'nc: ', nc[i,j,k]
+  if cloudy_mask[i,j,k] == 1:
+    AF[i, j, k] = rl[i,j,k] / adia_rl[k]
+  else:
+    AF[i, j, k] = 0
+
 #print AF
-plt.plot(AF.flatten(), nc.flatten(), 'o')
+plt.plot((AF * cloudy_mask).flatten(), (nc * cloudy_mask).flatten(), 'o')
 
 #plt.plot((rl*cloudy_mask).flatten(), (nc*cloudy_mask).flatten(), 'o')
 #
 plt.xscale('log')
+#plt.yscale('log')
 #
 plt.show()
