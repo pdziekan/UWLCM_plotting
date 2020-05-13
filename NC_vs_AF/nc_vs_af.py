@@ -1,3 +1,6 @@
+# calculate cloud droplet conc. vs adiabatic fraction
+# adiabatic rl calculated based on mean th and rv at cloud base cells
+
 from sys import argv, path, maxsize
 path.insert(0, "/home/piotr/usr/local/lib/python2.7/dist-packages/")
 

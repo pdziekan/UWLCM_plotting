@@ -1,3 +1,6 @@
+# calculate cloud droplet conc. vs adiabatic fraction
+# adiabatic rl calculated separately for each column
+
 from sys import argv, path, maxsize
 path.insert(0, "/home/piotr/usr/local/lib/python2.7/dist-packages/")
 
@@ -49,6 +52,8 @@ for timestep in timesteps:
   
   print 'rl>1e-5 cloudy cells: ', np.sum(cloudy_mask)
   print 'rl>1e-5 mean nc in cloudy cells: ', np.sum(nc * cloudy_mask) / np.sum(cloudy_mask)
+
+  altitude = np.zeros([nx, ny, nz])
   
   # ---- adiabatic LWC ----
   AF = np.zeros([nx, ny, nz])
@@ -125,6 +130,7 @@ for timestep in timesteps:
   #        print 'i: ',i, ' j: ',j, ' k: ',k, 'rl: ', rl[i,j,k], 'adia_rl: ', adia_rl[k], 'nc: ', nc[i,j,k]
         if cloudy_mask[i,j,k] > 0:
           AF[i, j, k] = rl[i,j,k] / adia_rl[i, j, k]
+          altitude[i, j, k] = k
   #        print 'i: ',i, ' j: ',j, ' k: ',k, 'rl: ', rl[i,j,k], 'adia_rl: ', adia_rl[k], 'nc: ', nc[i,j,k], 'AF: ', AF[i,j,k]
         else:
           AF[i, j, k] = 0
@@ -133,7 +139,8 @@ for timestep in timesteps:
   #print AF[AF>0]
   #print nc[nc>0]
   
-  plt.plot((AF * cloudy_mask).flatten(), (nc * cloudy_mask).flatten(), '.', markersize=1)
+  plt.scatter((AF * cloudy_mask).flatten(), (nc * cloudy_mask).flatten(), c =  (altitude * cloudy_mask).flatten(), s=2)
+  plt.colorbar()
   plt.xlim(0,10)
   plt.ylim(0,200)
   
