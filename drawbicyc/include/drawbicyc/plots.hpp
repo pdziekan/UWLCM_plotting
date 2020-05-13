@@ -4,6 +4,7 @@
 #include "cases/Dycoms_RF02/plots.hpp"
 #include "cases/moist_thermal/plots.hpp"
 #include "cases/PiChamber/plots.hpp"
+#include "cases/Lasher_Trapp/plots.hpp"
 
 const std::vector<std::string> series_sgs({
 // "tot_tke"
@@ -49,6 +50,11 @@ class Plots
       profs.insert(profs.end(), profs_PiChamber.begin(), profs_PiChamber.end());
       series.insert(series.end(), series_PiChamber.begin(), series_PiChamber.end());
       fields.insert(fields.end(), fields_PiChamber.begin(), fields_PiChamber.end());
+    }
+    else if(type == "Lasher_Trapp") {
+     // profs.insert(profs.end(), profs_Lasher_Trapp.begin(), profs_Lasher_Trapp.end());
+      series.insert(series.end(), series_Lasher_Trapp.begin(), series_Lasher_Trapp.end());
+      fields.insert(fields.end(), fields_Lasher_Trapp.begin(), fields_Lasher_Trapp.end());
     }
     /*
     else if(type == "base_prflux_vs_clhght") { 
