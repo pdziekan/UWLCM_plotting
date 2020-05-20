@@ -18,6 +18,7 @@ plt.figure(figsize=(16,10))
 evap_lat = 2.5e6 # [J/kg] latent heat of evaporation
 
 timesteps = [12000, 36000, 72000]
+#timesteps = [36000]
 
 input_dir = argv[1]
 outfile = argv[2]
@@ -49,11 +50,12 @@ for timestep in timesteps:
   
   # cloudiness mask - as in RICO paper
   cloudy_mask = np.where(rl > 1e-5, 1, 0)
+  cloudy_mask_used = cloudy_mask
   
   print 'rl>1e-5 cloudy cells: ', np.sum(cloudy_mask)
   print 'rl>1e-5 mean nc in cloudy cells: ', np.sum(nc * cloudy_mask) / np.sum(cloudy_mask)
 
-  altitude = np.zeros([nx, ny, nz])
+  hght_abv_clb = np.zeros([nx, ny, nz])
   
   # ---- adiabatic LWC ----
   AF = np.zeros([nx, ny, nz])
@@ -73,7 +75,8 @@ for timestep in timesteps:
   RH = rv / r_vs
   
   # cloud base
-  clb_idx = np.argmax(RH > 1, axis=2)
+  #clb_idx = np.argmax(RH > 1, axis=2)
+  clb_idx = np.argmax(cloudy_mask_used>0, axis=2)
   
   # clb condition per column
   clb_rv = np.zeros([nx, ny])
@@ -128,29 +131,72 @@ for timestep in timesteps:
       for k in np.arange(nz):
   #      if rl[i,j,k] > 0 and adia_rl[k] == 0:
   #        print 'i: ',i, ' j: ',j, ' k: ',k, 'rl: ', rl[i,j,k], 'adia_rl: ', adia_rl[k], 'nc: ', nc[i,j,k]
-        if cloudy_mask[i,j,k] > 0:
-          AF[i, j, k] = rl[i,j,k] / adia_rl[i, j, k]
-          altitude[i, j, k] = k
+        AF[i, j, k] = rl[i,j,k] / adia_rl[i, j, k]
+        hght_abv_clb[i, j, k] = (k - clb_idx[i,j]) * 40
   #        print 'i: ',i, ' j: ',j, ' k: ',k, 'rl: ', rl[i,j,k], 'adia_rl: ', adia_rl[k], 'nc: ', nc[i,j,k], 'AF: ', AF[i,j,k]
-        else:
-          AF[i, j, k] = 0
   
-  #print cloudy_mask[cloudy_mask>0]
+  #print cloudy_mask_used[cloudy_mask_used>0]
   #print AF[AF>0]
   #print nc[nc>0]
-  
-  plt.scatter((AF * cloudy_mask).flatten(), (nc * cloudy_mask).flatten(), c =  (altitude * cloudy_mask).flatten(), s=2)
-  plt.colorbar()
+
+  # set cloudy_mask=0 below cloud base and in non-cloudy columns
+  # not needed? after cloud base detection based on cloudy mask and not RH?
+  for i in np.arange(nx):
+    for j in np.arange(ny):
+      for k in np.arange(nz):
+        if k < clb_idx[i,j] or clb_idx[i,j]==0:
+          cloudy_mask_used[i,j,k] = 0
+
+  # plot cloudy points
+  plt.scatter(AF[cloudy_mask_used==1].flatten(), nc[cloudy_mask_used==1].flatten(), c =  hght_abv_clb[cloudy_mask_used==1].flatten(), s=2, cmap='hot', alpha=0.5)
+# jet, hot  
+  cb = plt.colorbar()
+  cb.set_label("Height above cloud base [m]")
+  plt.clim(0,1400)
   plt.xlim(0,10)
   plt.ylim(0,200)
   
   plt.xlabel('AF')
   plt.ylabel('Nc [1/cc]')
   
-  #plt.plot((rl*cloudy_mask).flatten(), (nc*cloudy_mask).flatten(), 'o')
+  #plt.plot((rl*cloudy_mask_used).flatten(), (nc*cloudy_mask_used).flatten(), 'o')
   #
   #plt.xscale('log')
   #plt.yscale('log')
   #
   #plt.show()
   plt.savefig(outfile + '_NCvsAF_AFperCol_' + str(timestep) +'.png')
+
+  # plot adia_rl vs rl
+  plt.clf()
+  plt.scatter(adia_rl[cloudy_mask_used==1].flatten(), rl[cloudy_mask_used==1].flatten(), c =  hght_abv_clb[cloudy_mask_used==1].flatten(), s=2, cmap='hot', alpha=0.5)
+# jet, hot  
+  cb = plt.colorbar()
+  cb.set_label("Height above cloud base [m]")
+  plt.clim(0,1400)
+  plt.gca().set_xlim(left=0)
+  plt.gca().set_ylim(bottom=0)
+  plt.ylabel('r_l')
+  plt.xlabel('adia r_l')
+  xpoints = ypoints = plt.xlim()
+  plt.plot(xpoints, ypoints, linestyle='--', color='k', lw=3, scalex=False, scaley=False)
+  plt.savefig(outfile + '_rl_vs_AdiaRl_AFperCol_' + str(timestep) +'.png')
+
+#  # plot NC vs rl
+  plt.clf()
+  plt.scatter(rl[cloudy_mask_used==1].flatten(), nc[cloudy_mask_used==1].flatten(), c =  hght_abv_clb[cloudy_mask_used==1].flatten(), s=2, cmap='hot', alpha=0.5)
+# jet, hot  
+  cb = plt.colorbar()
+  cb.set_label("Height above cloud base [m]")
+  plt.clim(0,1400)
+  plt.xlim(0,5e-3)
+  plt.ylim(0,200)
+  plt.xlabel('r_l')
+  plt.ylabel('Nc [1/cc]')
+  plt.savefig(outfile + '_NCvsrl_AFperCol_' + str(timestep) +'.png')
+
+#  # plot NC vs hght abv clb
+#  plt.clf()
+#  plt.scatter(hght_abv_clb[cloudy_mask_used==1].flatten(), nc[cloudy_mask_used==1].flatten(), c = AF[cloudy_mask_used==1].flatten())
+#  plt.colorbar()
+#  plt.savefig(outfile + '_NCvsHght_AFperCol_' + str(timestep) +'.png')
