@@ -1,4 +1,6 @@
 var_labels = {
+  "sgs_tke" : 'SGS TKE (Smagorinsky) [m$^{2}$ s$^{-2}$]',
+  "sgs_tke_sd" : 'SGS TKE (Super-droplets) [m$^{2}$ s$^{-2}$]',
   "lwp" : 'LWP [g m$^{-2}$]',
   "rwp" : 'RWP [g m$^{-2}$]',
   "surf_precip" : 'Surface precip. [mm/day]',
