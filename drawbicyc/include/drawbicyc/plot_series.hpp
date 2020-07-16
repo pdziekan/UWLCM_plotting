@@ -1118,8 +1118,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       {
         try
         {
-          typename Plotter_t::arr_t lwc(plotter.h5load_rc_timestep(at * n["outfreq"])); // cloud water
-          lwc += plotter.h5load_rr_timestep(at * n["outfreq"]); // add rain water
+          typename Plotter_t::arr_t lwc(plotter.h5load_rc_timestep(at * n["outfreq"])); // cloud water, no rain water in pi chamber icmw
           res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(lwc, distance_from_walls)));
         }
         catch(...) {;}
