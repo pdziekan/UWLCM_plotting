@@ -4,6 +4,7 @@
 #include "cases/Dycoms_RF02/plots.hpp"
 #include "cases/moist_thermal/plots.hpp"
 #include "cases/PiChamber/plots.hpp"
+#include "cases/PiChamber/plots_icmw.hpp"
 #include "cases/Lasher_Trapp/plots.hpp"
 
 const std::vector<std::string> series_sgs({
