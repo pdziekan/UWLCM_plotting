@@ -50,6 +50,11 @@ class Plots
       series.insert(series.end(), series_PiChamber.begin(), series_PiChamber.end());
       fields.insert(fields.end(), fields_PiChamber.begin(), fields_PiChamber.end());
     }
+    else if(type == "pi_chamber_icmw") { 
+      profs.insert(profs.end(), profs_PiChamberICMW.begin(), profs_PiChamberICMW.end());
+      series.insert(series.end(), series_PiChamberICMW.begin(), series_PiChamberICMW.end());
+      fields.insert(fields.end(), fields_PiChamberICMW.begin(), fields_PiChamberICMW.end());
+    }
     /*
     else if(type == "base_prflux_vs_clhght") { 
       profs.insert(profs.end(), profs_base_prflux_vs_clhght.begin(), profs_base_prflux_vs_clhght.end());
