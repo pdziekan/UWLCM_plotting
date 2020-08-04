@@ -333,4 +333,40 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
+  else if (plt == "T_nowall")
+  {
+    gp << "set title 'temperature (nowall) [K]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "Qv_nowall")
+  {
+    gp << "set title 'q_v (nowall) [g/kg]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "RH_nowall")
+  {
+    gp << "set title 'RH (nowall) [%]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "LWC_nowall")
+  {
+    gp << "set title 'LWC (nowall) [g/kg]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "N_drop_nowall")
+  {
+    gp << "set title 'N_{drop} (r>1.5um) (nowall) [cm^{-3}]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "N_aerosol_nowall")
+  {
+    gp << "set title 'N_{aerosol} (r<1.5um) (nowall) [cm^{-3}]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
 }
