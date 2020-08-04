@@ -1218,6 +1218,33 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...){;}
       }
+      else if (plt == "disp_r_nowall")
+      {
+	// relative dispersion (std dev / mean) of droplet radius distribution averaged over cells away from walls 
+        try
+        {
+          typename Plotter_t::arr_t m0(plotter.nowall(typename Plotter_t::arr_t(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"])), distance_from_walls));
+          typename Plotter_t::arr_t m1(plotter.nowall(typename Plotter_t::arr_t(plotter.h5load_timestep("cloud_rw_mom1", at * n["outfreq"])), distance_from_walls));
+          typename Plotter_t::arr_t m2(plotter.nowall(typename Plotter_t::arr_t(plotter.h5load_timestep("cloud_rw_mom2", at * n["outfreq"])), distance_from_walls));
+          // calculate stddev of radius, store in m2
+          m2 = where(m0 > 0,
+            m2 / m0 - m1 / m0 * m1 / m0, 0.);
+          // might be slightly negative due to numerical errors
+          m2 = where(m2 < 0, 0, m2);
+          m2 = sqrt(m2); // sqrt(variance)
+
+          // calculate mean radius, store in m1
+          m1 = where(m0 > 0,
+            m1 / m0, 0.);
+
+          auto tot_m1 = blitz::sum(m1);
+          if(tot_m1 > 0)
+            res_prof(at) = blitz::sum(m2) / tot_m1; 
+          else
+            res_prof(at) = 0;
+        }
+        catch(...){;}
+      }
 
       else assert(false);
     } // ------- end of time loop ------
@@ -1384,6 +1411,10 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     {
       res_pos *= 3600.;
       res_prof *= 1e6; // m -> um
+    }
+    else if (plt == "disp_r_nowall")
+    {
+      res_pos *= 3600.;
     }
 
     // set labels for the gnuplot plot
