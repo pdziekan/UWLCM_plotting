@@ -1188,6 +1188,36 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {;}
       }
+      else if (plt == "r_mean1_nowall")
+      {
+	// droplets mean radius away from walls
+        try
+        {
+          typename Plotter_t::arr_t m0(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
+          typename Plotter_t::arr_t m1(plotter.h5load_timestep("cloud_rw_mom1", at * n["outfreq"]));
+          auto tot_m0 = blitz::sum(typename Plotter_t::arr_t(plotter.nowall(m0, distance_from_walls)));
+          if(tot_m0 > 0)
+            res_prof(at) = blitz::sum(typename Plotter_t::arr_t(plotter.nowall(m1, distance_from_walls))) / tot_m0; 
+          else
+            res_prof(at) = 0;
+        }
+        catch(...){;}
+      }
+      else if (plt == "r_mean2_nowall")
+      {
+	// droplets effective radius away from walls
+        try
+        {
+          typename Plotter_t::arr_t m2(plotter.h5load_timestep("cloud_rw_mom2", at * n["outfreq"]));
+          typename Plotter_t::arr_t m3(plotter.h5load_timestep("cloud_rw_mom3", at * n["outfreq"]));
+          auto tot_m2 = blitz::sum(typename Plotter_t::arr_t(plotter.nowall(m2, distance_from_walls)));
+          if(tot_m2 > 0)
+            res_prof(at) = blitz::sum(typename Plotter_t::arr_t(plotter.nowall(m3, distance_from_walls))) / tot_m2; 
+          else
+            res_prof(at) = 0;
+        }
+        catch(...){;}
+      }
 
       else assert(false);
     } // ------- end of time loop ------
@@ -1344,6 +1374,16 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     {
       res_pos *= 3600.;
       res_prof /= 1e6; // 1/m^3 -> 1/cm^3
+    }
+    else if (plt == "r_mean1_nowall")
+    {
+      res_pos *= 3600.;
+      res_prof *= 1e6; // m -> um
+    }
+    else if (plt == "r_mean2_nowall")
+    {
+      res_pos *= 3600.;
+      res_prof *= 1e6; // m -> um
     }
 
     // set labels for the gnuplot plot

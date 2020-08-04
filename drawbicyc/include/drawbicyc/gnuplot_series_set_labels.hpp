@@ -359,13 +359,61 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   }
   else if (plt == "N_drop_nowall")
   {
-    gp << "set title 'N_{drop} (r>1.5um) (nowall) [cm^{-3}]'\n";
+    gp << "set title 'N_{drop} (nowall) [cm^{-3}]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
   else if (plt == "N_aerosol_nowall")
   {
-    gp << "set title 'N_{aerosol} (r<1.5um) (nowall) [cm^{-3}]'\n";
+    gp << "set title 'N_{aerosol} (nowall) [cm^{-3}]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "r_mean1_nowall")
+  {
+    gp << "set title '<r>_{drop} (nowall) [um]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "r_mean2_nowall")
+  {
+    gp << "set title 'r^{effective}_{drop} (nowall) [um'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "disp_r_nowall")
+  {
+    gp << "set title 'relative dispersion of r_{drop} (nowall) [1]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "N_removal_nowall")
+  {
+    gp << "set title 'N_{drop} removal rate (nowall) [cm^{-3} s^{-1}]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "Sigma2_S_nowall")
+  {
+    gp << "set title 'supersat variance (nowall) [10^{-4}?]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "Sigma2_T_nowall")
+  {
+    gp << "set title 'temperature variance (nowall) [K^2 ?]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "Sigma2_Qv_nowall")
+  {
+    gp << "set title 'r_v variance (nowall) [(g/kg)^2 ?]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "epsilon_nowall")
+  {
+    gp << "set title 'eddy dissipation rate (nowall) [m^2 s^{-3}]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
