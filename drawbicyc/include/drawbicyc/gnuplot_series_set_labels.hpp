@@ -413,7 +413,7 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   }
   else if (plt == "epsilon_nowall")
   {
-    gp << "set title 'eddy dissipation rate (nowall) [m^2 s^{-3}]'\n";
+    gp << "set title 'SGS TKE dissipation rate (nowall) [m^2 s^{-3}]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }

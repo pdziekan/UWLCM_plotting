@@ -18,6 +18,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
   const double distance_from_walls = 0.125; // for nowall statistics, distance taken from the Pi Chamber case description for ICMW2020, https://iccp2020.tropmet.res.in/Cloud-Modeling-Workshop-2020
 
   auto& n = plotter.map;
+  auto& n_prof = plotter.map_prof;
   for(auto elem : n)
   {
      std::cout << elem.first << " " << elem.second << std::endl;
@@ -1108,7 +1109,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         try
         {
           typename Plotter_t::arr_t tht(plotter.h5load_timestep("th", at * n["outfreq"]));
-          tht *= pow(plotter.p_e(plotter.LastIndex) / p_1000, R_d / c_pd); // tht -> T
+          tht *= pow(n_prof["p_e"](plotter.LastIndex) / p_1000, R_d / c_pd); // tht -> T
           res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(tht, distance_from_walls)));
         }
         catch(...) {;}
@@ -1242,6 +1243,19 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
             res_prof(at) = blitz::sum(m2) / tot_m1; 
           else
             res_prof(at) = 0;
+        }
+        catch(...){;}
+      }
+      else if (plt == "epsilon_nowall")
+      {
+	// SGS TKE dissipation rate away from walls [m^2/s^3]
+        try
+        {
+          const float C_E = 0.845;
+          typename Plotter_t::arr_t tke(plotter.h5load_timestep("tke", at * n["outfreq"]));
+          tke = pow(tke, 3./2.); 
+          tke /= n_prof["mix_len"](plotter.LastIndex); // divide by SGS mixing length
+          res_prof(at) = blitz::mean(plotter.nowall(tke, distance_from_walls)) * C_E; 
         }
         catch(...){;}
       }

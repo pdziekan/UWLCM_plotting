@@ -7,9 +7,12 @@
 class PlotterCommon
 {
   public:
+  using arr_prof_t = blitz::Array<float,1>;
+
   const string file;
   std::map<std::string, double> map;
-  blitz::Array<float, 1> timesteps, p_e;
+  std::map<std::string, arr_prof_t> map_prof;
+  blitz::Array<float, 1> timesteps;
   double CellVol, DomainSurf;
 
   protected:
@@ -94,8 +97,14 @@ class PlotterCommon
       // read environmental pressure profile
       h5load(file + "/const.h5", "p_e");
       h5s.getSimpleExtentDims(&n, NULL);
-      p_e.resize(n);
-      h5d.read(p_e.data(), H5::PredType::NATIVE_FLOAT);
+      map_prof.emplace("p_e", arr_prof_t(n));
+      h5d.read(map_prof["p_e"].data(), H5::PredType::NATIVE_FLOAT);
+
+      // read SGS mixing length profile
+      h5load(file + "/const.h5", "mix_len");
+      h5s.getSimpleExtentDims(&n, NULL);
+      map_prof.emplace("mix_len", arr_prof_t(n));
+      h5d.read(map_prof["mix_len"].data(), H5::PredType::NATIVE_FLOAT);
 
       // read output frequency
       float outfreq;

@@ -21,6 +21,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
   std::string prof_end_s = std::to_string(vm["prof_end"].as<int>());
 
   auto& n = plotter.map;
+  auto& n_prof = plotter.map_prof;
   for(auto elem : n)
   {
      std::cout << elem.first << " " << elem.second << std::endl;
@@ -574,7 +575,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
 //          typename Plotter_t::arr_t rv(plotter.h5load_timestep("rv", at * n["outfreq"]));
 
           typename Plotter_t::arr_t T = th.copy();
-          T *= pow(plotter.p_e(plotter.LastIndex) / p_1000, R_d / c_pd);
+          T *= pow(n_prof["p_e"](plotter.LastIndex) / p_1000, R_d / c_pd);
 // (plotter.h5load_timestep("libcloud_temperature", at * n["outfreq"]));
           // init pressure, from rv just to get correct size
 //          typename Plotter_t::arr_t p(rv); 
