@@ -11,7 +11,7 @@ const std::vector<std::string> series_PiChamberICMW({
 "r_mean2_nowall",
 "disp_r_nowall",
 
-"N_removal_nowall",
+"N_removal",
 "Sigma2_S_nowall",
 "Sigma2_T_nowall",
 "Sigma2_Qv_nowall",

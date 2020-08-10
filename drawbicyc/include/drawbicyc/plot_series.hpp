@@ -86,6 +86,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     std::string row;
     double prec_vol = 0.;
     double prec_vol_prev;
+    double removed_particles = 0.;
+    double removed_particles_prev;
 
     for (int at = first_timestep; at <= last_timestep; ++at) // TODO: mark what time does it actually mean!
     {
@@ -94,7 +96,14 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       prec_vol_prev = prec_vol;
       try
       {
-        prec_vol = plotter.load_liq_vol(at * n["outfreq"]);
+        prec_vol = plotter.puddle_liq_vol(at * n["outfreq"]);
+      }
+      catch(...){;}
+      // store accumulated number of removed droplets
+      removed_particles_prev = removed_particles;
+      try
+      {
+        removed_particles = plotter.puddle_prtcl_no(at * n["outfreq"]);
       }
       catch(...){;}
 
@@ -1258,6 +1267,15 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           res_prof(at) = blitz::mean(plotter.nowall(tke, distance_from_walls)) * C_E; 
         }
         catch(...){;}
+      }
+      else if (plt == "N_removal")
+      {
+        // droplet removal rate [1/(cm^3 * s)]
+        try
+        {
+          res_prof(at) = plotter.calc_prtcl_removal(removed_particles - removed_particles_prev);
+        }
+        catch(...) {;}
       }
 
       else assert(false);

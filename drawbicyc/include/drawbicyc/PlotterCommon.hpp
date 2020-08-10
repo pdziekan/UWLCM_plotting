@@ -13,7 +13,7 @@ class PlotterCommon
   std::map<std::string, double> map;
   std::map<std::string, arr_prof_t> map_prof;
   blitz::Array<float, 1> timesteps;
-  double CellVol, DomainSurf;
+  double CellVol, DomainSurf, DomainVol;
 
   protected:
   H5::H5File h5f;
@@ -48,7 +48,7 @@ class PlotterCommon
 
   public:
 
-  float load_liq_vol(int at)
+  float puddle_liq_vol(int at)
   {
     notice_macro("about to close current file")
     h5f.close();
@@ -66,6 +66,24 @@ class PlotterCommon
     return ret;
   }
 
+
+  float puddle_prtcl_no(int at)
+  {
+    notice_macro("about to close current file")
+    h5f.close();
+  
+    string timestep_file = file + "/timestep" + zeropad(at, 10) + ".h5";
+    notice_macro("about to open file: " << timestep_file)
+    h5f.openFile(timestep_file, H5F_ACC_RDONLY);
+  
+    notice_macro("about to read group: puddle")
+    h5g = h5f.openGroup("puddle");
+
+    float ret;
+    auto attr = h5g.openAttribute("particle_number");
+    attr.read(attr.getDataType(), &ret);
+    return ret;
+  }
   //ctor
   PlotterCommon(const string &file):
     file(file)

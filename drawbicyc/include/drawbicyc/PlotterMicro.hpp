@@ -308,6 +308,15 @@ class PlotterMicro_t : public Plotter_t<NDims>
                      * 1e3;        // to mm
   }
 
+  // droplet removal rate (at boundaries) since last output [1/(cm^3 s)]
+  double calc_prtcl_removal(double prtcl_removal_diff)
+  {
+    if(this->micro == "lgrngn")
+      return prtcl_removal_diff / this->DomainVol / (double(this->map["outfreq"]) * this->map["dt"]) / 1e6;
+    if(this->micro == "blk_1m")
+      return 0;
+  }
+
   //ctor
   PlotterMicro_t(const string &file, const string &micro):
     parent_t(file),

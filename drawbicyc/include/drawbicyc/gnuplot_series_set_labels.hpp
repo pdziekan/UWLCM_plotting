@@ -387,9 +387,9 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
-  else if (plt == "N_removal_nowall")
+  else if (plt == "N_removal")
   {
-    gp << "set title 'N_{drop} removal rate (nowall) [cm^{-3} s^{-1}]'\n";
+    gp << "set title 'N_{drop} removal rate [cm^{-3} s^{-1}]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }

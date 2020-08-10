@@ -189,6 +189,7 @@ class Plotter_t<3> : public PlotterCommon
     this->map["dz"] = tmp(0,0,1) - tmp(0,0,0);
     this->CellVol = this->map["dx"] * this->map["dy"] * this->map["dz"];
     this->DomainSurf = this->map["dx"] * this->map["dy"] * this->map["x"] * this->map["y"];
+    this->DomainVol = this->map["dx"] * this->map["dy"] * this->map["dz"] * this->map["x"] * this->map["y"] * this->map["z"];
 
 
     // other dataset are of the size x*z, resize tmp
