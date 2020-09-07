@@ -1,22 +1,12 @@
-#include "common.hpp"
+#include "common.hpp" // common has some ugly global constants
 #include "PlotterMicro.hpp"
 #include <boost/tuple/tuple.hpp>
 #include "plots.hpp"
 #include "gnuplot_series_set_labels.hpp"
 
-// some ugly constants
-const double p_1000 = 100000.;
-const double L = 2.5e6;
-const double R_d = 287.0024888;
-const double c_p = 1005;
-const double c_pd = c_p;
-const double D = 3.75e-6; //[1/s], ugly, large-scale horizontal wind divergence from the DYCOMS RF02 case TODO: read from model output
-
 template<class Plotter_t>
 void plot_series(Plotter_t plotter, Plots plots, std::string type)
 {
-  const double distance_from_walls = 0.125; // for nowall statistics, distance taken from the Pi Chamber case description for ICMW2020, https://iccp2020.tropmet.res.in/Cloud-Modeling-Workshop-2020
-
   auto& n = plotter.map;
   auto& n_prof = plotter.map_prof;
   for(auto elem : n)
@@ -1107,8 +1097,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       {
         try
         {
-          typename Plotter_t::arr_t rv(plotter.h5load_timestep("rv", at * n["outfreq"]));
-          res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(rv, distance_from_walls)));
+          auto stats = plotter.rv_stats_nowall_timestep(at * n["outfreq"]);
+          res_prof(at) = stats.first;
         }
         catch(...) {;}
       }
@@ -1117,9 +1107,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       {
         try
         {
-          typename Plotter_t::arr_t tht(plotter.h5load_timestep("th", at * n["outfreq"]));
-          tht *= pow(n_prof["p_e"](plotter.LastIndex) / p_1000, R_d / c_pd); // tht -> T
-          res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(tht, distance_from_walls)));
+          auto stats = plotter.T_stats_nowall_timestep(at * n["outfreq"]);
+          res_prof(at) = stats.first;
         }
         catch(...) {;}
       }
@@ -1134,12 +1123,12 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         catch(...) {;}
       }
 
-      else if (plt == "supersat_nowall" || plt == "RH_nowall")
+      else if (plt == "RH_nowall")
       {
         try
         {
-          typename Plotter_t::arr_t RH(plotter.h5load_timestep("RH", at * n["outfreq"]));
-          res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(RH, distance_from_walls)));
+          auto stats = plotter.RH_stats_nowall_timestep(at * n["outfreq"]);
+          res_prof(at) = stats.first;
         }
         catch(...) {;}
       }
@@ -1227,6 +1216,36 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
             res_prof(at) = 0;
         }
         catch(...){;}
+      }
+      // spatial variance of supersaturation calculated away from walls [1]
+      else if (plt == "Sigma2_S_nowall")
+      {
+        try
+        {
+          auto stats = plotter.RH_stats_nowall_timestep(at * n["outfreq"]);
+          res_prof(at) = stats.second * stats.second; // std_dev -> variance; sigma(RH) = sigma(S)
+        }
+        catch(...) {;}
+      }
+      // spatial variance of T calculated away from walls [K^2]
+      else if (plt == "Sigma2_T_nowall")
+      {
+        try
+        {
+          auto stats = plotter.T_stats_nowall_timestep(at * n["outfreq"]);
+          res_prof(at) = stats.second * stats.second; // std_dev -> variance
+        }
+        catch(...) {;}
+      }
+      // spatial variance of rv calculated away from walls [1]
+      else if (plt == "Sigma2_Qv_nowall")
+      {
+        try
+        {
+          auto stats = plotter.rv_stats_nowall_timestep(at * n["outfreq"]);
+          res_prof(at) = stats.second * stats.second; // std_dev -> variance
+        }
+        catch(...) {;}
       }
       else if (plt == "disp_r_nowall")
       {
@@ -1447,6 +1466,11 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     else if (plt == "disp_r_nowall")
     {
       res_pos *= 3600.;
+    }
+    else if (plt == "Sigma2_Qv_nowall")
+    {
+      res_pos *= 3600.;
+      res_prof *= 1e6; // 1 -> (g/kg)^2
     }
 
     // set labels for the gnuplot plot

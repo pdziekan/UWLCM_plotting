@@ -347,7 +347,7 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   }
   else if (plt == "RH_nowall")
   {
-    gp << "set title 'RH (nowall) [%]'\n";
+    gp << "set title 'RH (nowall) [1]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
@@ -395,19 +395,19 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   }
   else if (plt == "Sigma2_S_nowall")
   {
-    gp << "set title 'supersat variance (nowall) [10^{-4}?]'\n";
+    gp << "set title 'supersat variance (nowall) [1]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
   else if (plt == "Sigma2_T_nowall")
   {
-    gp << "set title 'temperature variance (nowall) [K^2 ?]'\n";
+    gp << "set title 'temperature variance (nowall) [K^2]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
   else if (plt == "Sigma2_Qv_nowall")
   {
-    gp << "set title 'r_v variance (nowall) [(g/kg)^2 ?]'\n";
+    gp << "set title 'q_v variance (nowall) [(g/kg)^2]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
