@@ -16,19 +16,27 @@ outfile = argv[5]
 #to_lvl = int(argv[5])
 
 if plot_dry == True:
-  size_data = {"rw" : 29, "rd" : 21}
+  size_data = {"rw" : 250, "rd" : 21}
+  #size_data = {"rw" : 29, "rd" : 21}
 else:
-  size_data = {"rw" : 29}
+  size_data = {"rw" : 250}
+  #size_data = {"rw" : 29}
 
 #hardcoded bin edges, need to match UWLCM
-left_edges = {"rw": np.zeros(30), "rd": np.zeros(22)}
-bin_centers = {"rw": np.zeros(29), "rd": np.zeros(21)}
-bin_width = {"rw": np.zeros(29), "rd": np.zeros(21)}
+#left_edges = {"rw": np.zeros(30), "rd": np.zeros(22)}
+#bin_centers = {"rw": np.zeros(29), "rd": np.zeros(21)}
+#bin_width = {"rw": np.zeros(29), "rd": np.zeros(21)}
+left_edges = {"rw": np.zeros(251), "rd": np.zeros(22)}
+bin_centers = {"rw": np.zeros(250), "rd": np.zeros(21)}
+bin_width = {"rw": np.zeros(250), "rd": np.zeros(21)}
 
-for i in np.arange(30):
-  left_edges["rw"][i] = 10**(-3 + i * .2) * 1e-6 # [m]
+#for i in np.arange(30):
+#  left_edges["rw"][i] = 10**(-3 + i * .2) * 1e-6 # [m]
+for i in np.arange(251):
+  left_edges["rw"][i] = i * 0.2e-6 # [m]
 
-for i in np.arange(29):
+for i in np.arange(250):
+#for i in np.arange(29):
   bin_centers["rw"][i] = 0.5 * (left_edges["rw"][i] + left_edges["rw"][i+1])
   bin_width["rw"][i] = (left_edges["rw"][i+1] - left_edges["rw"][i])
 
@@ -59,8 +67,9 @@ directories = argv[6:len(argv):2]
 labels = argv[7:len(argv):2]
 print directories, labels
 
-levels = ["ground", "cloud_base"]
+#levels = ["ground", "cloud_base"]
 #levels = ["all", "pi_chamber_measurement_location"]
+levels = ["all"]
 
 if plot_dry == True:
   all_data_names = np.append(data_names["rw"], data_names["rd"])
@@ -156,7 +165,9 @@ for lvl in levels:
       r_min = min(r_min, left_edges[rwrd][first_nonzero_idx])
       r_max = max(r_max, left_edges[rwrd][last_nonzero_idx+1])
       print 'r_min = ', r_min, ' r_max = ', r_max
-      plt.step(bin_centers[rwrd] * 1e6 * 2, avg_conc_arr[rwrd][lab] / bin_width[rwrd] / 1e12 / 2, where='mid', label=rwrd + '_' + lab, linewidth=6) # *1e6 to have microns on x, / 1e12 to adjust for width in microns and to have concentration per cm^3; *2 and /2 to get diameters
+      avg_conc_arr[rwrd][lab] =  avg_conc_arr[rwrd][lab] / bin_width[rwrd] / 1e12 / 2 # / 1e12 to adjust for width in microns and to have concentration per cm^3; /2 to get diameters
+      plt.step(bin_centers[rwrd] * 1e6 * 2, avg_conc_arr[rwrd][lab], where='mid', label=rwrd + '_' + lab, linewidth=6) # *1e6 to have microns on x; *2 to get diameters
+      np.savetxt("UWLCM_N"+lab+"_dsd.dat", avg_conc_arr[rwrd][lab])
 
 #    data = total_arr["rain_rw_mom3"].values()
 
