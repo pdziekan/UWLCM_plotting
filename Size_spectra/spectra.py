@@ -133,7 +133,7 @@ for lvl in levels:
         if lvl == "pi_chamber_measurement_location":
           total_arr[data][lab] = np.append(total_arr[data][lab], (h5py.File(filename, "r")[data]*rhod)[32:34,5:6,4:5]) # roughly + assuming dx=0.03125 m
         if lvl == "icmw_pi_chamber_nowall":
-          total_arr[data][lab] = np.append(total_arr[data][lab], (h5py.File(filename, "r")[data]*rhod)[5:60,5:60,5:28])
+          total_arr[data][lab] = np.append(total_arr[data][lab], (h5py.File(filename, "r")[data]*rhod)[4:61,4:61,4:29])
   
   #    hists[lab] = np.hist(total_arr, bins=100)
   #    _ = plt.hist(total_arr, bins='auto')
