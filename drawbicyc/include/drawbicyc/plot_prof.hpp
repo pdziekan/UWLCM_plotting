@@ -39,8 +39,9 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
 
 //  int k_i = 0; // inversion cell
 
-  int first_timestep =  vm["prof_start"].as<int>() / int(n["dt"] * n["outfreq"]);
-  int last_timestep =  vm["prof_end"].as<int>() / int(n["dt"] * n["outfreq"]);
+  std::cerr << int(n["dt"] * n["outfreq"]+0.5) << std::endl;
+  int first_timestep =  vm["prof_start"].as<int>() / int(n["dt"] * n["outfreq"]+0.5);
+  int last_timestep =  vm["prof_end"].as<int>() / int(n["dt"] * n["outfreq"]+0.5);
 
   // some ugly constants
   const double p_1000 = 100000.;
@@ -489,6 +490,11 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
         res = (res -1) * 100;
         res_prof_hlpr = plotter.horizontal_mean(res); // average in x
       }
+      else if (plt == "RH")
+      {
+        res = plotter.h5load_RH_timestep(at * n["outfreq"]);
+        res_prof_hlpr = plotter.horizontal_mean(res) * 100; // average in x; [%]
+      }
       else if (plt == "sat_RH_up")
       {
         {
@@ -584,6 +590,15 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
     //      p = rhod * R_d * (1 + 29./18. * rv) * T;  // Rv/Rd = 29/18
           res = th / T * (T - ql * L / c_p); 
 //          res += ql;
+        }
+        res_prof_hlpr = plotter.horizontal_mean(res); // average in x
+      }
+      else if (plt == "T")
+      {
+	// temp [K]
+        {
+          typename Plotter_t::arr_t th(plotter.h5load_timestep("th", at * n["outfreq"]));
+          res = th * pow(n_prof["p_e"](plotter.LastIndex) / p_1000, R_d / c_pd); // th->T
         }
         res_prof_hlpr = plotter.horizontal_mean(res); // average in x
       }

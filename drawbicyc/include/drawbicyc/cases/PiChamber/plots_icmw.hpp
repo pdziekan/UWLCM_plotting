@@ -18,6 +18,9 @@ const std::vector<std::string> series_PiChamberICMW({
 });
 
 std::vector<std::string> profs_PiChamberICMW({
+"T",
+"rv",
+"RH"
 }); // rtot has to be first
 
 
