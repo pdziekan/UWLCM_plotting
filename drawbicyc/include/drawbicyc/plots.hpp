@@ -4,6 +4,7 @@
 #include "cases/Dycoms_RF02/plots.hpp"
 #include "cases/moist_thermal/plots.hpp"
 #include "cases/PiChamber/plots.hpp"
+#include "cases/PiChamber/plots_icmw.hpp"
 #include "cases/Lasher_Trapp/plots.hpp"
 
 const std::vector<std::string> series_sgs({
@@ -55,6 +56,11 @@ class Plots
      // profs.insert(profs.end(), profs_Lasher_Trapp.begin(), profs_Lasher_Trapp.end());
       series.insert(series.end(), series_Lasher_Trapp.begin(), series_Lasher_Trapp.end());
       fields.insert(fields.end(), fields_Lasher_Trapp.begin(), fields_Lasher_Trapp.end());
+    }
+    else if(type == "pi_chamber_icmw") { 
+      profs.insert(profs.end(), profs_PiChamberICMW.begin(), profs_PiChamberICMW.end());
+      series.insert(series.end(), series_PiChamberICMW.begin(), series_PiChamberICMW.end());
+      fields.insert(fields.end(), fields_PiChamberICMW.begin(), fields_PiChamberICMW.end());
     }
     /*
     else if(type == "base_prflux_vs_clhght") { 
