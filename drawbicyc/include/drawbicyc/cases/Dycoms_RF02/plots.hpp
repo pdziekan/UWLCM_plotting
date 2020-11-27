@@ -7,11 +7,11 @@ const std::vector<std::string> series_dycoms({
 // "clb_bigrain_mean_inclt",
 //, "clb_bigrain_mean_gccn_fraction"
 //"wvarmax", "clfrac", "lwp", "er",
- "surf_precip",
-//"mass_dry",
- "acc_precip",
- "cl_nc",
- "cl_nr"
+// "surf_precip",
+////"mass_dry",
+// "acc_precip",
+// "cl_nc",
+// "cl_nr"
 // "cloud_base"
 // ,"cl_gccn_meanr"
 // ,"cl_avg_cloud_rad"
