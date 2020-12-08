@@ -5,6 +5,7 @@ const std::vector<std::string> series_PiChamberICMW({
 "Qv_nowall",
 "RH_nowall",
 "LWC_nowall",
+"LWC_gm-3_nowall",
 "N_drop_nowall",
 "N_aerosol_nowall",
 "N_removal",
@@ -18,6 +19,9 @@ const std::vector<std::string> series_PiChamberICMW({
 });
 
 std::vector<std::string> profs_PiChamberICMW({
+"T",
+"rv",
+"RH"
 }); // rtot has to be first
 
 
