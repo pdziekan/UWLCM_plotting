@@ -13,16 +13,20 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../cases/RICO1
 from plot_ranges import * 
 from plot_profs import *
 
-profs = ["cl_nc", "actrw_reff_cl", "cloud_std_dev"]
+profs = ["cl_nc", "actrw_reff_cl", "cloud_std_dev", "rliq", "ratio_mean_volue_r_to_eff_r_cubed"]
 xlabels = {
            "cl_nc": "cloud droplet concentration [1/cc]",
            "actrw_reff_cl": "effective radius of cloud droplets [um]",
-           "cloud_std_dev": "std. dev. of radius of cloud droplets [um]"
+           "cloud_std_dev": "std. dev. of radius of cloud droplets [um]",
+           "rliq": "liquid water [g/kg]",
+           "ratio_mean_volue_r_to_eff_r_cubed": "(mean vol rad) / (eff rad) [1]"
           }
 xlims = {
            "cl_nc": [],
            "actrw_reff_cl": [],
-           "cloud_std_dev": []
+           "cloud_std_dev": [],
+           "rliq": [],
+           "ratio_mean_volue_r_to_eff_r_cubed": []
         }
 
 # activate latex text rendering

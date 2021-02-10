@@ -54,7 +54,7 @@ plt.rcParams.update({'font.size': 10})
 
 #axes = plt.gca()
 #axes.tick_params(direction='in')
-labeldict=["{\it ScNc30}", "{\it ScNc45}", "{\it ScNc105}"]
+labeldict=["{\it Sc30}", "{\it Sc45}", "{\it Sc105}"]
 y_arr = np.arange(nploty)
 for y in y_arr:
   #tics inside
