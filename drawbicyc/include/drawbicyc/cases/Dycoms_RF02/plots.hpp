@@ -23,7 +23,7 @@ const std::vector<std::string> series_dycoms({
 });
 
 std::vector<std::string> profs_dycoms({
-"00rtot",
+"00rtot"
 // "rliq", "thl", "wvar", 
 //"w3rd",
 // "prflux"
@@ -35,7 +35,8 @@ std::vector<std::string> profs_dycoms({
 //, "actrw_rw_cl"
 ,"rd_geq_0.8um_conc"
 //, "non_gccn_rw_cl"
-//, "gccn_rw_cl"
+, "gccn_rw_cl_down"
+, "non_gccn_rw_cl_down"
 //, "nc_up" 
 //,"sat_RH_up"
 //, "act_conc_up" 

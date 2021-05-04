@@ -1160,6 +1160,17 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         catch(...) {;}
       }
 
+      else if (plt == "LWC_gm-3_nowall")
+      {
+        try
+        {
+          typename Plotter_t::arr_t lwc(plotter.h5load_rc_timestep(at * n["outfreq"])); // cloud water, no rain water in pi chamber icmw
+          lwc *= rhod;
+          res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(lwc, distance_from_walls)));
+        }
+        catch(...) {;}
+      }
+
       else if (plt == "RH_nowall")
       {
         try
@@ -1471,6 +1482,11 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     {
       res_pos *= 3600.;
       res_prof *= 1e3; // g/kg
+    }
+    else if (plt == "LWC_gm-3_nowall")
+    {
+      res_pos *= 3600.;
+      res_prof *= 1e3; // g/m^3
     }
     else if (plt == "T_nowall")
     {
