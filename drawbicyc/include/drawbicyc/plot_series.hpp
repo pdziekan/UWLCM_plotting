@@ -926,6 +926,43 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...){;}
       }
+
+
+      else if (plt == "cl_rd_geq_0.8um_conc")
+      {
+	// gccn (r_d >= 0.8 um) concentration in cloudy grid cells
+        try
+        {
+          // cloud fraction (cloudy if N_c > 20/cm^3)
+          typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
+          snap *= rhod; // b4 it was specific moment
+          snap /= 1e6; // per cm^3
+          snap = iscloudy(snap); // cloudiness mask
+          typename Plotter_t::arr_t snap2(plotter.h5load_timestep("rd_geq_0.8um_rw_mom0", at * n["outfreq"]));
+          snap2 *= rhod; // b4 it was specific moment
+          snap2 /= 1e6; // per cm^3
+          snap2 *= snap;
+          if(blitz::sum(snap) > 0)
+            res_prof(at) = blitz::sum(snap2) / blitz::sum(snap); 
+          else
+            res_prof(at) = 0;
+        }
+        catch(...){;}
+      }
+      else if (plt == "rd_geq_0.8um_conc")
+      {
+	// gccn (r_d >= 0.8 um) concentration
+        try
+        {
+          typename Plotter_t::arr_t snap2(plotter.h5load_timestep("rd_geq_0.8um_rw_mom0", at * n["outfreq"]));
+          snap2 /= 1e6; // per cm^3
+          snap2 *= rhod; // b4 it was per milligram
+          res_prof(at) = blitz::mean(snap2); 
+        }
+        catch(...){;}
+      }
+
+
       else if (plt == "cl_meanr")
       {
 	// cloud droplets mean radius in cloudy grid cells

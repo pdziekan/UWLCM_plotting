@@ -246,6 +246,18 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
+  else if (plt == "cl_rd_geq_0.8um_conc")
+  {
+    gp << "set title 'average conc with r_d>=0.8um in cloudy cells [1/cm^3]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "rd_geq_0.8um_conc")
+  {
+    gp << "set title 'average conc with r_d>=0.8um [1/cm^3]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
   else if (plt == "surf_flux_sensible")
   {
     gp << "set title 'sensible surf flux [W/m^2]'\n";
