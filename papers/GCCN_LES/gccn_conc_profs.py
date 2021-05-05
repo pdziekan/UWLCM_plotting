@@ -16,61 +16,52 @@ from plot_profs import *
 # activate latex text rendering
 rc('text', usetex=True)
 # font size
-plt.rcParams.update({'font.size': 24})
+#plt.rcParams.update({'font.size': 24})
 # fig size
-plt.figure(figsize=(20,10))
+#plt.figure(figsize=(20,10))
 
-# profs = ["gccn_rw_cl_down"]
-# nplotx=1
-# nploty=1
-# 
-# # init the plot
-# fig, axarr = plt.subplots(nplotx, nploty)
-# print 'axarr type: ', type(axarr)
-# print 'axarr shape: ', axarr.shape
-# plot_iter=0
-# 
-# assert len(sys.argv) == 6
-# 
-# 
-# n_profs=3
-# file_names = []
-# file_labels = []
-# file_no = np.arange(1, 2 * n_profs , 2) # 2* because for each line there is data file and label
-# for no in file_no:
-#   print no
-#   print sys.argv[no]
-#   file_names.append(sys.argv[no] + "profiles_7200_18000.dat")
-#   file_labels.append(sys.argv[no+1])
-# 
-# print file_names
-# plot_iter = plot_profiles(profs, plot_iter, nplotx, nploty, axarr, xscaledict, yscaledict, xlimdict_series[cusc_iter], ylimdict_series, xlabel='Time [h]', file_names=file_names, file_labels=file_labels, linewidth=1.5)
+fig, axarr = plt.subplots(1,2)
 
 linestyles = ['--', '-.', ':']
 dashList = [(3,1),(1,1),(4,1,1,1),(4,2)]
 
 #plt.xlabel('mean wet radius of droplets formed on aerosols with $r_\mathrm{dry}>2\mu\mathrm{m}$ [$\mu\mathrm{m}$]')
-#plt.ylabel('height / inversion height')
 
 # plot init conc
-hgt = np.arange(0, 1.1, 0.01)
-init_conc = hgt.copy()
-init_conc[hgt < 1] = 2.8
-init_conc[hgt >= 1] = 0
-plt.plot(init_conc, hgt)
+#hgt = np.arange(0, 1.1, 0.01)
+#init_conc = hgt.copy()
+#init_conc[hgt < 1] = 2.8
+#init_conc[hgt >= 1] = 0
+#plt.plot(init_conc, hgt)
 
+# rd>=0.8um
 for no in np.arange(3600, 18001, 3600):
   print(no)
   file_name = sys.argv[2] + "profiles_" + str(no) + "_" + str(no) + ".dat"
   profs_file = open(file_name, "r")
   my_hgt = read_my_var(profs_file, "position")
   my_gccn_conc = read_my_var(profs_file, "rd_geq_0.8um_conc")
-  
   profs_file.close()
-  
-  plt.plot(my_gccn_conc, my_hgt)#, label=sys.argv[no+1])
+  axarr[0].plot(my_gccn_conc, my_hgt)#, label=sys.argv[no+1])
+
+# rd<2um (czy na pewno?)
+for no in np.arange(3600, 18001, 3600):
+  file_name = "/home/piotr/praca/GCCN_LES/wyniki/Dycoms_RF02/profs_non_gccn_conc/11_12_out_UWLCM_dycoms_sgs_GCCNx10_TurbAdve_MixLenFix_129x129x301_dt1_SstpCond10_SstpCoal10_sd100_dt1_RE1_out_lgrngn_dycoms_profiles_of_non_gccn_conc/11_12_out_UWLCM_dycoms_sgs_GCCNx10_TurbAdve_MixLenFix_129x129x301_dt1_SstpCond10_SstpCoal10_sd100_dt1_RE1_out_lgrngn_dycoms_profiles_" + str(no) + "_" + str(no) + ".dat"
+  profs_file = open(file_name, "r")
+  my_hgt = read_my_var(profs_file, "position")
+  my_non_gccn_conc = read_my_var(profs_file, "non_gccn_conc")
+  profs_file.close()
+  axarr[1].plot(my_non_gccn_conc, my_hgt)#, label=sys.argv[no+1])
 
 #plt.legend()
-plt.ylim(0,1.1)
-plt.xlim(0,3)
+axarr[0].set_ylim(0,1.5)
+axarr[0].set_xlim(0,3)
+axarr[1].set_ylim(0,1.5)
+axarr[1].set_xlim(0,250)
+
+
+axarr[0].set_ylabel('height / inversion height')
+axarr[0].set_xlabel('GCCN conc. [cm$^{-3}$]')
+axarr[1].set_xlabel('CCN conc. [cm$^{-3}$]')
+
 plt.savefig(sys.argv[1])
