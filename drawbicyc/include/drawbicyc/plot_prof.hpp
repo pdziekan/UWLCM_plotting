@@ -92,6 +92,16 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
         res += plotter.h5load_rr_timestep(at * n["outfreq"]) * 1e3; // rain
         res_prof_hlpr = plotter.horizontal_mean(res); // average in x
       }
+      if (plt == "gccn_conc")
+      {
+        res = plotter.h5load_timestep("gccn_rw_mom0", at * n["outfreq"]) * rhod / 1e6;
+        res_prof_hlpr = plotter.horizontal_mean(res); // average in x
+      }
+      if (plt == "non_gccn_conc")
+      {
+        res = plotter.h5load_timestep("non_gccn_rw_mom0", at * n["outfreq"]) * rhod / 1e6;
+        res_prof_hlpr = plotter.horizontal_mean(res); // average in x
+      }
       if (plt == "gccn_rw")
       {
 	// gccn (rd>1um) droplets dry radius
