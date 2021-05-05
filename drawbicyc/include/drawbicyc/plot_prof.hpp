@@ -92,6 +92,16 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
         res += plotter.h5load_rr_timestep(at * n["outfreq"]) * 1e3; // rain
         res_prof_hlpr = plotter.horizontal_mean(res); // average in x
       }
+      if (plt == "gccn_conc")
+      {
+        res = plotter.h5load_timestep("gccn_rw_mom0", at * n["outfreq"]) * rhod / 1e6;
+        res_prof_hlpr = plotter.horizontal_mean(res); // average in x
+      }
+      if (plt == "non_gccn_conc")
+      {
+        res = plotter.h5load_timestep("non_gccn_rw_mom0", at * n["outfreq"]) * rhod / 1e6;
+        res_prof_hlpr = plotter.horizontal_mean(res); // average in x
+      }
       if (plt == "gccn_rw")
       {
 	// gccn (rd>1um) droplets dry radius
@@ -223,6 +233,35 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
           auto tmp = plotter.h5load_timestep("w", at * n["outfreq"]);
           typename Plotter_t::arr_t snap(tmp);
           res_tmp2 = isdowndraught(snap);
+        }
+        { // cloudy
+          typename Plotter_t::arr_t snap(plotter.h5load_rc_timestep(at * n["outfreq"]));
+          res_tmp = iscloudy_rc_rico(snap);
+          res_tmp2 *= res_tmp;
+        }
+        // mean rw
+        {
+          auto tmp = plotter.h5load_timestep("gccn_rw_mom1", at * n["outfreq"]) * 1e6;
+          typename Plotter_t::arr_t snap(tmp);
+          res_tmp = snap; 
+        }
+        {
+          auto tmp = plotter.h5load_timestep("gccn_rw_mom0", at * n["outfreq"]);
+          typename Plotter_t::arr_t snap(tmp);
+          res_tmp = where(res_tmp > 0 , res_tmp / snap, res_tmp);
+        }
+        // mean only over cloudy downdraught cells
+        res_tmp *= res_tmp2;
+        prof_tmp = plotter.horizontal_sum(res_tmp2); // number of cloudy downdraft cells on a given level
+        res_prof_hlpr = where(prof_tmp > 0 , plotter.horizontal_sum(res_tmp) / prof_tmp, 0);
+      }
+      if (plt == "gccn_rw_cl_up")
+      {
+	// gccn (rd>2um) droplets dry radius in cloudy downdraughts
+        { // updraft
+          auto tmp = plotter.h5load_timestep("w", at * n["outfreq"]);
+          typename Plotter_t::arr_t snap(tmp);
+          res_tmp2 = isupdraught(snap);
         }
         { // cloudy
           typename Plotter_t::arr_t snap(plotter.h5load_rc_timestep(at * n["outfreq"]));
