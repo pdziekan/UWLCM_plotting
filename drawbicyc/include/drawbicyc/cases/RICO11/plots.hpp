@@ -6,7 +6,9 @@ const std::vector<std::string> series_rico({
 // "clb_bigrain_mean_conc",
 // "clb_bigrain_mean_inclt",
 //, "clb_bigrain_mean_gccn_fraction"
- "clfrac", "lwp",
+ "cloud_cover_rico",
+ "cloud_base_rico",
+ "lwp",
  "rwp",
  "surf_precip",
  "acc_precip",
