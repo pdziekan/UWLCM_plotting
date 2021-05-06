@@ -13,8 +13,8 @@ from latex_labels import labeldict
 # activate latex text rendering
 rc('text', usetex=True)
 
-#rico_vars = ["lwp", "rwp", "surf_precip", "acc_precip", "cl_nc"]
-rico_vars = ["clb_bigrain_mean_rd","clb_bigrain_mean_kappa","clb_bigrain_mean_conc","clb_bigrain_mean_inclt", "cl_nr"]
+rico_vars = ["lwp", "rwp", "acc_precip", "cl_nc", "clfrac", "cloud_base"]#, "surf_flux_latent", "surf_flux_sensible" ]
+#rico_vars = ["clb_bigrain_mean_rd","clb_bigrain_mean_kappa","clb_bigrain_mean_conc","clb_bigrain_mean_inclt", "cl_nr"]
 
 # init the plot
 nplotx = 2
