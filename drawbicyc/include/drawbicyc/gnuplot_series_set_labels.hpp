@@ -5,12 +5,12 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   gp << "set yrange[*:*]\n";
   gp << "set xrange[*:*]\n";
 
-  if (plt == "clfrac")
+  if (plt == "cloud_cover_dycoms" || plt == "cloud_cover_rico")
   {
   //  res_pos *= 60.;
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
-    gp << "set title 'cloud fraction'\n";
+    gp << "set title 'cloud cover'\n";
   }
   else if (plt == "ract_com")
   {
@@ -192,7 +192,7 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
-  else if (plt == "cloud_base")
+  else if (plt == "cloud_base_dycoms" || plt == "cloud_base_rico")
   {
     gp << "set title 'cloud base [m]'\n";
     gp << "set xlabel ''\n";
