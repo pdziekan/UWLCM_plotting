@@ -388,6 +388,18 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {;}
       }
+      else if (plt == "inversion_height_rico")
+      {
+	// height of cells with largest gradient of theta
+        try
+        {
+          typename Plotter_t::arr_t th(plotter.h5load_timestep("th", at * n["outfreq"]));
+          auto grad = plotter.cent_diff_vert(th);
+          auto max_index = blitz::maxIndex(grad, plotter.LastIndex);
+          res_prof(at) = (blitz::mean(max_index) + 1) * n["dz"];
+        }
+        catch(...) {;}
+      }
       else if (plt == "nc")
       {
 	// cloud droplet (0.5um < r < 25 um) concentration
@@ -511,7 +523,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           cloudy_column = where(cloudy_column > 0, 1, 0);
           plotter.k_i = where(cloudy_column == 0, 1e6, plotter.k_i); // 1e6 denotes no clouds in the column
           if(blitz::sum(cloudy_column) > 0)
-            res_prof(at) = blitz::min(plotter.k_i);
+            res_prof(at) = blitz::min(plotter.k_i) * n["dz"];
           else
             res_prof(at) = 0;
         }

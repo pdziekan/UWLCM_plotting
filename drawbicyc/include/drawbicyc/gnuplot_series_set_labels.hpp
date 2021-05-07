@@ -12,6 +12,12 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set ylabel ''\n";
     gp << "set title 'cloud cover'\n";
   }
+  else if (plt == "inversion_height_rico")
+  {
+    gp << "set ylabel 'inversion_height [m]'\n";
+    gp << "set xlabel 'time [min]'\n";
+    gp << "set title 'inversion height (RICO)'\n";
+  }
   else if (plt == "ract_com")
   {
     gp << "set ylabel 'q_c center of mass [km]'\n";
@@ -192,9 +198,15 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
-  else if (plt == "cloud_base_dycoms" || plt == "cloud_base_rico")
+  else if (plt == "cloud_base_dycoms")
   {
     gp << "set title 'cloud base [m]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "min_cloud_base_rico")
+  {
+    gp << "set title 'lowest cloud base [m]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }

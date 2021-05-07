@@ -7,7 +7,8 @@ const std::vector<std::string> series_rico({
 // "clb_bigrain_mean_inclt",
 //, "clb_bigrain_mean_gccn_fraction"
  "cloud_cover_rico",
- "cloud_base_rico",
+ "min_cloud_base_rico",
+ "inversion_height_rico",
  "lwp",
  "rwp",
  "surf_precip",

@@ -16,7 +16,7 @@ const std::vector<std::string> series_dycoms({
 // ,"cl_gccn_meanr"
 // ,"cl_avg_cloud_rad"
 // ,"cl_gccn_conc", "gccn_conc"
- ,"cl_rd_geq_0.8um_conc", "rd_geq_0.8um_conc"
+ "cl_rd_geq_0.8um_conc", "rd_geq_0.8um_conc"
 // ,"cl_non_gccn_conc", "non_gccn_conc", "cl_gccn_to_non_gccn_conc_ratio"
 // "cl_sd_conc", "cl_sd_conc_std_dev",
 // "tot_water"
