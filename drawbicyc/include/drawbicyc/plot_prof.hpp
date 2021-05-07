@@ -668,6 +668,12 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
         res = plotter.h5load_timestep("rd_geq_0.8um_rw_mom0", at * n["outfreq"]) * rhod / 1e6; // from sepcific to normal moment + per cm^3
         res_prof_hlpr = plotter.horizontal_mean(res); // average in x
       }
+      else if (plt == "rd_lt_0.8um_conc")
+      {
+	// rd<0.8um concentration [1/cm^3]
+        res = plotter.h5load_timestep("rd_lt_0.8um_rw_mom0", at * n["outfreq"]) * rhod / 1e6; // from sepcific to normal moment + per cm^3
+        res_prof_hlpr = plotter.horizontal_mean(res); // average in x
+      }
       else if (plt == "cl_nc")
       {
 	// cloud droplet (0.5um < r < 25 um) concentration in cloudy grid cells

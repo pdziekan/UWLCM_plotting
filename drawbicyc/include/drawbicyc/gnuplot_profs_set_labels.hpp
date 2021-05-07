@@ -135,6 +135,10 @@ void gnuplot_profs_set_labels(Gnuplot &gp, std::string plt, const bool normalize
   {
     gp << "set title 'concentration of droplets with dry radius >= 0.8um [1/cm^3]'\n";
   }
+  else if (plt == "rd_lt_0.8um_conc")
+  {
+    gp << "set title 'concentration of droplets with dry radius < 0.8um [1/cm^3]'\n";
+  }
   else if (plt == "cl_nc")
   {
     gp << "set title 'cloud droplets concentration in cloudy cells [1/cm^3]'\n";

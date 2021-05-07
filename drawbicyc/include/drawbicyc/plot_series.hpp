@@ -115,12 +115,15 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       {
         try
         {
-          // cloud fraction (cloudy if q_c > 0.1 g/kg)
-          // read activated droplets mixing ratio to res_tmp 
+          // cloud fraction (fraction of columns with at least one cloudy cell, i.e. cell with  q_c > 0.01 g/kg)
           auto tmp = plotter.h5load_rc_timestep(at * n["outfreq"]);
           typename Plotter_t::arr_t snap(tmp);
-          res_tmp = iscloudy_rc_rico(snap); // find cells with rc>1e-5
-          res_prof(at) = blitz::mean(res_tmp); 
+          snap = iscloudy_rc_rico(snap); // find cells with rc>1e-5
+          snap(plotter.hrzntl_slice(0)) = 0; // cheat to avoid occasional "cloudy" cell at ground level due to activation from surf flux
+          plotter.k_i = blitz::first((snap == 1), plotter.LastIndex); 
+          plotter.k_i = blitz::sum(snap, plotter.LastIndex);
+          plotter.k_i = where(plotter.k_i > 0, 1, 0);
+          res_prof(at) = blitz::mean(plotter.k_i); 
         }
         catch(...){;}
       }
