@@ -58,7 +58,7 @@ for x in x_arr:
       item.set_fontsize(8)
     # subplot numbering
     if y < nploty - nemptyplots or x < (nplotx - 1):
-      axarr[x,y].text(0.2, 0.9, labeldict[y + x*nploty], fontsize=8, transform=axarr[x,y].transAxes)
+      axarr[x,y].text(0.5, 0.85, labeldict[y + x*nploty], fontsize=8, transform=axarr[x,y].transAxes)
 
 #single legend for the whole figure
 handles, labels = axarr[0,0].get_legend_handles_labels()

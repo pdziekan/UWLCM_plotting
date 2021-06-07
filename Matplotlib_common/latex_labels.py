@@ -13,6 +13,7 @@ var_labels = {
   "rliq" : '$q_{l}$ [g/kg]',
   "clfrac" : 'Cloud fraction',
   "cloud_cover_rico" : 'Cloud cover',
+  "cloud_cover_dycoms" : 'Cloud cover',
   "prflux" : 'Precip. flux [W m$^{-2}$]',
   "wvar" : r'Var$\left(w\right)$ [m$^2$ s$^{-2}$]',
   "w3rd" : 'Third mom. of $w$ [m$^3$ s$^{-3}$]',

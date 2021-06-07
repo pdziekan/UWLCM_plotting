@@ -126,14 +126,14 @@ xlimdict_series = {
 
 ylimdict_series = {
   "clfrac" : None,
-  "cl_nc" : None,
-  "cl_nr" : None,
-  "lwp" : None,
-  "rwp" : None,
+  "cl_nc" : (-1,155),
+  "cl_nr" : (-0.02,.55),
+  "lwp" : (-1,45),
+  "rwp" : (-1,15),
   "er" : None,
   "wvarmax" : None,
-  "surf_precip" : None,
-  "acc_precip" : None,#(0,0.07),
+  "surf_precip" : (-0.05,1.2),
+  "acc_precip" : (-0.002,0.08),
   "cl_gccn_conc" : None,#(1e-6, 1),
   "cloud_base" : None,
   "clb_bigrain_mean_rd" : None, 
@@ -141,7 +141,7 @@ ylimdict_series = {
   "clb_bigrain_mean_conc" :  None, 
   "clb_bigrain_mean_inclt" :  None, 
   "clb_bigrain_mean_gccn_fraction" :  None, 
-  "cloud_cover_rico" : None,
-  "min_cloud_base_rico" : None,
-  "inversion_height_rico" : None
+  "cloud_cover_rico" : (-0.1,0.6),
+  "min_cloud_base_rico" : (-1,750),
+  "inversion_height_rico" : (1000,3000)
 }

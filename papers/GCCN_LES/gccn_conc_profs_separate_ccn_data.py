@@ -44,7 +44,7 @@ for no in np.arange(3600, 18001, 3600):
   profs_file.close()
   axarr[0].plot(my_gccn_conc, my_hgt)#, label=sys.argv[no+1])
 
-# rd<2um (czy na pewno?)
+# rd<2um
 for no in np.arange(3600, 18001, 3600):
   file_name = "/home/piotr/praca/GCCN_LES/wyniki/Dycoms_RF02/profs_non_gccn_conc/11_12_out_UWLCM_dycoms_sgs_GCCNx10_TurbAdve_MixLenFix_129x129x301_dt1_SstpCond10_SstpCoal10_sd100_dt1_RE1_out_lgrngn_dycoms_profiles_of_non_gccn_conc/11_12_out_UWLCM_dycoms_sgs_GCCNx10_TurbAdve_MixLenFix_129x129x301_dt1_SstpCond10_SstpCoal10_sd100_dt1_RE1_out_lgrngn_dycoms_profiles_" + str(no) + "_" + str(no) + ".dat"
   profs_file = open(file_name, "r")

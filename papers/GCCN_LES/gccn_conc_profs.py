@@ -20,7 +20,7 @@ rc('text', usetex=True)
 # fig size
 #plt.figure(figsize=(20,10))
 
-fig, axarr = plt.subplots(1,2)
+fig, axarr = plt.subplots(1,3)
 
 linestyles = ['--', '-.', ':']
 dashList = [(3,1),(1,1),(4,1,1,1),(4,2)]
@@ -32,18 +32,25 @@ dashList = [(3,1),(1,1),(4,1,1,1),(4,2)]
 #init_conc[hgt >= 1] = 0
 #plt.plot(init_conc, hgt)
 
-for no in np.arange(3600, 36001, 3600):
+times = np.arange(3600, 21601, 3600)
+#times = np.insert(times, 0, 300)
+
+print(times)
+
+for no in times:
   print(no)
   file_name = sys.argv[2] + "profiles_" + str(no) + "_" + str(no) + ".dat"
   profs_file = open(file_name, "r")
   my_hgt = read_my_var(profs_file, "position")
- # my_gccn_conc = read_my_var(profs_file, "rd_geq_0.8um_conc")
- # my_ccn_conc = read_my_var(profs_file, "rd_lt_0.8um_conc")
-  my_gccn_conc = read_my_var(profs_file, "gccn_conc")
-  my_ccn_conc = read_my_var(profs_file, "non_gccn_conc")
+  my_gccn_conc = read_my_var(profs_file, "rd_geq_0.8um_conc")
+  my_ccn_conc = read_my_var(profs_file, "rd_lt_0.8um_conc")
+  my_sd_conc = read_my_var(profs_file, "sd_conc")
+  #my_gccn_conc = read_my_var(profs_file, "gccn_conc")
+  #my_ccn_conc = read_my_var(profs_file, "non_gccn_conc")
   profs_file.close()
-  axarr[0].plot(my_gccn_conc, my_hgt)#, label=sys.argv[no+1])
-  axarr[1].plot(my_ccn_conc, my_hgt)#, label=sys.argv[no+1])
+  axarr[0].plot(my_gccn_conc, my_hgt)
+  axarr[1].plot(my_ccn_conc, my_hgt)
+  axarr[2].plot(my_sd_conc, my_hgt)
 
 ## Dycoms rd<2um
 #for no in np.arange(3600, 18001, 3600):
@@ -56,15 +63,20 @@ for no in np.arange(3600, 36001, 3600):
 
 
 #plt.legend()
-#axarr[0].set_ylim(0,1.5)
-#axarr[0].set_xlim(0,3)
-#axarr[1].set_ylim(0,1.5)
-#axarr[1].set_xlim(0,250)
+axarr[0].set_ylim(0,1.2)
+axarr[0].set_xlim(0,3)
+axarr[1].set_ylim(0,1.2)
+axarr[1].set_xlim(0,300)
+axarr[2].set_ylim(0,1.2)
+axarr[2].set_xlim(0,200)
 
 
-#axarr[0].set_ylabel('height / inversion height')
-axarr[0].set_ylabel('height [m]')
-axarr[0].set_xlabel('GCCN ($r_d \geq 2 \mu m$) conc. [cm$^{-3}$]')
-axarr[1].set_xlabel('CCN ($r_d < 2 \mu m$) conc. [cm$^{-3}$]')
+axarr[0].set_ylabel('height / inversion height')
+#axarr[0].set_ylabel('height [m]')
+#axarr[0].set_xlabel('GCCN ($r_d \geq 2 \mu m$) conc. [cm$^{-3}$]')
+#axarr[1].set_xlabel('CCN ($r_d < 2 \mu m$) conc. [cm$^{-3}$]')
+axarr[0].set_xlabel('GCCN conc. [cm$^{-3}$]')
+axarr[1].set_xlabel('CCN conc. [cm$^{-3}$]')
+axarr[2].set_xlabel('$N_\mathrm{SD}$')
 
 plt.savefig(sys.argv[1])
