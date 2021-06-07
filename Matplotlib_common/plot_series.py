@@ -23,6 +23,10 @@ def plot_series(var_list, plot_iter, nplotx, nploty, axarr, xscaledict, yscaledi
       
       # rescale time to hours
       my_times = my_times / 3600.
+
+      # rescale autoconv. and accr. rates to g/(m^3 * day)
+      if var == "cl_accr25_rico" or var == "cl_acnv25_rico":
+        my_res *= 3600 * 24
       
       series_file.close()
   

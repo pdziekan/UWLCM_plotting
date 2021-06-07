@@ -29,7 +29,9 @@ xscaledict = {
   "clb_bigrain_mean_gccn_fraction" :  "linear", 
   "cloud_cover_rico" : "linear",
   "min_cloud_base_rico" : "linear",
-  "inversion_height_rico" : "linear"
+  "inversion_height_rico" : "linear",
+  "cl_acnv25_rico" : "linear",
+  "cl_accr25_rico" : "linear",
 }
 
 yscaledict = {
@@ -63,7 +65,9 @@ yscaledict = {
   "clb_bigrain_mean_gccn_fraction" :  "linear", 
   "cloud_cover_rico" : "linear",
   "min_cloud_base_rico" : "linear",
-  "inversion_height_rico" : "linear"
+  "inversion_height_rico" : "linear",
+  "cl_acnv25_rico" : "linear",
+  "cl_accr25_rico" : "linear",
 }
 
 xlimdict_profs = {
@@ -121,7 +125,9 @@ xlimdict_series = {
   "clb_bigrain_mean_gccn_fraction" :  (0,10),
   "cloud_cover_rico" : (0,10),
   "min_cloud_base_rico" : (0,10),
-  "inversion_height_rico" : (0,10)
+  "inversion_height_rico" : (0,10),
+  "cl_acnv25_rico" : (0,10),
+  "cl_accr25_rico" : (0,10),
 }
 
 ylimdict_series = {
@@ -143,5 +149,7 @@ ylimdict_series = {
   "clb_bigrain_mean_gccn_fraction" :  None, 
   "cloud_cover_rico" : (-0.1,0.6),
   "min_cloud_base_rico" : (-1,750),
-  "inversion_height_rico" : (1000,3000)
+  "inversion_height_rico" : (1000,3000),
+  "cl_acnv25_rico" : None,
+  "cl_accr25_rico" : None,
 }
