@@ -14,7 +14,7 @@ const std::vector<std::string> series_dycoms({
 ////"mass_dry",
 // "acc_precip",
  "cl_nc",
-// "cl_nr"
+ "cl_nr"
  "cloud_base"
 // ,"cl_gccn_meanr"
 // ,"cl_avg_cloud_rad"
