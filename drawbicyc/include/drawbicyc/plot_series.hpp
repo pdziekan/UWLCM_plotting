@@ -612,6 +612,58 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {;}
       }
+      else if (plt == "cl_acnv25_dycoms")
+      {
+        // autconversion rate with rain threshold r=25um (cloudy cells as in Dycoms) [g/(m3*s)]
+        // rather coarse estimate, sum of acnv accumulated over ALL cells since the last output
+        // is divided by the instantaneous volume of all cloudy cells
+        // TODO: output instantaneous acnv rate in libcloud, not the accumulated one?
+        try
+        {
+          // cloud fraction (cloudy if N_c > 20/cm^3)
+          typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
+          snap *= rhod; // b4 it was specific moment
+          snap /= 1e6; // per cm^3
+          snap = iscloudy(snap); // cloudiness mask
+
+          typename Plotter_t::arr_t acc_acnv(plotter.h5load_timestep("acc_acnv25", at * n["outfreq"]));
+          auto tot_acc_acnv = blitz::sum(acc_acnv);
+
+          if(blitz::sum(snap) > 0)
+            res_prof(at) =  4./3. * 3.1416 * 1e6 * (tot_acc_acnv - tot_acc_acnv_prev) / ((blitz::sum(snap) * plotter.CellVol) * (n["outfreq"] * n["dt"])); 
+          else
+            res_prof(at) = 0;
+
+          tot_acc_acnv_prev = tot_acc_acnv;
+        }
+        catch(...) {;}
+      }
+      else if (plt == "cl_accr25_dycoms")
+      {
+        // accretion rate with rain threshold r=25um (cloudy cells as in Dycoms) [g/(m3*s)]
+        // rather coarse estimate, sum of accr accumulated over ALL cells since the last output
+        // is divided by the instantaneous volume of all cloudy cells
+        // TODO: output instantaneous accr rate in libcloud, not the accumulated one?
+        try
+        {
+          // cloud fraction (cloudy if N_c > 20/cm^3)
+          typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
+          snap *= rhod; // b4 it was specific moment
+          snap /= 1e6; // per cm^3
+          snap = iscloudy(snap); // cloudiness mask
+
+          typename Plotter_t::arr_t acc_accr(plotter.h5load_timestep("acc_accr25", at * n["outfreq"]));
+          double tot_acc_accr = blitz::sum(acc_accr); 
+
+          if(blitz::sum(snap) > 0)
+            res_prof(at) = 4./3. * 3.14166 * 1e6 * (tot_acc_accr - tot_acc_accr_prev) / ((blitz::sum(snap) * plotter.CellVol) * (n["outfreq"] * n["dt"])); 
+          else
+            res_prof(at) = 0;
+
+          tot_acc_accr_prev = tot_acc_accr;
+        }
+        catch(...) {;}
+      }
       else if (plt == "cl_acnv25_rico")
       {
         // autconversion rate with rain threshold r=25um (cloudy cells as in Rico) [g/(m3*s)]
@@ -620,12 +672,6 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // TODO: output instantaneous acnv rate in libcloud, not the accumulated one?
         try
         {
-//          // cloud fraction (cloudy if N_c > 20/cm^3)
-//          typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
-//          snap *= rhod; // b4 it was specific moment
-//          snap /= 1e6; // per cm^3
-//          snap = iscloudy(snap); // cloudiness mask
-
           // cloud fraction (cloudy if r_c > 1e-5)
           typename Plotter_t::arr_t snap(plotter.h5load_rc_timestep(at * n["outfreq"]));
           snap = iscloudy_rc_rico(snap); 
@@ -650,12 +696,6 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // TODO: output instantaneous accr rate in libcloud, not the accumulated one?
         try
         {
-//          // cloud fraction (cloudy if N_c > 20/cm^3)
-//          typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
-//          snap *= rhod; // b4 it was specific moment
-//          snap /= 1e6; // per cm^3
-//          snap = iscloudy(snap); // cloudiness mask
-
           // cloud fraction (cloudy if r_c > 1e-5)
           typename Plotter_t::arr_t snap(plotter.h5load_rc_timestep(at * n["outfreq"]));
           snap = iscloudy_rc_rico(snap); 

@@ -6,6 +6,9 @@ const std::vector<std::string> series_dycoms({
 // "clb_bigrain_mean_conc",
 // "clb_bigrain_mean_inclt",
 //, "clb_bigrain_mean_gccn_fraction"
+
+"cl_acnv25_dycoms",
+"cl_accr25_dycoms",
 "wvarmax", "cloud_cover_dycoms", "lwp", "er",
  "surf_precip",
 ////"mass_dry",
