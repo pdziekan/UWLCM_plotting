@@ -6,17 +6,17 @@ const std::vector<std::string> series_dycoms({
 // "clb_bigrain_mean_conc",
 // "clb_bigrain_mean_inclt",
 //, "clb_bigrain_mean_gccn_fraction"
-//"wvarmax", "clfrac", "lwp", "er",
-// "surf_precip",
+"wvarmax", "cloud_cover_dycoms", "lwp", "er",
+ "surf_precip",
 ////"mass_dry",
 // "acc_precip",
-// "cl_nc",
+ "cl_nc",
 // "cl_nr"
-// "cloud_base"
+ "cloud_base"
 // ,"cl_gccn_meanr"
 // ,"cl_avg_cloud_rad"
 // ,"cl_gccn_conc", "gccn_conc"
- "cl_rd_geq_0.8um_conc", "rd_geq_0.8um_conc"
+// "cl_rd_geq_0.8um_conc", "rd_geq_0.8um_conc"
 // ,"cl_non_gccn_conc", "non_gccn_conc", "cl_gccn_to_non_gccn_conc_ratio"
 // "cl_sd_conc", "cl_sd_conc_std_dev",
 // "tot_water"
@@ -34,6 +34,8 @@ std::vector<std::string> profs_dycoms({
 //,"rad_flx"
 //, "actrw_rw_cl"
 ,"rd_geq_0.8um_conc"
+,"rd_lt_0.8um_conc"
+,"sd_conc"
 //, "non_gccn_rw_cl"
 //, "gccn_rw_cl_down"
 //, "non_gccn_rw_cl_down"
