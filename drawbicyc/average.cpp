@@ -29,6 +29,11 @@ bool open_file(string filename, ifstream &stream)
     cerr << "Unable to open file: " << filename << endl;
     throw std::runtime_error("error opening file");
   }
+  if (stream.peek() == std::ifstream::traits_type::eof())
+  {
+    cerr << "File is empty: " << filename << endl;
+    throw std::runtime_error("error opening file");
+  }
 }
 
 void average(int argc, char* argv[], int wtp, std::vector<std::string> types, std::string suffix)
@@ -51,7 +56,10 @@ void average(int argc, char* argv[], int wtp, std::vector<std::string> types, st
 
   types.insert(types.begin(), "position");
 
-  int prof_ctr = 0;
+  cerr << "types: ";
+  for (auto const &type: types)
+    cerr << type << " ";
+  cerr << endl;
 
   // init sizes of profiles/series assuming that they have same size in all files
   open_file(string(argv[4]).append(suffix).append(".dat"), iprof_file);
@@ -67,7 +75,7 @@ void average(int argc, char* argv[], int wtp, std::vector<std::string> types, st
   snap2.resize(snap.shape());
 
   // actual averaging
-  for (auto &plt : types)
+  for (auto const &plt : types)
   {
     // set gnuplot plot labels
     if(wtp == series)
@@ -81,35 +89,41 @@ void average(int argc, char* argv[], int wtp, std::vector<std::string> types, st
 
     for(int i=4; i<argc; i+=1) // add value of the array from each file
     {
-   //   try{
-        open_file(string(argv[i]).append(suffix).append(".dat"), iprof_file);
-     // } catch (...) {continue;}
+      open_file(string(argv[i]).append(suffix).append(".dat"), iprof_file);
 
-      // discard arrays tored before the desired one
-      for(int k=0; k<=prof_ctr; ++k)
+      // find the line with the desired plot
+      bool plt_found = 0;
+      while(getline( iprof_file, line ) ) {
+        if( line.find( plt ) != string::npos ) // data found
+        {
+          iprof_file >> snap; // read in the array
+          std::getline(iprof_file, line); // blitz reading arrays doesnt move to the next line, need to do it manually here
+
+          if (plt == "base_prflux_vs_clhght") // we need weighted average for this plot - array of weights before array of values
+          {
+            weight += snap; // add to sum of weights
+            snap2 = snap; // store weight of this one
+            std::getline(iprof_file, line); // discard array description
+            iprof_file >> snap; // read actual values
+            avg += snap * snap2; // add weight*value
+            std_dev += snap * snap * snap2; // weight * value^2
+          }
+          else // all values have same weight
+          {
+            avg += snap;
+            std_dev += snap * snap;
+            weight += 1;
+          }
+
+          plt_found = 1;
+          break;
+        }
+      }
+      if (!plt_found) // data not found
       {
-        std::getline(iprof_file, line); // discard array description
-        cerr << "plt: " << plt << " " << line << endl;
-        iprof_file >> snap; // read in the array
-        cerr << "plt: " << plt  << " " << snap;
-        std::getline(iprof_file, line); // blitz reading arrays doesnt move to the next line, need to do it manually here
+        cout << plt << " not found in the current file" << endl;
       }
 
-      if (plt == "base_prflux_vs_clhght") // we need weighted average for this plot - array of weights before array of values
-      {
-        weight += snap; // add to sum of weights
-        snap2 = snap; // store weight of this one
-        std::getline(iprof_file, line); // discard array description
-        iprof_file >> snap; // read actual values
-        avg += snap * snap2; // add weight*value
-        std_dev += snap * snap * snap2; // weight * value^2
-      }
-      else // all values have same weight
-      {
-        avg += snap;
-        std_dev += snap * snap;
-        weight += 1;
-      }
       iprof_file.close();
     }
     avg = where(weight > 0, avg / weight, 0);
@@ -126,6 +140,7 @@ void average(int argc, char* argv[], int wtp, std::vector<std::string> types, st
         gp.send1d(boost::make_tuple(avg, pos));
     }
 
+    std::cout << plt << " weight: " << weight;
     std::cout << plt << " avg: " << avg;
     std::cout << plt << " std_dev: " << std_dev;
     if (plt == "base_prflux_vs_clhght") 
@@ -138,14 +153,14 @@ void average(int argc, char* argv[], int wtp, std::vector<std::string> types, st
     oprof_file << plt << "_std_dev" << endl;
     oprof_file << std_dev;
 
-    prof_ctr += 
-      plt == "base_prflux_vs_clhght" ||  // this plot outputs two arrays: weights and averages
-      plt == "ract_avg" ||               // following plots also output two arrays: averages and standard deviations
-      plt == "cloud_avg_act_conc" ||
-      plt == "cloud_avg_supersat" ||
-      plt == "sd_conc_avg" ||
-      plt == "sd_conc_act_avg"
-      ? 2 : 1;
+//    prof_ctr += 
+//      plt == "base_prflux_vs_clhght" ||  // this plot outputs two arrays: weights and averages
+//      plt == "ract_avg" ||               // following plots also output two arrays: averages and standard deviations
+//      plt == "cloud_avg_act_conc" ||
+//      plt == "cloud_avg_supersat" ||
+//      plt == "sd_conc_avg" ||
+//      plt == "sd_conc_act_avg"
+//      ? 2 : 1;
   }
 }
 
