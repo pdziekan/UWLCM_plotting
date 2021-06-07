@@ -13,7 +13,7 @@ from latex_labels import labeldict
 # activate latex text rendering
 rc('text', usetex=True)
 
-rico_vars = ["lwp", "rwp", "cloud_cover_rico", "min_cloud_base_rico", "inversion_height_rico", "cl_nc", "cl_nr", "acc_precip", "surf_precip", "cl_acnv25_rico", "cl_accr25_rico"]#, "surf_flux_latent", "surf_flux_sensible" ]
+rico_vars = ["lwp", "rwp", "cloud_cover_rico", "min_cloud_base_rico", "inversion_height_rico", "cl_nc", "cl_nr", "surf_precip", "acc_precip", "cl_acnv25_rico", "cl_accr25_rico"]#, "surf_flux_latent", "surf_flux_sensible" ]
 #rico_vars = ["clb_bigrain_mean_rd","clb_bigrain_mean_kappa","clb_bigrain_mean_conc","clb_bigrain_mean_inclt", "cl_nr"]
 
 # init the plot
