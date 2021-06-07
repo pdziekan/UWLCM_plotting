@@ -67,7 +67,6 @@ class PlotterCommon
     return ret;
   }
 
-
   float puddle_prtcl_no(int at)
   {
     notice_macro("about to close current file")
@@ -85,6 +84,25 @@ class PlotterCommon
     attr.read(attr.getDataType(), &ret);
     return ret;
   }
+
+  float acnv25(int at)
+  {
+    notice_macro("about to close current file")
+    h5f.close();
+  
+    string timestep_file = file + "/timestep" + zeropad(at, 10) + ".h5";
+    notice_macro("about to open file: " << timestep_file)
+    h5f.openFile(timestep_file, H5F_ACC_RDONLY);
+  
+    notice_macro("about to read group: /")
+    h5g = h5f.openGroup("/");
+
+    float ret;
+    auto attr = h5g.openAttribute("acnv25");
+    attr.read(attr.getDataType(), &ret);
+    return ret;
+  }
+
   //ctor
   PlotterCommon(const string &file):
     file(file)

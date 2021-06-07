@@ -5,6 +5,13 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   gp << "set yrange[*:*]\n";
   gp << "set xrange[*:*]\n";
 
+  if (plt == "cl_acnv25_rico" || plt == "cl_acnv25_dycoms")
+  {
+  //  res_pos *= 60.;
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+    gp << "set title 'autoconersion rate (r>25um) (cloudy) [g/(m3*s}]'\n";
+  }
   if (plt == "cloud_cover_dycoms" || plt == "cloud_cover_rico")
   {
   //  res_pos *= 60.;
