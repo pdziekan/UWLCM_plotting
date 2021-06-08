@@ -14,12 +14,12 @@ from latex_labels import labeldict
 # activate latex text rendering
 rc('text', usetex=True)
 
-dycoms_vars = ["lwp", "er", "wvarmax", "surf_precip", "cl_nc", "cloud_cover_dycoms", "cl_acnv25_dycoms", "cl_accr25_dycoms"]# "cloud_base"]#, "cfrac"]
+dycoms_vars = ["lwp", "er", "wvarmax", "surf_precip", "cl_nc", "cl_nr", "cloud_base_dycoms", "cloud_cover_dycoms", "cl_acnv25_dycoms", "cl_accr25_dycoms"]# "cloud_base"]#, "cfrac"]
 #dycoms_vars = ["clb_bigrain_mean_rd","clb_bigrain_mean_kappa","clb_bigrain_mean_conc","clb_bigrain_mean_inclt", "cl_nr"]
 
 # init the plot
 nplotx = 3
-nploty= 3
+nploty= 4
 fig, axarr = plt.subplots(nplotx,nploty)
 
 #plot_reference_series(dycoms_vars, 0, nplotx, nploty, axarr)
