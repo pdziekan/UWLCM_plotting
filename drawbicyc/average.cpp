@@ -110,9 +110,22 @@ void average(int argc, char* argv[], int wtp, std::vector<std::string> types, st
           }
           else // all values have same weight
           {
-            avg += snap;
-            std_dev += snap * snap;
-            weight += 1;
+            if (wtp == series) // some simulations may have finished earlier (e.g. time limit), take them into account only up to the point they finished. NOTE: 0 value is considered to indicate no output...
+            {
+              // find the last non-zero position
+              auto last_valid_pos = last(snap != 0);
+              last_valid_pos = last_valid_pos > snap.size() ? snap.size() - 1 : last_valid_pos;
+              Range valid_range(0, last_valid_pos);
+              avg(valid_range) += snap(valid_range);
+              std_dev(valid_range) += snap(valid_range) * snap(valid_range);
+              weight(valid_range) += 1;
+            }
+            else
+            {
+              avg += snap;
+              std_dev += snap * snap;
+              weight += 1;
+            }
           }
 
           plt_found = 1;
@@ -126,9 +139,10 @@ void average(int argc, char* argv[], int wtp, std::vector<std::string> types, st
 
       iprof_file.close();
     }
+
     avg = where(weight > 0, avg / weight, 0);
     //std_dev = where(weight > 0, sqrt(std_dev / weight - avg * avg), 0); // without the Bessel correction
-    std_dev = where(weight > 0, sqrt(weight / (weight - 1) * (std_dev / weight - avg * avg)), 0); // with the Bessel correction
+    std_dev = where(weight > 1, sqrt(weight / (weight - 1) * (std_dev / weight - avg * avg)), 0); // with the Bessel correction
     if(plt == "position")
       pos = avg;
     else
@@ -138,6 +152,12 @@ void average(int argc, char* argv[], int wtp, std::vector<std::string> types, st
         gp.send1d(boost::make_tuple(pos, avg));
       else if (wtp == profs)
         gp.send1d(boost::make_tuple(avg, pos));
+    }
+    
+    if(wtp==series)
+    {
+      if(max(weight)!=min(weight)) cerr << "WARNING: not all time series reached the end" << endl;
+      if(max(weight)!=argc-4) cerr << "WARNING: some files did not contain some of the time series" << endl;
     }
 
     std::cout << plt << " weight: " << weight;
