@@ -36,6 +36,8 @@ var_labels = {
   "clb_bigrain_mean_gccn_fraction" : 'frac. of (r$>$40um) on gccn @ clbase',
   "cl_acnv25_rico" : 'acnv. rate [g m$^{-3}$ d$^{-1}$]',
   "cl_accr25_rico" : 'accr. rate [g m$^{-3}$ d$^{-1}$]',
+  "cl_acnv25_dycoms" : 'acnv. rate [g m$^{-3}$ d$^{-1}$]',
+  "cl_accr25_dycoms" : 'accr. rate [g m$^{-3}$ d$^{-1}$]',
 }
 
 

@@ -25,7 +25,9 @@ xscaledict = {
   "clb_bigrain_mean_conc" :  "linear",
   "clb_bigrain_mean_inclt" :  "linear",
   "clb_bigrain_mean_gccn_fraction" :  "linear",
-  "cloud_cover_dycoms" :  "linear"
+  "cloud_cover_dycoms" :  "linear",
+  "cl_acnv25_dycoms" : "linear",
+  "cl_accr25_dycoms" : "linear",
 }
 
 yscaledict = {
@@ -55,7 +57,9 @@ yscaledict = {
   "clb_bigrain_mean_conc" :  "linear",
   "clb_bigrain_mean_inclt" :  "linear",
   "clb_bigrain_mean_gccn_fraction" :  "linear",
-  "cloud_cover_dycoms" :  "linear"
+  "cloud_cover_dycoms" :  "linear",
+  "cl_acnv25_dycoms" : "linear",
+  "cl_accr25_dycoms" : "linear",
 }
 
 xlimdict_profs = {
@@ -110,6 +114,8 @@ xlimdict_series = {
   "clb_bigrain_mean_inclt" :  (1,6),
   "clb_bigrain_mean_gccn_fraction" :  (1,6),
   "cloud_cover_dycoms" :  (1,6),
+  "cl_acnv25_dycoms" : (1,6),
+  "cl_accr25_dycoms" : (1,6),
 }
 
 ylimdict_series = {
@@ -129,6 +135,8 @@ ylimdict_series = {
   "clb_bigrain_mean_inclt" :  None,
   "clb_bigrain_mean_gccn_fraction" :  None,
   "cloud_cover_dycoms" :  None,
+  "cl_acnv25_dycoms" : None,
+  "cl_accr25_dycoms" : None,
 }
 
 
