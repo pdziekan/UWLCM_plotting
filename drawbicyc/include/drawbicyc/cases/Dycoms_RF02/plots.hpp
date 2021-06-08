@@ -7,6 +7,7 @@ const std::vector<std::string> series_dycoms({
 // "clb_bigrain_mean_inclt",
 //, "clb_bigrain_mean_gccn_fraction"
 
+ "cl_nr",
 "cl_acnv25_dycoms",
 "cl_accr25_dycoms",
 "wvarmax", "cloud_cover_dycoms", "lwp", "er",
@@ -14,8 +15,7 @@ const std::vector<std::string> series_dycoms({
 ////"mass_dry",
 // "acc_precip",
  "cl_nc",
-// "cl_nr"
- "cloud_base"
+ "cloud_base_dycoms"
 // ,"cl_gccn_meanr"
 // ,"cl_avg_cloud_rad"
 // ,"cl_gccn_conc", "gccn_conc"
