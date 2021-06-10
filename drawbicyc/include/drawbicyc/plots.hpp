@@ -6,6 +6,7 @@
 #include "cases/PiChamber/plots.hpp"
 #include "cases/PiChamber/plots_icmw.hpp"
 #include "cases/Lasher_Trapp/plots.hpp"
+#include "cases/common_plots/GCCN_CCN_conc/plots.hpp"
 
 const std::vector<std::string> series_sgs({
 // "tot_tke"
@@ -61,6 +62,11 @@ class Plots
       profs.insert(profs.end(), profs_PiChamberICMW.begin(), profs_PiChamberICMW.end());
       series.insert(series.end(), series_PiChamberICMW.begin(), series_PiChamberICMW.end());
       fields.insert(fields.end(), fields_PiChamberICMW.begin(), fields_PiChamberICMW.end());
+    }
+    else if(type == "gccn_ccn_conc") { 
+      profs.insert(profs.end(), profs_gccn_ccn_conc.begin(), profs_gccn_ccn_conc.end());
+      series.insert(series.end(), series_gccn_ccn_conc.begin(), series_gccn_ccn_conc.end());
+      fields.insert(fields.end(), fields_gccn_ccn_conc.begin(), fields_gccn_ccn_conc.end());
     }
     /*
     else if(type == "base_prflux_vs_clhght") { 
