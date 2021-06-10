@@ -1705,7 +1705,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
       gp.send1d(boost::make_tuple(res_pos, res_prof_acc_sum));
       oprof_file << "acc_" << plt << endl ;
-      oprof_file << res_prof ;
+      oprof_file << res_prof_acc_sum ;
     }
    // plot(gp, res);
   } // var loop
