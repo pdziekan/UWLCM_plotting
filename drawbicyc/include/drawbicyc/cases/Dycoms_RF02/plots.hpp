@@ -13,7 +13,7 @@ const std::vector<std::string> series_dycoms({
 "wvarmax", "cloud_cover_dycoms", "lwp", "er",
  "surf_precip",
 ////"mass_dry",
-// "acc_precip",
+ "acc_precip",
  "cl_nc",
  "cloud_base_dycoms"
 // ,"cl_gccn_meanr"

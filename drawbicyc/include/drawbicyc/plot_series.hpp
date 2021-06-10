@@ -1676,6 +1676,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     gp << "plot '-' with l";
     if(plot_std_dev)
       gp << ", '-' w l, '-' w l";
+    else if(plt == "cl_acnv25_dycoms" || plt == "cl_acnv25_rico" || plt == "cl_accr25_dycoms" || plt == "cl_accr25_rico")
+      gp << ", '-' w l";
     gp << " \n";
 
     std::cout << plt << " " << res_pos << res_prof << res_prof_std_dev << std::endl;
@@ -1689,6 +1691,21 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       gp.send1d(boost::make_tuple(res_pos, res_prof));
       res_prof = res_prof - 2*res_prof_std_dev;
       gp.send1d(boost::make_tuple(res_pos, res_prof));
+    }
+    if(plt == "cl_acnv25_dycoms" || plt == "cl_acnv25_rico" || plt == "cl_accr25_dycoms" || plt == "cl_accr25_rico")
+    {
+      // acnv/accr rate averaged since the start of the simulation
+      int nt = last_timestep - first_timestep + 1;
+      Array<double, 1> res_prof_acc_sum(nt);
+      res_prof_acc_sum = 0;
+      for(int t=1; t<nt; ++t)
+        res_prof_acc_sum(t) = (res_prof_acc_sum(t-1) + res_prof(t));
+      for(int t=1; t<nt; ++t)
+        res_prof_acc_sum(t) /= double(t);
+
+      gp.send1d(boost::make_tuple(res_pos, res_prof_acc_sum));
+      oprof_file << "acc_" << plt << endl ;
+      oprof_file << res_prof ;
     }
    // plot(gp, res);
   } // var loop
