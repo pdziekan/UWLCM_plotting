@@ -37,11 +37,12 @@ const std::vector<std::string> series_rico({
 
 std::vector<std::string> profs_rico({
 "00rtot"
-,"rd_lt_0.8um_conc"
-,"rd_geq_0.8um_conc"
-,"sd_conc"
-//, "rliq", "thl", "wvar", 
-// ,"prflux"
+//,"rd_lt_0.8um_conc"
+//,"rd_geq_0.8um_conc"
+//,"sd_conc"
+, "rliq"
+//, "thl", "wvar", 
+ ,"prflux"
 //,"clfrac"
 //,"sd_conc"
 //,"cl_nc"
