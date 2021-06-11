@@ -82,6 +82,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     double tot_acc_acnv_prev = 0;
     double tot_acc_accr_prev = 0;
 
+    bool data_found = 1;
+
     for (int at = first_timestep; at <= last_timestep; ++at) // TODO: mark what time does it actually mean!
     {
       res_pos(at) = at * n["outfreq"] * n["dt"] / 3600.;
@@ -114,7 +116,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           plotter.k_i = where(plotter.k_i > 20 , 1 , 0); // cloudiness as in Ackermann et al. 
           res_prof(at) = blitz::mean(plotter.k_i);
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "cloud_cover_rico")
       {
@@ -130,7 +132,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           plotter.k_i = where(plotter.k_i > 0, 1, 0);
           res_prof(at) = blitz::mean(plotter.k_i); 
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // max RH in the domain
       else if (plt == "RH_max")
@@ -143,7 +145,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(tmp);
           res_prof(at) = blitz::max(snap);
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // r_act averaged over cloudy cells
       else if (plt == "ract_avg")
@@ -154,7 +156,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           res_prof(at) = stats.first;
           res_prof_std_dev(at) = stats.second;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // average sd_conc
       else if (plt == "sd_conc")
@@ -165,7 +167,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           res_prof(at) = stats.first;
           res_prof_std_dev(at) = stats.second;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // average sd_conc in cloudy cells
       else if (plt == "cl_sd_conc")
@@ -176,7 +178,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           res_prof(at) = stats.first;
           res_prof_std_dev(at) = stats.second;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // average activated sd_conc in clloudy cells
       else if (plt == "cl_sd_conc_act")
@@ -187,7 +189,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           res_prof(at) = stats.first;
           res_prof_std_dev(at) = stats.second;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "tot_water")
       {
@@ -220,7 +222,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
             res_prof(at) += blitz::mean(snap);
           } 
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "ract_com")
       {
@@ -229,7 +231,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         {
           res_prof(at) = plotter.act_com_z_timestep(at * n["outfreq"]);
         }        
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "com_vel")
       {
@@ -254,7 +256,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else 
             res_prof(at) = 0.;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "com_supersat")
       {
@@ -279,7 +281,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else 
             res_prof(at) = 0.;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "com_mom0")
       {
@@ -310,7 +312,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
             res_prof(at) = 0.;
           }
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "com_mom1")
       {
@@ -325,7 +327,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
             res_prof(at) = 0.;
           com_miu(at) = res_prof(at); // mean radius [m]
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "com_mom2")
       {
@@ -364,7 +366,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0.;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "com_sd_conc")
       {
@@ -375,7 +377,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t sd_conc(tmp); // number of SDs
           res_prof(at) = sd_conc(com_x_idx(at), com_z_idx(at));
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "th_com")
       {
@@ -394,7 +396,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0.;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "inversion_height_rico")
       {
@@ -406,7 +408,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           auto max_index = blitz::maxIndex(grad, plotter.LastIndex);
           res_prof(at) = (blitz::mean(max_index) + 1) * n["dz"];
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "nc")
       {
@@ -419,7 +421,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           snap *= rhod; // b4 it was per milligram
           res_prof(at) = blitz::mean(snap); 
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "ntot")
       {
@@ -432,7 +434,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           snap *= rhod; // b4 it was per milligram
           res_prof(at) = blitz::mean(snap); 
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "nr")
       {
@@ -445,7 +447,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           snap *= rhod; // b4 it was per milligram
           res_prof(at) = blitz::mean(snap); 
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "cl_nc")
       {
@@ -467,7 +469,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "cl_nr")
       {
@@ -490,7 +492,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "cloud_base_dycoms")
       {
@@ -514,7 +516,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "min_cloud_base_rico")
       {
@@ -535,7 +537,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // average concentration of activated droplets in cloudy cells
       else if (plt == "cloud_avg_act_conc")
@@ -546,7 +548,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           res_prof(at) = stats.first;
           res_prof_std_dev(at) = stats.second;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // average supersaturation in cells with S>0
       else if (plt == "cloud_avg_supersat")
@@ -557,7 +559,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           res_prof(at) = stats.first;
           res_prof_std_dev(at) = stats.second;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // spatial average of mean radius of activated droplets in cloudy cells
       else if (plt == "cl_avg_cloud_rad")
@@ -567,7 +569,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           auto stats = plotter.cloud_meanr_stats_timestep(at * n["outfreq"]);
           res_prof(at) = stats.first;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
       // spatial average of standard deviation of the acttivated droplets radius distribution in cloudy cells
@@ -578,7 +580,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           auto stats = plotter.cloud_stddevr_stats_timestep(at * n["outfreq"]);
           res_prof(at) = stats.first;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
       else if (plt == "mass_dry")
@@ -592,7 +594,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           snap *= rhod * plotter.CellVol; // turn mixing ratio in g/kg to total mass in g
           res_prof(at) = blitz::sum(snap); 
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "surf_precip")
       {
@@ -601,7 +603,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         {
           res_prof(at) = plotter.calc_surf_precip(prec_vol - prec_vol_prev);
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "acc_precip")
       {
@@ -610,7 +612,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         {
           res_prof(at) = plotter.calc_acc_surf_precip(prec_vol);
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "cl_acnv25_dycoms")
       {
@@ -636,7 +638,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
           tot_acc_acnv_prev = tot_acc_acnv;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "cl_accr25_dycoms")
       {
@@ -662,7 +664,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
           tot_acc_accr_prev = tot_acc_accr;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "cl_acnv25_rico")
       {
@@ -686,7 +688,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
           tot_acc_acnv_prev = tot_acc_acnv;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "cl_accr25_rico")
       {
@@ -710,7 +712,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
           tot_acc_accr_prev = tot_acc_accr;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "lwp")
       {   
@@ -725,7 +727,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
             res_prof(at) = blitz::mean(snap); 
           }
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }   
       else if (plt == "rwp")
       {   
@@ -738,7 +740,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
             res_prof(at) = blitz::mean(snap); 
           }
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }   
       else if (plt == "surf_flux_latent")
       {   
@@ -749,7 +751,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
             res_prof(at) = blitz::mean(snap); 
           }
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }   
       else if (plt == "surf_flux_sensible")
       {   
@@ -760,7 +762,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
             res_prof(at) = blitz::mean(snap); 
           }
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }   
       else if (plt == "er")
       {   
@@ -799,7 +801,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           auto mean = plotter.horizontal_mean(snap);
           res_prof(at) = blitz::max(mean); // the max value
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "tot_tke")
       {
@@ -831,7 +833,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
           res_prof(at) += blitz::mean(plotter.horizontal_mean(snap));
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "uw_tot_tke") // As in the Thomas et al. 2019 paper about Pi chamber LES, but without substractin the running average. TODO: make it nowall?
       {
@@ -861,7 +863,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           }
           
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "uw_tot_tke_running_avg") // As in the Thomas et al. 2019 paper about Pi chamber LES. TODO: make it nowall?
       {
@@ -929,7 +931,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
             res_prof(at) += blitz::mean(plotter.horizontal_mean(tke));
           }
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "sgs_tke") // TODO: make it nowall?
       {
@@ -938,7 +940,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t tke(plotter.h5load_timestep("tke", at * n["outfreq"]));
           res_prof(at) = blitz::mean(plotter.horizontal_mean(tke));
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "sgs_tke_sd") // TKE of SGS motion of SD (turb_adve) 
       {
@@ -958,7 +960,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
           res_prof(at) = blitz::sum(tke) / blitz::count(tot_m0 > 0.);
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "cl_gccn_conc")
       {
@@ -979,7 +981,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "cl_non_gccn_conc")
       {
@@ -1000,7 +1002,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "cl_gccn_to_non_gccn_conc_ratio")
       {
@@ -1022,7 +1024,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "cl_gccn_meanr")
       {
@@ -1044,7 +1046,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "gccn_conc")
       {
@@ -1056,7 +1058,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           snap2 *= rhod; // b4 it was per milligram
           res_prof(at) = blitz::mean(snap2); 
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "non_gccn_conc")
       {
@@ -1068,7 +1070,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           snap2 *= rhod; // b4 it was per milligram
           res_prof(at) = blitz::mean(snap2); 
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
 
@@ -1091,7 +1093,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "rd_geq_0.8um_conc")
       {
@@ -1103,7 +1105,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           snap2 *= rhod; // b4 it was per milligram
           res_prof(at) = blitz::mean(snap2); 
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
 
@@ -1127,7 +1129,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // cloud base mean incloud time of bigrain (r>40um)
       else if (plt == "clb_bigrain_mean_inclt")
@@ -1156,7 +1158,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // cloud base mean rd of bigrain (r>40um)
       else if (plt == "clb_bigrain_mean_rd")
@@ -1185,7 +1187,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // cloud base mean rkappa of bigrain (r>40um)
       else if (plt == "clb_bigrain_mean_kappa")
@@ -1214,7 +1216,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // cloud base mean concentration of bigrain
       else if (plt == "clb_bigrain_mean_conc")
@@ -1240,7 +1242,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // cloud base mean fraction of bigrain formed on gccn
       else if (plt == "clb_bigrain_mean_gccn_fraction")
@@ -1269,7 +1271,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
       // ------ plots specific to the Pi Chamber ICMW case, averaged over the domain with the exception of near-wall cells ------
@@ -1281,7 +1283,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           auto stats = plotter.rv_stats_nowall_timestep(at * n["outfreq"]);
           res_prof(at) = stats.first;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
       else if (plt == "T_nowall")
@@ -1291,7 +1293,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           auto stats = plotter.T_stats_nowall_timestep(at * n["outfreq"]);
           res_prof(at) = stats.first;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
       else if (plt == "LWC_nowall")
@@ -1301,7 +1303,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t lwc(plotter.h5load_rc_timestep(at * n["outfreq"])); // cloud water, no rain water in pi chamber icmw
           res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(lwc, distance_from_walls)));
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
       else if (plt == "LWC_gm-3_nowall")
@@ -1312,7 +1314,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           lwc *= rhod;
           res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(lwc, distance_from_walls)));
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
       else if (plt == "RH_nowall")
@@ -1322,7 +1324,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           auto stats = plotter.RH_stats_nowall_timestep(at * n["outfreq"]);
           res_prof(at) = stats.first;
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
       else if (plt == "N_drop_nowall")
@@ -1333,7 +1335,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           nc *= rhod; // 1/kg -> 1/m^3
           res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(nc, distance_from_walls)));
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
       else if (plt == "N_aerosol_nowall")
@@ -1344,7 +1346,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           na *= rhod; // 1/kg -> 1/m^3
           res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(na, distance_from_walls)));
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
       else if (plt == "tot_tke_nowall")
@@ -1377,7 +1379,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
           res_prof(at) += blitz::mean(plotter.horizontal_mean(snap));
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "r_mean1_nowall")
       {
@@ -1392,7 +1394,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "r_mean2_nowall")
       {
@@ -1407,7 +1409,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // spatial variance of supersaturation calculated away from walls [1]
       else if (plt == "Sigma2_S_nowall")
@@ -1417,7 +1419,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           auto stats = plotter.RH_stats_nowall_timestep(at * n["outfreq"]);
           res_prof(at) = stats.second * stats.second; // std_dev -> variance; sigma(RH) = sigma(S)
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // spatial variance of T calculated away from walls [K^2]
       else if (plt == "Sigma2_T_nowall")
@@ -1427,7 +1429,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           auto stats = plotter.T_stats_nowall_timestep(at * n["outfreq"]);
           res_prof(at) = stats.second * stats.second; // std_dev -> variance
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       // spatial variance of rv calculated away from walls [1]
       else if (plt == "Sigma2_Qv_nowall")
@@ -1437,7 +1439,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           auto stats = plotter.rv_stats_nowall_timestep(at * n["outfreq"]);
           res_prof(at) = stats.second * stats.second; // std_dev -> variance
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "disp_r_nowall")
       {
@@ -1464,7 +1466,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           else
             res_prof(at) = 0;
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "epsilon_nowall")
       {
@@ -1477,7 +1479,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           tke /= n_prof["mix_len"](plotter.LastIndex); // divide by SGS mixing length
           res_prof(at) = blitz::mean(plotter.nowall(tke, distance_from_walls)) * C_E; 
         }
-        catch(...){;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "N_removal")
       {
@@ -1486,11 +1488,15 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         {
           res_prof(at) = plotter.calc_prtcl_removal(removed_particles - removed_particles_prev);
         }
-        catch(...) {;}
+        catch(...) {if(at==first_timestep) data_found=0;}
       }
 
       else assert(false);
     } // ------- end of time loop ------
+
+    // if no data was found, skip to the next var, dont save the data=0 as it was confusing
+    if(!data_found)
+      continue;
 
     // processing done after reading whole time series
     if (plt == "ract_com")
