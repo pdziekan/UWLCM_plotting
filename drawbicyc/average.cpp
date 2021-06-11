@@ -55,6 +55,10 @@ void average(int argc, char* argv[], int wtp, std::vector<std::string> types, st
   init_prof(gp, ofile + string(".svg"), ver, hor); 
 
   types.insert(types.begin(), "position");
+  for(std::string plt: types)
+    if(plt == "cl_acnv25_dycoms" || plt == "cl_acnv25_rico" || plt == "cl_accr25_dycoms" || plt == "cl_accr25_rico")
+      types.push_back(std::string("acc_").append(plt));
+
 
   cerr << "types: ";
   for (auto const &type: types)
