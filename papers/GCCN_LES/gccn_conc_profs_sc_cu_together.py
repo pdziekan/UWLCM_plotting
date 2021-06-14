@@ -1,0 +1,116 @@
+from matplotlib import rc
+import matplotlib.pyplot as plt
+from matplotlib.ticker import AutoMinorLocator, MultipleLocator
+from matplotlib.ticker import FormatStrFormatter, NullFormatter
+from matplotlib.ticker import MaxNLocator
+
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../Matplotlib_common/")
+#sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../Dycoms_RF02/")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../cases/RICO11/")
+
+from plot_ranges import * 
+from plot_profs import *
+
+# activate latex text rendering
+rc('text', usetex=True)
+# font size
+#plt.rcParams.update({'font.size': 24})
+# fig size
+#plt.figure(figsize=(3.2,5))
+
+fig, axarr = plt.subplots(2,2, figsize=(5.5,6))
+
+linestyles = ['--', '-.', ':']
+dashList = [(3,1),(1,1),(4,1,1,1),(4,2)]
+
+# plot init conc
+#hgt = np.arange(0, 1.1, 0.01)
+#init_conc = hgt.copy()
+#init_conc[hgt < 1] = 2.8
+#init_conc[hgt >= 1] = 0
+#plt.plot(init_conc, hgt)
+
+times_sc = np.arange(7200, 21601, 7200)
+times_cu = np.arange(7200, 36001, 7200)
+#times = np.insert(times, 0, 300)
+
+#print(times)
+
+for no in times_sc:
+  print(no)
+  file_name = sys.argv[2] + "profiles_" + str(no) + "_" + str(no) + ".dat"
+  profs_file = open(file_name, "r")
+  my_hgt = read_my_var(profs_file, "position")
+  my_gccn_conc = read_my_var(profs_file, "rd_geq_0.8um_conc")
+  my_ccn_conc = read_my_var(profs_file, "rd_lt_0.8um_conc")
+  my_sd_conc = read_my_var(profs_file, "sd_conc")
+  profs_file.close()
+  axarr[0,0].plot(my_gccn_conc, my_hgt, label=str(int(no/3600.)) + ' h')
+  axarr[0,1].plot(my_ccn_conc, my_hgt)
+
+for no in times_cu:
+  print(no)
+  file_name = sys.argv[3] + "profiles_" + str(no) + "_" + str(no) + ".dat"
+  profs_file = open(file_name, "r")
+  my_hgt = read_my_var(profs_file, "position")
+  my_gccn_conc = read_my_var(profs_file, "rd_geq_0.8um_conc")
+  my_ccn_conc = read_my_var(profs_file, "rd_lt_0.8um_conc")
+  my_sd_conc = read_my_var(profs_file, "sd_conc")
+  profs_file.close()
+  axarr[1,0].plot(my_gccn_conc, my_hgt, label=str(int(no/3600.)) + ' h')
+  axarr[1,1].plot(my_ccn_conc, my_hgt)
+
+## Dycoms rd<2um
+#for no in np.arange(3600, 18001, 3600):
+#  file_name = "/home/piotr/praca/GCCN_LES/wyniki/Dycoms_RF02/profs_non_gccn_conc/11_12_out_UWLCM_dycoms_sgs_GCCNx10_TurbAdve_MixLenFix_129x129x301_dt1_SstpCond10_SstpCoal10_sd100_dt1_RE1_out_lgrngn_dycoms_profiles_of_non_gccn_conc/11_12_out_UWLCM_dycoms_sgs_GCCNx10_TurbAdve_MixLenFix_129x129x301_dt1_SstpCond10_SstpCoal10_sd100_dt1_RE1_out_lgrngn_dycoms_profiles_" + str(no) + "_" + str(no) + ".dat"
+#  profs_file = open(file_name, "r")
+#  my_hgt = read_my_var(profs_file, "position")
+#  my_non_gccn_conc = read_my_var(profs_file, "non_gccn_conc")
+#  profs_file.close()
+#  axarr[1].plot(my_non_gccn_conc, my_hgt)#, label=sys.argv[no+1])
+
+
+axarr[0,0].legend()
+axarr[1,0].legend()
+
+axarr[1,0].set_ylim(0,2000)
+axarr[1,1].set_ylim(0,2000)
+axarr[0,0].set_ylim(0,1100)
+axarr[0,1].set_ylim(0,1100)
+
+axarr[0,0].set_xlim(0,)
+axarr[0,1].set_xlim(100,300)
+axarr[1,0].set_xlim(0,)
+axarr[1,1].set_xlim(70,120)
+
+axarr[0,0].axhline(y = 450, color = 'black', linestyle = '--', lw=1.5)
+axarr[1,0].axhline(y = 450, color = 'black', linestyle = '--')
+
+#axarr[2].set_ylim(0,1.2)
+#axarr[2].set_xlim(0,200)
+
+axarr[0,0].set_title('stratocumulus')
+axarr[0,1].set_title('stratocumulus')
+
+axarr[1,0].set_title('cumulus')
+axarr[1,1].set_title('cumulus')
+
+
+#axarr[0].set_ylabel('height / inversion height')
+axarr[0,0].set_ylabel('height [m]')
+axarr[1,0].set_ylabel('height [m]')
+#axarr[0].set_xlabel('GCCN ($r_d \geq 2 \mu m$) conc. [cm$^{-3}$]')
+#axarr[1].set_xlabel('CCN ($r_d < 2 \mu m$) conc. [cm$^{-3}$]')
+axarr[1,0].set_xlabel('GCCN conc. [cm$^{-3}$]')
+axarr[1,1].set_xlabel('CCN conc. [cm$^{-3}$]')
+#axarr[2].set_xlabel('$N_\mathrm{SD}$')
+
+#hide tick labels
+axarr[0,1].set_yticklabels([])
+axarr[1,1].set_yticklabels([])
+
+fig.tight_layout(pad=0.3, w_pad=0, h_pad=0)
+
+plt.savefig(sys.argv[1])
