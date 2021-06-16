@@ -18,9 +18,9 @@ rc('text', usetex=True)
 # font size
 #plt.rcParams.update({'font.size': 24})
 # fig size
-#plt.figure(figsize=(20,10))
+plt.figure(figsize=(3.2,2.5))
 
-fig, axarr = plt.subplots(1,3)
+fig, axarr = plt.subplots(1,2)
 
 linestyles = ['--', '-.', ':']
 dashList = [(3,1),(1,1),(4,1,1,1),(4,2)]
@@ -32,7 +32,8 @@ dashList = [(3,1),(1,1),(4,1,1,1),(4,2)]
 #init_conc[hgt >= 1] = 0
 #plt.plot(init_conc, hgt)
 
-times = np.arange(3600, 21601, 3600)
+#times = np.arange(7200, 21601, 7200)
+times = np.arange(7200, 36001, 7200)
 #times = np.insert(times, 0, 300)
 
 print(times)
@@ -48,9 +49,9 @@ for no in times:
   #my_gccn_conc = read_my_var(profs_file, "gccn_conc")
   #my_ccn_conc = read_my_var(profs_file, "non_gccn_conc")
   profs_file.close()
-  axarr[0].plot(my_gccn_conc, my_hgt)
+  axarr[0].plot(my_gccn_conc, my_hgt, label=str(int(no/3600.)) + ' h')
   axarr[1].plot(my_ccn_conc, my_hgt)
-  axarr[2].plot(my_sd_conc, my_hgt)
+#  axarr[2].plot(my_sd_conc, my_hgt)
 
 ## Dycoms rd<2um
 #for no in np.arange(3600, 18001, 3600):
@@ -62,21 +63,28 @@ for no in times:
 #  axarr[1].plot(my_non_gccn_conc, my_hgt)#, label=sys.argv[no+1])
 
 
-#plt.legend()
-axarr[0].set_ylim(0,1.2)
-axarr[0].set_xlim(0,3)
-axarr[1].set_ylim(0,1.2)
-axarr[1].set_xlim(0,300)
-axarr[2].set_ylim(0,1.2)
-axarr[2].set_xlim(0,200)
+axarr[0].legend()
+
+axarr[0].set_ylim(0,2000)
+axarr[1].set_ylim(0,2000)
+#axarr[0].set_ylim(0,1100)
+#axarr[1].set_ylim(0,1100)
+
+axarr[0].set_xlim(0,)
+axarr[1].set_xlim(0,)
+
+axarr[0].axhline(y = 450, color = 'black', linestyle = '--')
+
+#axarr[2].set_ylim(0,1.2)
+#axarr[2].set_xlim(0,200)
 
 
-axarr[0].set_ylabel('height / inversion height')
-#axarr[0].set_ylabel('height [m]')
+#axarr[0].set_ylabel('height / inversion height')
+axarr[0].set_ylabel('height [m]')
 #axarr[0].set_xlabel('GCCN ($r_d \geq 2 \mu m$) conc. [cm$^{-3}$]')
 #axarr[1].set_xlabel('CCN ($r_d < 2 \mu m$) conc. [cm$^{-3}$]')
 axarr[0].set_xlabel('GCCN conc. [cm$^{-3}$]')
 axarr[1].set_xlabel('CCN conc. [cm$^{-3}$]')
-axarr[2].set_xlabel('$N_\mathrm{SD}$')
+#axarr[2].set_xlabel('$N_\mathrm{SD}$')
 
 plt.savefig(sys.argv[1])
