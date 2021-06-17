@@ -37,7 +37,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
     {
       std::cout << at * n["outfreq"] << " : " << plt << std::endl;
       Gnuplot gp;
-      init(gp, plotter.file + "_" + type + ".plot/" + plt + "/" + zeropad(at * n["outfreq"]) + ".pdf", 1, 1, n, 2, 2000. / 12800.); 
+      init(gp, plotter.file + "_" + type + ".plot/" + plt + "/" + zeropad(at * n["outfreq"]) + ".pdf", 1, 1, n, 1.5, 2000. / 12800.); 
 
 //      gp << "set logscale cb\n";
 //      gp << "unset xlabel\n";
