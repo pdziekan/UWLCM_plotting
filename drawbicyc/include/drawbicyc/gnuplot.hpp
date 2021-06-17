@@ -48,10 +48,11 @@ void init(
   if(ratio == 0)
     ratio = n["dz"] / n["dx"];
 
-  const int xtics = 7;
-  const int ytics = xtics * ratio + 0.5;
+  const int xtics = 5;
+  //const int xtics = 5;
+  const int ytics = 5;//xtics * ratio + 0.5;
 
-  gp << "set term svg dynamic enhanced size " << nx * size_scale * 500 << "," << ny * size_scale * 500 << " font ',13'\n";
+  gp << "set term svg dynamic enhanced size " << nx * size_scale * 500 << "," << ny * size_scale * 500 << " font ',16'\n";
 //  gp << "set size square\n";
   gp << "set size ratio "<< ratio <<" \n";
   gp << "set encoding utf8\n";
@@ -62,21 +63,27 @@ void init(
   gp << "dy = " << n["dy"] << "\n"; 
   gp << "dz = " << n["dz"] << "\n"; 
 
+//  gp << "set format x '%5.0f'\n";
+//  gp << "set format y '%3.0f'\n";
+//  gp << "set xtics out scale .5 rotate by 60 ('0' 0, '1.6' 32, '3.2' 64, '4.8' 96, '6.4' 128)\n";
+
   gp << "set xtics out scale .5 rotate by 60 (";
   for(int i=0; i<xtics; ++i)
   {
-    double label = double(i) / (xtics-1)* n["x"]  * n["dx"] / 1e3; 
-    gp << "'" << std::setprecision(1) << label << "' " << double(i * n["x"] / (xtics-1));
+    double label = double(i) / (xtics-1)* (n["x"]-1)  * n["dx"] / 1.e3 ; 
+    gp << "'" << std::fixed << std::setprecision(1) << label << "' " << double(i * n["x"] / (xtics-1));
     if(i < xtics-1)
       gp << ", ";
   } 
   gp << ")\n"; 
 
-  gp << "set ytics out scale .5 rotate by 60 (";
+//  gp << "set ytics out scale .5 rotate by 60 ('0' 0, '0.25' 50, '0.5' 100, '0.75' 150, '1' 200)\n";
+
+  gp << "set ytics out scale .1 rotate by 60 (";
   for(int i=0; i<ytics; ++i)
   {
-    double label = double(i) / (ytics-1)* n["z"]  * n["dz"] / 1e3; 
-    gp << "'" << std::setprecision(1) << label << "' " << double(i * n["z"] / (ytics-1));
+    double label = double(i) / (ytics-1)* (n["z"]-1)  * n["dz"] / 1.e3; 
+    gp << "'" << std::fixed << std::setprecision(1) << label << "' " << double(i * n["z"] / (ytics-1));
     if(i < ytics-1)
       gp << ", ";
   } 
@@ -86,5 +93,5 @@ void init(
   gp << "set ylabel 'z [km]'\n";
   gp << "set output '" << file << "'\n";
   gp << "set grid\n";
-  gp << "set multiplot layout " << ny << "," << nx << "\n";
+//  gp << "set multiplot layout " << ny << "," << nx << "\n";
 }

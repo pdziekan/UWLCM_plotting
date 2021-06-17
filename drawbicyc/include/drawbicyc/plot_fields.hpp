@@ -24,6 +24,12 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
   blitz::secondIndex j;
   blitz::Range all = blitz::Range::all();
 
+  // read in density
+  typename Plotter_t::arr_t rhod(plotter.h5load(plotter.file + "/const.h5", "G"));
+
+  int yslice_idx = 20; // TEMPORARY! do not average over y when plotting fields of 3D sims. plot cross section at this index instead.
+  //int yslice_idx = 50; // TEMPORARY! do not average over y when plotting fields of 3D sims. plot cross section at this index instead.
+
   for (int at = 0; at < n["t"]; ++at) // TODO: mark what time does it actually mean!
   {
     if(int(at * n["outfreq"]) % plotfreq != 0) continue;
@@ -31,17 +37,28 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
     {
       std::cout << at * n["outfreq"] << " : " << plt << std::endl;
       Gnuplot gp;
-      init(gp, plotter.file + "_" + type + ".plot/" + plt + "/" + zeropad(at * n["outfreq"]) + ".svg", 1, 1, n, 1, 0.666666); 
+      init(gp, plotter.file + "_" + type + ".plot/" + plt + "/" + zeropad(at * n["outfreq"]) + ".svg", 1, 1, n, 1.5, 2000. / 12800.); 
+
+//      gp << "set logscale cb\n";
+      gp << "unset xlabel\n";
+      gp << "set ylabel 'z [km]'\n";
 
       if (plt == "rl")
       {
         try{
           // cloud water content
-        auto tmp = plotter.h5load_ract_timestep(at * n["outfreq"]) * 1e3;
+          auto tmp = plotter.h5load_ract_timestep(at * n["outfreq"]) * 1e3;
 
-        std::string title = "cloud water mixing ratio [g/kg]";
-          gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
-          plotter.plot(gp, tmp);
+          gp << "set logscale cb\n";
+          std::string title = "liquid water mixing ratio [g/kg]";
+          //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
+          gp << "set logscale cb\n";
+          gp << "set title '" +title + "' offset 0,-1.3\n";
+//          gp << "set cbrange [0:2]\n";
+          gp << "set cbrange [2e-4:2]\n";
+      //    gp << "set cbtics font 'Verdana,20'\n";
+          plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
+          gp << "unset logscale cb\n";
         }
         catch(...){}
       }
@@ -55,8 +72,20 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
            std::string title = "rain (r > 25um) water mixing ratio [g/kg]";
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
 //          gp << "set cbrange [1e-2:1]\n";
-          plotter.plot(gp, tmp);
+          plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
           gp << "unset logscale cb\n";
+        }
+        catch(...){}
+      }
+      else if (plt == "nact")
+      {
+          // activated particle concentration
+        try{
+          auto tmp = plotter.h5load_timestep("actrw_rw_mom0", at * n["outfreq"]) * 1e-6;
+          std::string title ="activated droplet spec. conc. [mg^{-1}]";
+          gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
+//          gp << "set cbrange [0:150]\n";
+          plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }
@@ -64,11 +93,15 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
       {
           // cloud particle concentration
         try{
-          auto tmp = plotter.h5load_timestep("actrw_rw_mom0", at * n["outfreq"]) * 1e-6;
-          std::string title ="activated droplet spec. conc. [mg^{-1}]";
-          gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
-//          gp << "set cbrange [0:150]\n";
-          plotter.plot(gp, tmp);
+          auto tmp = plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]) * 1e-6 * rhod;
+          std::string title ="cloud droplet conc. [cm^{-1}]";
+          gp << "set logscale cb\n";
+          //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
+          gp << "set title '" +title + " offset 0,-1.3'\n";
+          gp << "set cbrange [4:200]\n";
+          //gp << "set cbrange [0:160]\n";
+          plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
+          gp << "unset logscale cb\n";
         }
         catch(...){}
       }
@@ -83,7 +116,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title ="dry mass mixing ratio [ug/kg]";
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
 //          gp << "set cbrange [1e-2:1]\n";
-          plotter.plot(gp, tmp);
+          plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
           gp << "unset logscale cb\n";
         }
         catch(...){}
@@ -97,7 +130,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
 //          gp << "set cbrange [.01:10]\n";
           gp << "set logscale cb\n";
-          plotter.plot(gp, tmp);
+          plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
           gp << "unset logscale cb\n";
         }
         catch(...){}
@@ -110,7 +143,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "cloud (0.5um < r < 25um) droplet effective radius [μm]"; 
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
 //          gp << "set cbrange [1:20]\n";
-          plotter.plot(gp, tmp);
+          plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }
@@ -132,7 +165,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
 //          gp << "set cbrange [" << 0 << ":" << 150 << "]\n";
           gp << "set title 'aerosol concentration [mg^{-1}]'\n";
           tmp /= 1e6;
-          plotter.plot(gp, tmp);
+          plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
       }
 */
       else if (plt == "mrk")
@@ -141,7 +174,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "marker"; 
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
         auto tmp = plotter.h5load_timestep("mrk", at * n["outfreq"]);
-        plotter.plot(gp, tmp);
+        plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }   
@@ -151,7 +184,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "water vapour mixing ratio [g/kg]"; 
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
         auto tmp = plotter.h5load_timestep("rv", at * n["outfreq"]) * 1e3;
-        plotter.plot(gp, tmp);
+        plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }   
@@ -161,7 +194,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "dry air potential temperature [K]"; 
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
         auto tmp = plotter.h5load_timestep("th", at * n["outfreq"]);
-        plotter.plot(gp, tmp);
+        plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }   
@@ -171,7 +204,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "velocity in x [m/s]"; 
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
         auto tmp = plotter.h5load_timestep("u", at * n["outfreq"]);
-        plotter.plot(gp, tmp);
+        plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }   
@@ -181,7 +214,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "velocity in z [m/s]"; 
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
         auto tmp = plotter.h5load_timestep("w", at * n["outfreq"]);
-        plotter.plot(gp, tmp);
+        plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }   
@@ -191,7 +224,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "velocity field divergence"; 
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
         auto tmp = plotter.h5load_timestep("vel_div", at * n["outfreq"]);
-        plotter.plot(gp, tmp);
+        plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }   
@@ -201,7 +234,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "relative humidity"; 
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
         auto tmp = plotter.h5load_timestep("RH", at * n["outfreq"]);
-        plotter.plot(gp, tmp);
+        plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }   
@@ -211,7 +244,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "libcloud pressure [Pa]"; 
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
         auto tmp = plotter.h5load_timestep("libcloud_pressure", at * n["outfreq"]);
-        plotter.plot(gp, tmp);
+        plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }   
@@ -221,7 +254,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "libcloud temperature [K]"; 
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
         auto tmp = plotter.h5load_timestep("libcloud_temperature", at * n["outfreq"]);
-        plotter.plot(gp, tmp);
+        plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }   
@@ -244,7 +277,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "number of super-droplets"; 
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
         auto tmp = plotter.h5load_timestep("sd_conc", at * n["outfreq"]);
-        plotter.plot(gp, tmp);
+        plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }   
@@ -254,17 +287,32 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "gccn(rd>2um) concentration [1/kg]"; 
           gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
         typename Plotter_t::arr_t tmp(plotter.h5load_timestep("gccn_rw_mom0", at * n["outfreq"]));
-        plotter.plot(gp, tmp);
+        plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }   
       else if (plt == "rd_geq_0.8um_conc")
       {   
         try{
-          std::string title = "rd>=0.8um concentration [1/kg]"; 
-          gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
-          typename Plotter_t::arr_t tmp(plotter.h5load_timestep("rd_geq_0.8um_rw_mom0", at * n["outfreq"]));
-          plotter.plot(gp, tmp);
+          std::string title = "GCCN conc.  [cm^{-1}]"; 
+          //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
+          gp << "set title '" +title + " offset 0,-1.3'\n";
+          gp << "set cbrange [0:5]\n";
+          typename Plotter_t::arr_t tmp(plotter.h5load_timestep("rd_geq_0.8um_rw_mom0", at * n["outfreq"]) * 1e-6 * rhod);
+          gp << "set xlabel 'x [km]'\n";
+          plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
+        }
+        catch(...){}
+      }   
+      else if (plt == "rd_lt_0.8um_conc")
+      {   
+        try{
+          std::string title = "CCN conc.  [cm^{-1}]"; 
+          //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
+          gp << "set title '" +title + " offset 0,-1.3'\n";
+          gp << "set cbrange [0:400]\n";
+          typename Plotter_t::arr_t tmp(plotter.h5load_timestep("rd_lt_0.8um_rw_mom0", at * n["outfreq"]) * 1e-6 * rhod);
+          plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
         }
         catch(...){}
       }   

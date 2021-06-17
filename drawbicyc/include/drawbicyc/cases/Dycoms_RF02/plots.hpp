@@ -50,7 +50,9 @@ std::vector<std::string> profs_dycoms({
 }); // rtot has to be first
 
 std::vector<std::string> fields_dycoms({
-//"rl", "nc",
+"rl", "nc",
+"rd_geq_0.8um_conc",
+"rd_lt_0.8um_conc"
 // "rr", "nr",
 //"ef", "na", 
 //"th", "rv",     
@@ -60,5 +62,5 @@ std::vector<std::string> fields_dycoms({
 //"lib_pres", "lib_temp"
 //"gccn_conc",
 //"gccn_mean_rw"
-"rd_geq_0.8um_conc"
+
 });

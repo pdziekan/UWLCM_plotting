@@ -64,11 +64,13 @@ std::vector<std::string> profs_rico({
 
 std::vector<std::string> fields_rico({
 "rl", "nc",
- "rr", "nr",
+// "rr", "nr",
 //"ef", "na", 
-"th", "rv",     
-"u", "w", 
+//"th", "rv",     
+//"u", "w", 
 //"sd_conc",//, "r_dry", 
 //"RH", "supersat",
 //"lib_pres", "lib_temp"
+"rd_geq_0.8um_conc",
+"rd_lt_0.8um_conc"
 });

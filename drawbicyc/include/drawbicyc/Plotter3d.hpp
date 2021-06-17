@@ -143,7 +143,8 @@ class Plotter_t<3> : public PlotterCommon
     blitz::Array<float, 3> tmp3d(data);
     using namespace blitz::tensor;
     // select a slize in second dimension to average over
-    auto tmp3dslice = tmp3d(blitz::Range::all(), yrange_override, blitz::Range::all());
+    //auto tmp3dslice = tmp3d(blitz::Range::all(), yrange_override, blitz::Range::all());
+    auto tmp3dslice = tmp3d(blitz::Range::all(), yrange_override, blitz::Range(0,50));
     auto tmp2d = blitz::mean(tmp3dslice(i,k,j), k); // mean over second dimension
     blitz::Array<float, 2> tmp(tmp2d);
 
