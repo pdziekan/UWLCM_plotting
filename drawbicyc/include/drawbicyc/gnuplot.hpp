@@ -52,7 +52,7 @@ void init(
   //const int xtics = 5;
   const int ytics = 5;//xtics * ratio + 0.5;
 
-  gp << "set term svg dynamic enhanced size " << nx * size_scale * 500 << "," << ny * size_scale * 500 << " font ',16'\n";
+  gp << "set term pdfcairo enhanced size " << nx * size_scale * 5.5 << "," << ny * size_scale * 4 << " font ',14'\n";
 //  gp << "set size square\n";
   gp << "set size ratio "<< ratio <<" \n";
   gp << "set encoding utf8\n";

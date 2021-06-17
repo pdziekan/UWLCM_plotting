@@ -37,10 +37,10 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
     {
       std::cout << at * n["outfreq"] << " : " << plt << std::endl;
       Gnuplot gp;
-      init(gp, plotter.file + "_" + type + ".plot/" + plt + "/" + zeropad(at * n["outfreq"]) + ".svg", 1, 1, n, 1.5, 2000. / 12800.); 
+      init(gp, plotter.file + "_" + type + ".plot/" + plt + "/" + zeropad(at * n["outfreq"]) + ".pdf", 1, 1, n, 1, 2000. / 12800.); 
 
 //      gp << "set logscale cb\n";
-      gp << "unset xlabel\n";
+//      gp << "unset xlabel\n";
       gp << "set ylabel 'z [km]'\n";
 
       if (plt == "rl")
@@ -53,7 +53,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title = "liquid water mixing ratio [g/kg]";
           //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
           gp << "set logscale cb\n";
-          gp << "set title '" +title + "' offset 0,-1.3\n";
+          gp << "set title '" +title + "' offset 0,-1.2\n";
 //          gp << "set cbrange [0:2]\n";
           gp << "set cbrange [2e-4:2]\n";
       //    gp << "set cbtics font 'Verdana,20'\n";
@@ -97,9 +97,10 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           std::string title ="cloud droplet conc. [cm^{-1}]";
           gp << "set logscale cb\n";
           //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
-          gp << "set title '" +title + " offset 0,-1.3'\n";
+          gp << "set title '" +title + "' offset 0,-1.2\n";
           gp << "set cbrange [4:200]\n";
           //gp << "set cbrange [0:160]\n";
+          gp << "show ylabel\n";
           plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
           gp << "unset logscale cb\n";
         }
@@ -296,7 +297,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
         try{
           std::string title = "GCCN conc.  [cm^{-1}]"; 
           //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
-          gp << "set title '" +title + " offset 0,-1.3'\n";
+          gp << "set title '" +title + "' offset 0,-1.2\n";
           gp << "set cbrange [0:5]\n";
           typename Plotter_t::arr_t tmp(plotter.h5load_timestep("rd_geq_0.8um_rw_mom0", at * n["outfreq"]) * 1e-6 * rhod);
           gp << "set xlabel 'x [km]'\n";
@@ -309,7 +310,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
         try{
           std::string title = "CCN conc.  [cm^{-1}]"; 
           //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
-          gp << "set title '" +title + " offset 0,-1.3'\n";
+          gp << "set title '" +title + "' offset 0,-1.2\n";
           gp << "set cbrange [0:400]\n";
           typename Plotter_t::arr_t tmp(plotter.h5load_timestep("rd_lt_0.8um_rw_mom0", at * n["outfreq"]) * 1e-6 * rhod);
           plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
