@@ -41,6 +41,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
 
 //      gp << "set logscale cb\n";
 //      gp << "unset xlabel\n";
+      gp << "set xlabel 'x [km]'\n";
       gp << "set ylabel 'z [km]'\n";
 
       if (plt == "rl")
@@ -49,10 +50,23 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           // cloud water content
           auto tmp = plotter.h5load_ract_timestep(at * n["outfreq"]) * 1e3;
 
+          // disable tics labels
+          gp << "set xtics out scale .5 rotate by 60 (";
+          int xtics = 5;
+          for(int i=0; i<xtics; ++i)
+          {
+            gp << "'' " << double(i * n["x"] / (xtics-1));
+            if(i < xtics-1)
+              gp << ", ";
+          }
+          gp << ")\n";
+
+
           gp << "set logscale cb\n";
           std::string title = "liquid water mixing ratio [g/kg]";
           //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
           gp << "set logscale cb\n";
+          gp << "unset xlabel\n";
           gp << "set title '" +title + "' offset 0,-1.2\n";
 //          gp << "set cbrange [0:2]\n";
           gp << "set cbrange [2e-4:2]\n";
@@ -93,9 +107,22 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
       {
           // cloud particle concentration
         try{
+
+          // disable tics labels
+          gp << "set xtics out scale .5 rotate by 60 (";
+          int xtics = 5;
+          for(int i=0; i<xtics; ++i)
+          {
+            gp << "'' " << double(i * n["x"] / (xtics-1));
+            if(i < xtics-1)
+              gp << ", ";
+          }
+          gp << ")\n";
+
           auto tmp = plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]) * 1e-6 * rhod;
           std::string title ="cloud droplet conc. [cm^{-1}]";
           gp << "set logscale cb\n";
+          gp << "unset xlabel\n";
           //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
           gp << "set title '" +title + "' offset 0,-1.2\n";
           gp << "set cbrange [4:200]\n";
@@ -295,6 +322,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
       else if (plt == "rd_geq_0.8um_conc")
       {   
         try{
+
           std::string title = "GCCN conc.  [cm^{-1}]"; 
           //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
           gp << "set title '" +title + "' offset 0,-1.2\n";
@@ -308,9 +336,22 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
       else if (plt == "rd_lt_0.8um_conc")
       {   
         try{
+
+          // disable tics labels
+          gp << "set xtics out scale .5 rotate by 60 (";
+          int xtics = 5;
+          for(int i=0; i<xtics; ++i)
+          {
+            gp << "'' " << double(i * n["x"] / (xtics-1));
+            if(i < xtics-1)
+              gp << ", ";
+          }
+          gp << ")\n";
+
           std::string title = "CCN conc.  [cm^{-1}]"; 
           //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
           gp << "set title '" +title + "' offset 0,-1.2\n";
+          gp << "unset xlabel\n";
           gp << "set cbrange [0:400]\n";
           typename Plotter_t::arr_t tmp(plotter.h5load_timestep("rd_lt_0.8um_rw_mom0", at * n["outfreq"]) * 1e-6 * rhod);
           plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
