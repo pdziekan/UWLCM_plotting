@@ -24,7 +24,7 @@ varlabels = ["{\it Sc30}", "{\it Sc40\_salt\_CCN}", "{\it Sc45}", "{\it Sc105}"]
 averaging_period = float(profs_to_it - profs_from_it) / 3600. # period over which series are averaged [h]; NOTE: we assume that series_from(to)_it = profs_from(to)_it / outfreq!
 
 # assumed initial GCCN concentrations
-GCCN_conc = [0,0.216,5*0.216,10*0.216]
+GCCN_conc = [0,0.28,5*0.28,10*0.28]
 
 # init the plot
 nplotx = 2 #int(nplots/6 + 0.5)
