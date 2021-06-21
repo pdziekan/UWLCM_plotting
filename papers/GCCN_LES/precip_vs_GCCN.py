@@ -18,7 +18,7 @@ profs_from_it = int(sys.argv[3])
 profs_to_it = int(sys.argv[4])
 qlimit = float(sys.argv[5])
 
-varlabels = ["{\it Sc30\_wash}", "{\it Sc40\_salt\_CCN\_wash}", "{\it Sc45\_wash}", "{\it Sc105\_wash}"]
+varlabels = ["{\it Cu35\_wash}", "{\it Cu55\_wash}", "{\it Cu75\_wash}"]
 #varlabels = ["{\it Cu38}", "{\it Cu60}", "{\it Cu85}"]
 #varlabels = ["{\it Sc38}", "{\it Sc60}", "{\it Sc115}"]
 averaging_period = float(profs_to_it - profs_from_it) / 3600. # period over which series are averaged [h]; NOTE: we assume that series_from(to)_it = profs_from(to)_it / outfreq!
@@ -44,7 +44,7 @@ for no in file_no:
 
 label_counter=0
 
-for it in np.arange(16):
+for it in np.arange(12):
   print(series_file_names[it])
   print(profs_file_names[it])
 
@@ -234,9 +234,9 @@ lgd = fig.legend(handles, labels, handlelength=4, loc='lower center', bbox_to_an
 
 
 #figure size
-fig.set_size_inches(5.5, 3.6)# 5.214)#20.75,13.74)
+fig.set_size_inches(5.5, 3.3)# 5.214)#20.75,13.74)
 #distances between subplots and from bottom of the plot
-fig.subplots_adjust(bottom=0.16 + (len(labels) - 2) * 0.1, wspace=0.3)#, hspace=0.25)
+fig.subplots_adjust(bottom=0.20 + (len(labels) - 2) * 0.1, wspace=0.3)#, hspace=0.25)
 
 #fig.tight_layout(pad=0.3, w_pad=0, h_pad=0)
 
