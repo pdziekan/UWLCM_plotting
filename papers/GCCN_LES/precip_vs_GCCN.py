@@ -18,7 +18,7 @@ profs_from_it = int(sys.argv[3])
 profs_to_it = int(sys.argv[4])
 qlimit = float(sys.argv[5])
 
-varlabels = ["{\it Sc30}", "{\it Sc40\_salt\_CCN}", "{\it Sc45}", "{\it Sc105}"]
+varlabels = ["{\it Sc30\_wash}", "{\it Sc40\_salt\_CCN\_wash}", "{\it Sc45\_wash}", "{\it Sc105\_wash}"]
 #varlabels = ["{\it Cu38}", "{\it Cu60}", "{\it Cu85}"]
 #varlabels = ["{\it Sc38}", "{\it Sc60}", "{\it Sc115}"]
 averaging_period = float(profs_to_it - profs_from_it) / 3600. # period over which series are averaged [h]; NOTE: we assume that series_from(to)_it = profs_from(to)_it / outfreq!
