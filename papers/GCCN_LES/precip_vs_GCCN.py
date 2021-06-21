@@ -21,6 +21,7 @@ qlimit = float(sys.argv[5])
 #varlabels = ["{\it ScNc30}", "{\it ScNc40\_salt\_CCN}", "{\it ScNc45}", "{\it ScNc105}"]
 #varlabels = ["{\it Cu38}", "{\it Cu60}", "{\it Cu85}"]
 varlabels = ["{\it Sc38}", "{\it Sc60}", "{\it Sc115}"]
+varlabels = ["{\it Sc38}","{\it Sc55\_salt\_CCN}", "{\it Sc60}", "{\it Sc115}"]
 averaging_period = float(profs_to_it - profs_from_it) / 3600. # period over which series are averaged [h]; NOTE: we assume that series_from(to)_it = profs_from(to)_it / outfreq!
 
 # assumed initial GCCN concentrations
@@ -44,12 +45,12 @@ for no in file_no:
 
 label_counter=0
 
-for it in np.arange(12):
-  print(series_file_names[it])
-  print(profs_file_names[it])
+for it in np.arange(16):
+#  print(series_file_names[it])
+#  print(profs_file_names[it])
 
   if(it % 4 == 0):
-    mean_surf_precip = []
+    #mean_surf_precip = []
     tot_acc_surf_precip = []
     tot_acc_surf_precip_std_dev = []
     prflux = []
@@ -63,38 +64,62 @@ for it in np.arange(12):
     tot_acc_accr = []
     tot_acc_accr_std_dev = []
 
-  series_infile = open(series_file_names[it], "r")
-  try:
-    profs_infile = open(profs_file_names[it], "r")
-  except:
-    print "Could not open the profiles file"
+  if(it > 3 and it < 8):
+    # messed names, pre is midpolluted, post is pristine
+    series_infile_pre = open(series_file_names[it], "r")
+    series_infile_post = open(series_file_names[it-4], "r")
+    profs_infile_pre = open(profs_file_names[it], "r")
+    profs_infile_post = open(profs_file_names[it-4], "r")
 
-#  print series_file_names[it]
-#  print profs_file_names[it]
+    acc_surf_precip_post = read_my_var(series_infile_post, "acc_precip")
+    acc_surf_precip_pre = read_my_var(series_infile_pre, "acc_precip")
+    tot_acc_surf_precip_post = (acc_surf_precip_post[series_to_it] - acc_surf_precip_post[series_from_it])
+    tot_acc_surf_precip_pre = (acc_surf_precip_pre[series_to_it] - acc_surf_precip_pre[series_from_it])
+    tot_acc_surf_precip.append(tot_acc_surf_precip_pre + (tot_acc_surf_precip_post - tot_acc_surf_precip_pre) * 2. / (60. - 38.)) #linear
+    tot_acc_surf_precip_std_dev.append(0)
 
-# calc mean surf precip
-  surf_precip = read_my_var(series_infile, "surf_precip")
-  mean_surf_precip.append(np.mean(surf_precip[series_from_it:series_to_it]))
+  else:
+    true_it = it
+    if(it>7):
+      true_it = it-4
+    series_infile = open(series_file_names[true_it], "r")
+    try:
+      profs_infile = open(profs_file_names[true_it], "r")
+    except:
+      print "Could not open the profiles file"
+  
+  #  print series_file_names[it]
+  #  print profs_file_names[it]
+  
+  # calc mean surf precip
+    #surf_precip = read_my_var(series_infile, "surf_precip")
+    #mean_surf_precip.append(np.mean(surf_precip[series_from_it:series_to_it]))
+  
+  # calc acc surf precip
+    acc_surf_precip = read_my_var(series_infile, "acc_precip")
+    try:
+      acc_surf_precip_std_dev = read_my_var(series_infile, "acc_precip_std_dev")
+    except:
+      print "Could not find acc_precip_std_dev, setting to 0"
+      acc_surf_precip_std_dev = np.zeros(len(acc_surf_precip))
 
-# calc acc surf precip
-  acc_surf_precip = read_my_var(series_infile, "acc_precip")
-  try:
-    acc_surf_precip_std_dev = read_my_var(series_infile, "acc_precip_std_dev")
-  except:
-    print "Could not find acc_precip_std_dev, setting to 0"
-    acc_surf_precip_std_dev = np.zeros(len(acc_surf_precip))
-
-  tot_acc_surf_precip.append(acc_surf_precip[series_to_it] - acc_surf_precip[series_from_it])
-  tot_acc_surf_precip_std_dev.append(acc_surf_precip_std_dev[series_to_it] + acc_surf_precip_std_dev[series_from_it])
+    tot_acc_surf_precip.append(acc_surf_precip[series_to_it] - acc_surf_precip[series_from_it])
+    tot_acc_surf_precip_std_dev.append(acc_surf_precip_std_dev[series_to_it] + acc_surf_precip_std_dev[series_from_it])
 
 # find cloud base
-  try:
-    ql = read_my_var(profs_infile, "rliq")
-    clbase = np.argmax(ql>qlimit)
-  except:
-    clbase=0
-    print "Could not find the rliq profile, setting clbase=0"
-  print clbase
+  if(it > 3 and it < 8):
+    ql = read_my_var(profs_infile_pre, "rliq")
+    clbase_pre = np.argmax(ql>qlimit)
+    ql = read_my_var(profs_infile_post, "rliq")
+    clbase_post = np.argmax(ql>qlimit)
+  else:
+    try:
+      ql = read_my_var(profs_infile, "rliq")
+      clbase = np.argmax(ql>qlimit)
+    except:
+      clbase=0
+      print "Could not find the rliq profile, setting clbase=0"
+    print clbase
 
 # --- get prflux at cloud base; divide by cloud fraction at this height to get an estimate of average over cloud cells only ---
 # TODO: no sense to divide by cloud fraction in a specific cell at a height! We should divide by cloud cover (fraction of cloudy columns), which is in the series file
@@ -103,74 +128,97 @@ for it in np.arange(12):
 #  print "cloud fraction at cloud base (calculated using the threshold of LWP in a column from Ackerman et al.): ", clfrac_at_cbase
 #  prfluxDivByClFrac.append(read_my_var(profs_infile, "prflux")[clbase] / read_my_var(profs_infile, "clfrac")[clbase])
 #  prfluxDivByClFrac_std_dev.append(read_my_var(profs_infile, "prflux_std_dev")[clbase] / read_my_var(profs_infile, "clfrac")[clbase])
-# --- get prflux at cloud base height ---
-  try:
-    prflux.append(read_my_var(profs_infile, "prflux")[clbase] / 2264.705 * 3.6 * 24 ) # convert from W/m2 to mm/day
-    prflux_std_dev.append(read_my_var(profs_infile, "prflux_std_dev")[clbase] / 2264.705 * 3.6 * 24 )
-  except:
-    print "Could not find the prflux profile, setting prflux at cloud base = 0"
-    prflux.append(0)
+
+  if(it > 3 and it < 8):
+    prflux_pre = read_my_var(profs_infile_pre, "prflux")[clbase_pre] / 2264.705 * 3.6 * 24 
+    prflux_post = read_my_var(profs_infile_post, "prflux")[clbase_post] / 2264.705 * 3.6 * 24 
+    prflux.append(prflux_pre + (prflux_post - prflux_pre) * 2. / (60. - 38.))
     prflux_std_dev.append(0)
-# --- get prflux at cloud base from the prflux vs cloud height profile ---
-  try:
-    clb_prflux = read_my_var(profs_infile, "base_prflux_vs_clhght")
-    clb_prflux_std_dev = np.nan_to_num(read_my_var(profs_infile, "base_prflux_vs_clhght_std_dev"))
-    clb_prflux_occur = read_my_var(profs_infile, "base_prflux_vs_clhght number of occurances")
-    prfluxFromPrfluxVsClhght.append(np.sum(clb_prflux * clb_prflux_occur) / np.sum(clb_prflux_occur) / 2264.705 * 3.6 * 24 )
-    prfluxFromPrfluxVsClhght_std_dev.append(np.sum(clb_prflux_std_dev * clb_prflux_occur) / np.sum(clb_prflux_occur) / 2264.705 * 3.6 * 24 )
-  except:
-    print "Could not find the base_prflux_vs_clhght data, setting prflux at cloud base from the prflux vs cloud height profile = 0"
-    prfluxFromPrfluxVsClhght.append(0)
-    prfluxFromPrfluxVsClhght_std_dev.append(0)
+  else:
+  # --- get prflux at cloud base height ---
+    try:
+      prflux.append(read_my_var(profs_infile, "prflux")[clbase] / 2264.705 * 3.6 * 24 ) # convert from W/m2 to mm/day
+      prflux_std_dev.append(read_my_var(profs_infile, "prflux_std_dev")[clbase] / 2264.705 * 3.6 * 24 )
+    except:
+      print "Could not find the prflux profile, setting prflux at cloud base = 0"
+      prflux.append(0)
+      prflux_std_dev.append(0)
+  # --- get prflux at cloud base from the prflux vs cloud height profile ---
+    try:
+      clb_prflux = read_my_var(profs_infile, "base_prflux_vs_clhght")
+      clb_prflux_std_dev = np.nan_to_num(read_my_var(profs_infile, "base_prflux_vs_clhght_std_dev"))
+      clb_prflux_occur = read_my_var(profs_infile, "base_prflux_vs_clhght number of occurances")
+      prfluxFromPrfluxVsClhght.append(np.sum(clb_prflux * clb_prflux_occur) / np.sum(clb_prflux_occur) / 2264.705 * 3.6 * 24 )
+      prfluxFromPrfluxVsClhght_std_dev.append(np.sum(clb_prflux_std_dev * clb_prflux_occur) / np.sum(clb_prflux_occur) / 2264.705 * 3.6 * 24 )
+    except:
+      print "Could not find the base_prflux_vs_clhght data, setting prflux at cloud base from the prflux vs cloud height profile = 0"
+      prfluxFromPrfluxVsClhght.append(0)
+      prfluxFromPrfluxVsClhght_std_dev.append(0)
 
 
 # get acnv rate in cloudy cells averaged over whole simulation
-  try:
-    acc_acnv = read_my_var(series_infile, "acc_cl_acnv25_dycoms")
-  except:
+  if(it > 3 and it < 8):
+    acc_acnv_pre = read_my_var(series_infile_pre, "acc_cl_acnv25_dycoms")
+    acc_acnv_post = read_my_var(series_infile_post, "acc_cl_acnv25_dycoms")
+    tot_acc_acnv_pre = ((acc_acnv_pre[series_to_it] * series_to_it) - (acc_acnv_pre[series_from_it] * series_from_it)) / (series_to_it - series_from_it)
+    tot_acc_acnv_post = ((acc_acnv_post[series_to_it] * series_to_it) - (acc_acnv_post[series_from_it] * series_from_it)) / (series_to_it - series_from_it)
+    tot_acc_acnv.append(tot_acc_acnv_pre + (tot_acc_acnv_post - tot_acc_acnv_pre) * 2. / (60. - 38.))
+    tot_acc_acnv_std_dev.append(0)
+
+    acc_accr_pre = read_my_var(series_infile_pre, "acc_cl_accr25_dycoms")
+    acc_accr_post = read_my_var(series_infile_post, "acc_cl_accr25_dycoms")
+    tot_acc_accr_pre = ((acc_accr_pre[series_to_it] * series_to_it) - (acc_accr_pre[series_from_it] * series_from_it)) / (series_to_it - series_from_it)
+    tot_acc_accr_post = ((acc_accr_post[series_to_it] * series_to_it) - (acc_accr_post[series_from_it] * series_from_it)) / (series_to_it - series_from_it)
+    tot_acc_accr.append(tot_acc_accr_pre + (tot_acc_accr_post - tot_acc_accr_pre) * 2. / (60. - 38.))
+    tot_acc_accr_std_dev.append(0)
+
+  else:
     try:
-      acc_acnv = read_my_var(series_infile, "acc_cl_acnv25_rico")
+      acc_acnv = read_my_var(series_infile, "acc_cl_acnv25_dycoms")
     except:
-      print "Could not find acc_acnv, setting to 0"
-      acc_acnv = np.zeros(len(acc_surf_precip))
-
-  try:
-    acc_acnv_std_dev = read_my_var(series_infile, "acc_cl_acnv25_dycoms_std_dev")
-  except:
+      try:
+        acc_acnv = read_my_var(series_infile, "acc_cl_acnv25_rico")
+      except:
+        print "Could not find acc_acnv, setting to 0"
+        acc_acnv = np.zeros(len(acc_surf_precip))
+  
     try:
-      acc_acnv_std_dev = read_my_var(series_infile, "acc_cl_acnv25_rico_std_dev")
+      acc_acnv_std_dev = read_my_var(series_infile, "acc_cl_acnv25_dycoms_std_dev")
     except:
-      print "Could not find acc_acnv_std_dev, setting to 0"
-      acc_acnv_std_dev = np.zeros(len(acc_acnv))
-
-  # acc_cl_acnv25_dycoms_std_dev is a time series of the acnv rate averaged from the start up to the moment.
-  # calculate acnv rate averaged from series_from to series_to
-  tot_acc_acnv.append(((acc_acnv[series_to_it] * series_to_it) - (acc_acnv[series_from_it] * series_from_it)) / (series_to_it - series_from_it))
-  tot_acc_acnv_std_dev.append(acc_acnv_std_dev[series_to_it] + acc_acnv_std_dev[series_from_it])
-
-# get accr rate in cloudy cells averaged over whole simulation
-  try:
-    acc_accr = read_my_var(series_infile, "acc_cl_accr25_dycoms")
-  except:
+      try:
+        acc_acnv_std_dev = read_my_var(series_infile, "acc_cl_acnv25_rico_std_dev")
+      except:
+        print "Could not find acc_acnv_std_dev, setting to 0"
+        acc_acnv_std_dev = np.zeros(len(acc_acnv))
+  
+    # acc_cl_acnv25_dycoms_std_dev is a time series of the acnv rate averaged from the start up to the moment.
+    # calculate acnv rate averaged from series_from to series_to
+    tot_acc_acnv.append(((acc_acnv[series_to_it] * series_to_it) - (acc_acnv[series_from_it] * series_from_it)) / (series_to_it - series_from_it))
+    tot_acc_acnv_std_dev.append(acc_acnv_std_dev[series_to_it] + acc_acnv_std_dev[series_from_it])
+  
+  # get accr rate in cloudy cells averaged over whole simulation
     try:
-      acc_accr = read_my_var(series_infile, "acc_cl_accr25_rico")
+      acc_accr = read_my_var(series_infile, "acc_cl_accr25_dycoms")
     except:
-      print "Could not find acc_accr, setting to 0"
-      acc_accr = np.zeros(len(acc_surf_precip))
-
-  try:
-    acc_accr_std_dev = read_my_var(series_infile, "acc_cl_accr25_dycoms_std_dev")
-  except:
+      try:
+        acc_accr = read_my_var(series_infile, "acc_cl_accr25_rico")
+      except:
+        print "Could not find acc_accr, setting to 0"
+        acc_accr = np.zeros(len(acc_surf_precip))
+  
     try:
-      acc_accr_std_dev = read_my_var(series_infile, "acc_cl_accr25_rico_std_dev")
+      acc_accr_std_dev = read_my_var(series_infile, "acc_cl_accr25_dycoms_std_dev")
     except:
-      print "Could not find acc_accr_std_dev, setting to 0"
-      acc_accr_std_dev = np.zeros(len(acc_accr))
-
-  # acc_cl_accr25_dycoms_std_dev is a time series of the accr rate averaged from the start up to the moment.
-  # calculate accr rate averaged from series_from to series_to
-  tot_acc_accr.append(((acc_accr[series_to_it] * series_to_it) - (acc_accr[series_from_it] * series_from_it)) / (series_to_it - series_from_it))
-  tot_acc_accr_std_dev.append(acc_accr_std_dev[series_to_it] + acc_accr_std_dev[series_from_it])
+      try:
+        acc_accr_std_dev = read_my_var(series_infile, "acc_cl_accr25_rico_std_dev")
+      except:
+        print "Could not find acc_accr_std_dev, setting to 0"
+        acc_accr_std_dev = np.zeros(len(acc_accr))
+  
+    # acc_cl_accr25_dycoms_std_dev is a time series of the accr rate averaged from the start up to the moment.
+    # calculate accr rate averaged from series_from to series_to
+    tot_acc_accr.append(((acc_accr[series_to_it] * series_to_it) - (acc_accr[series_from_it] * series_from_it)) / (series_to_it - series_from_it))
+    tot_acc_accr_std_dev.append(acc_accr_std_dev[series_to_it] + acc_accr_std_dev[series_from_it])
 
   if((it+1) % 4 == 0):
    # tot_acc_surf_precip_std_dev = [3 * x for x in tot_acc_surf_precip_std_dev] # we show errors bars with 3 std dev
@@ -240,9 +288,9 @@ lgd = fig.legend(handles, labels, handlelength=4, loc='lower center', bbox_to_an
 
 
 #figure size
-fig.set_size_inches(5.5, 5.5)# 5.214)#20.75,13.74)
+fig.set_size_inches(5.5, 6.)# 5.214)#20.75,13.74)
 #distances between subplots and from bottom of the plot
-fig.subplots_adjust(bottom=0.1 + (len(labels) - 2) * 0.1, wspace=0.3)#, hspace=0.25)
+fig.subplots_adjust(bottom=0.1 + (len(labels) - 2) * 0.06, wspace=0.3)#, hspace=0.25)
 
 #fig.tight_layout(pad=0.3, w_pad=0, h_pad=0)
 
