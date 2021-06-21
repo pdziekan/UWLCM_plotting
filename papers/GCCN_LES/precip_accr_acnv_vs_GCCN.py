@@ -18,9 +18,9 @@ profs_from_it = int(sys.argv[3])
 profs_to_it = int(sys.argv[4])
 qlimit = float(sys.argv[5])
 
-varlabels = ["{\it Sc30}", "{\it Sc40\_salt\_CCN}", "{\it Sc45}", "{\it Sc105}"]
+#varlabels = ["{\it ScNc30}", "{\it ScNc40\_salt\_CCN}", "{\it ScNc45}", "{\it ScNc105}"]
 #varlabels = ["{\it Cu38}", "{\it Cu60}", "{\it Cu85}"]
-#varlabels = ["{\it Sc38}", "{\it Sc60}", "{\it Sc115}"]
+varlabels = ["{\it Sc38}", "{\it Sc60}", "{\it Sc115}"]
 averaging_period = float(profs_to_it - profs_from_it) / 3600. # period over which series are averaged [h]; NOTE: we assume that series_from(to)_it = profs_from(to)_it / outfreq!
 
 # assumed initial GCCN concentrations
@@ -28,7 +28,7 @@ GCCN_conc = [0,0.216,5*0.216,10*0.216]
 
 # init the plot
 nplotx = 2 #int(nplots/6 + 0.5)
-nploty = 1
+nploty = 2
 fig, axarr = plt.subplots(nploty, nplotx)#), constrained_layout=True )
 
 #prepare a list of output files, assuming the following order: prsitine, standard, polluted, for each 4 results: no GCCN, GCCN ,GCCNx5, GCCNx10
@@ -44,7 +44,7 @@ for no in file_no:
 
 label_counter=0
 
-for it in np.arange(16):
+for it in np.arange(12):
   print(series_file_names[it])
   print(profs_file_names[it])
 
@@ -185,16 +185,20 @@ for it in np.arange(16):
     tot_acc_acnv_std_dev = [24. * 3600. * x for x in tot_acc_acnv_std_dev] # same
     tot_acc_accr = [24. * 3600. * x for x in tot_acc_accr] # turn into g / m^3 / day
     tot_acc_accr_std_dev = [24. * 3600. * x for x in tot_acc_accr_std_dev] # same
-    axarr[0].errorbar(GCCN_conc, tot_acc_surf_precip, yerr = tot_acc_surf_precip_std_dev, marker='o', fmt='.', label = varlabels[(it)/4])
-    axarr[1].errorbar(GCCN_conc, prflux, yerr = prflux_std_dev, marker='o', fmt='.')
+    axarr[0,0].errorbar(GCCN_conc, tot_acc_surf_precip, yerr = tot_acc_surf_precip_std_dev, marker='o', fmt='.', label = varlabels[(it)/4])
+    axarr[0,1].errorbar(GCCN_conc, prflux, yerr = prflux_std_dev, marker='o', fmt='.')
+    axarr[1,0].errorbar(GCCN_conc, tot_acc_acnv, yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
+    axarr[1,1].errorbar(GCCN_conc, tot_acc_accr, yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
 
-axarr[0].set_ylabel('surface precipitation [mm/day]')
-axarr[1].set_ylabel('cloud base precipitation [mm/day]')
+axarr[0,0].set_ylabel('surface precipitation [mm/day]')
+axarr[0,1].set_ylabel('cloud base precipitation [mm/day]')
+axarr[1,0].set_ylabel('autoconversion [g/(m$^3$ day)]')
+axarr[1,1].set_ylabel('accretion [g/(m$^3$ day)]')
 
 #axarr[1,0].set_xlabel('GCCN concentration [cm$^{-3}$]')
 #axarr[1,1].set_xlabel('GCCN concentration [cm$^{-3}$]')
-axarr[0].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
-axarr[1].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
+axarr[1,0].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
+axarr[1,1].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
 
 # legend font size
 #plt.rcParams.update({'font.size': 10})
@@ -211,17 +215,19 @@ axarr[1].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
 #axes = plt.gca()
 #axes.tick_params(direction='in')
 x_arr = np.arange(nplotx)
+y_arr = np.arange(nploty)
 for x in x_arr:
-  #tics inside
-  axarr[x].tick_params(direction='in', which='both', top=1, right=1)
-  #minor tics
-  axarr[x].xaxis.set_minor_locator(AutoMinorLocator())
-  axarr[x].yaxis.set_minor_locator(AutoMinorLocator())
-  #labels and tics font size
-  for item in ([axarr[x].xaxis.label, axarr[x].yaxis.label] + axarr[x].get_xticklabels() + axarr[x].get_yticklabels()):
-    item.set_fontsize(10)
-  # subplot numbering
-  axarr[x].text(0.1, 0.9, labeldict[x], fontsize=10, transform=axarr[x].transAxes)
+  for y in y_arr:
+    #tics inside
+    axarr[x,y].tick_params(direction='in', which='both', top=1, right=1)
+    #minor tics
+    axarr[x,y].xaxis.set_minor_locator(AutoMinorLocator())
+    axarr[x,y].yaxis.set_minor_locator(AutoMinorLocator())
+    #labels and tics font size
+    for item in ([axarr[x,y].xaxis.label, axarr[x,y].yaxis.label] + axarr[x,y].get_xticklabels() + axarr[x,y].get_yticklabels()):
+      item.set_fontsize(10)
+    # subplot numbering
+    axarr[x,y].text(0.1, 0.9, labeldict[x*nploty + y], fontsize=10, transform=axarr[x,y].transAxes)
 
 ## show legends
 #for x in np.arange(nplotx):
@@ -229,14 +235,14 @@ for x in x_arr:
 #    axarr[x].legend(loc="upper center")
 
 #single legend for the whole figure
-handles, labels = axarr[0].get_legend_handles_labels()
+handles, labels = axarr[0,0].get_legend_handles_labels()
 lgd = fig.legend(handles, labels, handlelength=4, loc='lower center', bbox_to_anchor=(0.475,0))
 
 
 #figure size
-fig.set_size_inches(5.5, 3.6)# 5.214)#20.75,13.74)
+fig.set_size_inches(5.5, 5.5)# 5.214)#20.75,13.74)
 #distances between subplots and from bottom of the plot
-fig.subplots_adjust(bottom=0.16 + (len(labels) - 2) * 0.1, wspace=0.3)#, hspace=0.25)
+fig.subplots_adjust(bottom=0.1 + (len(labels) - 2) * 0.1, wspace=0.3)#, hspace=0.25)
 
 #fig.tight_layout(pad=0.3, w_pad=0, h_pad=0)
 
