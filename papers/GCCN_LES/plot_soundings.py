@@ -20,7 +20,8 @@ thl[z<zi] = 288.3
 thl[z>=zi] = 295 + (z[z>=zi] - zi)**(1./3.)
 
 qt[z<zi] = 9.45
-qt[z>=zi] = 5 - 3 * (1 - np.exp((z[z>=zi] - zi) / 500.))
+print(np.exp(-(z[z>=zi] - zi) / 500.))
+qt[z>=zi] = 5 - 3 * (1. - np.exp(-(z[z>=zi] - zi) / 500.))
 
 axarr[0].plot(thl,z)
 axarr[1].plot(qt,z)

@@ -197,8 +197,8 @@ axarr[1,1].set_ylabel('accretion [g/(m$^3$ day)]')
 
 #axarr[1,0].set_xlabel('GCCN concentration [cm$^{-3}$]')
 #axarr[1,1].set_xlabel('GCCN concentration [cm$^{-3}$]')
-axarr[1,0].set_xlabel('$N_\mathrm{GCCN}$ [cm$^{-3}$]')
-axarr[1,1].set_xlabel('$N_\mathrm{GCCN}$ [cm$^{-3}$]')
+axarr[1,0].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
+axarr[1,1].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
 
 # legend font size
 #plt.rcParams.update({'font.size': 10})
