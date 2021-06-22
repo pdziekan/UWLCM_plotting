@@ -26,7 +26,7 @@ print 'axarr type: ', type(axarr)
 print 'axarr shape: ', axarr.shape
 plot_iter=0
 
-assert len(sys.argv) == 16
+assert len(sys.argv) == 14
 
 
 xlimdict_series = {
@@ -42,8 +42,8 @@ ylimdict_series = {
 }
 
 
-n_plots = [2,3,2] # 2 lines on sc and cu no mix, 3 lines on cu
-n_plots_bfr = [0,2,5] # lazy partial sum :p
+n_plots = [2,2,2] # 2 lines on sc and cu no mix, 3 lines on cu
+n_plots_bfr = [0,2,4] # lazy partial sum :p
 
 for cusc_iter in [0,1,2]: # stratocumulus, cumulus, cumulus no mix,
   file_names = []
