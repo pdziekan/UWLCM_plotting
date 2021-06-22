@@ -17,10 +17,18 @@ series_to_it = int(sys.argv[2])
 profs_from_it = int(sys.argv[3])
 profs_to_it = int(sys.argv[4])
 qlimit = float(sys.argv[5])
+relative = bool(sys.argv[6])
 
 #varlabels = ["{\it ScNc30}", "{\it ScNc40\_salt\_CCN}", "{\it ScNc45}", "{\it ScNc105}"]
-varlabels = ["{\it Cu38}", "{\it Cu60}", "{\it Cu85}"]
-#varlabels = ["{\it Sc38}", "{\it Sc60}", "{\it Sc115}"]
+
+#varlabels = ["{\it Cu38}", "{\it Cu60}", "{\it Cu85}"]
+#CCN_conc = [52.5, 105, 210]
+#nc = [38, 60, 85]
+
+varlabels = ["{\it Sc38}", "{\it Sc60}", "{\it Sc115}"]
+CCN_conc = [95, 190, 475]
+nc = [38, 60, 115]
+
 averaging_period = float(profs_to_it - profs_from_it) / 3600. # period over which series are averaged [h]; NOTE: we assume that series_from(to)_it = profs_from(to)_it / outfreq!
 
 # assumed initial GCCN concentrations
@@ -34,7 +42,7 @@ fig, axarr = plt.subplots(nploty, nplotx)#), constrained_layout=True )
 #prepare a list of output files, assuming the following order: prsitine, standard, polluted, for each 4 results: no GCCN, GCCN ,GCCNx5, GCCNx10
 series_file_names = []
 profs_file_names = []
-file_no = np.arange(6, len(sys.argv)-1 , 1)
+file_no = np.arange(7, len(sys.argv)-1 , 1)
 print file_no
 for no in file_no:
   series_file_names.append(sys.argv[no] + "series.dat")
@@ -185,20 +193,37 @@ for it in np.arange(12):
     tot_acc_acnv_std_dev = [24. * 3600. * x for x in tot_acc_acnv_std_dev] # same
     tot_acc_accr = [24. * 3600. * x for x in tot_acc_accr] # turn into g / m^3 / day
     tot_acc_accr_std_dev = [24. * 3600. * x for x in tot_acc_accr_std_dev] # same
-    axarr[0,0].errorbar(GCCN_conc, tot_acc_surf_precip, yerr = tot_acc_surf_precip_std_dev, marker='o', fmt='.', label = varlabels[(it)/4])
-    axarr[0,1].errorbar(GCCN_conc, prflux, yerr = prflux_std_dev, marker='o', fmt='.')
-    axarr[1,0].errorbar(GCCN_conc, tot_acc_acnv, yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
-    axarr[1,1].errorbar(GCCN_conc, tot_acc_accr, yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
+    if(relative):
+      GCCN_CCN_rat = [GCCN_con / CCN_conc[int(np.floor(it/4))] for GCCN_con in GCCN_conc]
+      #GCCN_CCN_rat = [GCCN_con / nc[int(np.floor(it/4))] for GCCN_con in GCCN_conc]
+      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip - tot_acc_surf_precip[0], yerr = tot_acc_surf_precip_std_dev + tot_acc_surf_precip_std_dev[0], marker='o', fmt='.', label = varlabels[(it)/4])
+      axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0], yerr = prflux_std_dev + prflux_std_dev[0], marker='o', fmt='.')
+      axarr[1,0].errorbar(GCCN_CCN_rat, tot_acc_acnv - tot_acc_acnv[0], yerr = tot_acc_acnv_std_dev + tot_acc_acnv_std_dev[0], marker='o', fmt='.')
+      axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0], yerr = tot_acc_acnv_std_dev + tot_acc_acnv_std_dev[0], marker='o', fmt='.')
+    else:
+      axarr[0,0].errorbar(GCCN_conc, tot_acc_surf_precip, yerr = tot_acc_surf_precip_std_dev, marker='o', fmt='.', label = varlabels[(it)/4])
+      axarr[0,1].errorbar(GCCN_conc, prflux, yerr = prflux_std_dev, marker='o', fmt='.')
+      axarr[1,0].errorbar(GCCN_conc, tot_acc_acnv, yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
+      axarr[1,1].errorbar(GCCN_conc, tot_acc_accr, yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
 
-axarr[0,0].set_ylabel('surface precipitation [mm/day]')
-axarr[0,1].set_ylabel('cloud base precipitation [mm/day]')
-axarr[1,0].set_ylabel('autoconversion [g/(m$^3$ day)]')
-axarr[1,1].set_ylabel('accretion [g/(m$^3$ day)]')
-
-#axarr[1,0].set_xlabel('GCCN concentration [cm$^{-3}$]')
-#axarr[1,1].set_xlabel('GCCN concentration [cm$^{-3}$]')
-axarr[1,0].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
-axarr[1,1].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
+if(relative):
+  axarr[0,0].set_ylabel('exc. surf. precip. [mm/day]')
+  axarr[0,1].set_ylabel('exc. cl. base precip. [mm/day]')
+  axarr[1,0].set_ylabel('exc. autoconv. [g/(m$^3$ day)]')
+  axarr[1,1].set_ylabel('exc. accr. [g/(m$^3$ day)]')
+  #axarr[1,0].set_xlabel('GCCN concentration [cm$^{-3}$]')
+  #axarr[1,1].set_xlabel('GCCN concentration [cm$^{-3}$]')
+  axarr[1,0].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN} / N_\mathrm{CCN}$')
+  axarr[1,1].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN} / N_\mathrm{CCN}$')
+else:
+  axarr[0,0].set_ylabel('surface precipitation [mm/day]')
+  axarr[0,1].set_ylabel('cloud base precipitation [mm/day]')
+  axarr[1,0].set_ylabel('autoconversion [g/(m$^3$ day)]')
+  axarr[1,1].set_ylabel('accretion [g/(m$^3$ day)]')
+  #axarr[1,0].set_xlabel('GCCN concentration [cm$^{-3}$]')
+  #axarr[1,1].set_xlabel('GCCN concentration [cm$^{-3}$]')
+  axarr[1,0].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
+  axarr[1,1].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
 
 # legend font size
 #plt.rcParams.update({'font.size': 10})
