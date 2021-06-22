@@ -2,6 +2,7 @@ from matplotlib import rc
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import AutoMinorLocator, MultipleLocator
+from scipy.optimize import curve_fit
 
 import os
 import sys
@@ -52,6 +53,13 @@ for no in file_no:
 #assert(len(series_file_names) == 16)
 
 label_counter=0
+
+# stuff for urve fitting
+x00 = []
+y00 = []
+y01 = []
+y10 = []
+y11 = []
 
 for it in np.arange(16):
 #  print(series_file_names[it])
@@ -245,24 +253,76 @@ for it in np.arange(16):
     if(relative):
       GCCN_CCN_rat = [GCCN_con / CCN_conc[int(np.floor(it/4))] for GCCN_con in GCCN_conc]
       #GCCN_CCN_rat = [GCCN_con / nc[int(np.floor(it/4))] for GCCN_con in GCCN_conc]
-      axarr[0,0].errorbar(GCCN_CCN_rat,\
-      tot_acc_surf_precip - tot_acc_surf_precip[0],\
-      yerr = tot_acc_surf_precip_std_dev ,\
-      marker='o', fmt='.', label = varlabels[(it)/4])
+      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip - tot_acc_surf_precip[0], yerr = tot_acc_surf_precip_std_dev , marker='o', fmt='.', label = varlabels[(it)/4])
       axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0], yerr = prflux_std_dev, marker='o', fmt='.')
       axarr[1,0].errorbar(GCCN_CCN_rat, tot_acc_acnv - tot_acc_acnv[0], yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
       axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0], yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
+      #save the data for curve fitting
+      if(it<12):
+        x00.extend(GCCN_CCN_rat)
+        y00.extend(tot_acc_surf_precip - tot_acc_surf_precip[0])
+        y01.extend(prflux - prflux[0])
+        y10.extend(tot_acc_acnv - tot_acc_acnv[0])
+        y11.extend(tot_acc_accr - tot_acc_accr[0])
     else:
       axarr[0,0].errorbar(GCCN_conc, tot_acc_surf_precip, yerr = tot_acc_surf_precip_std_dev, marker='o', fmt='.', label = varlabels[(it)/4])
       axarr[0,1].errorbar(GCCN_conc, prflux, yerr = prflux_std_dev, marker='o', fmt='.')
       axarr[1,0].errorbar(GCCN_conc, tot_acc_acnv, yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
       axarr[1,1].errorbar(GCCN_conc, tot_acc_accr, yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
 
+
+
+#curve fitting
 if(relative):
-  axarr[0,0].set_ylabel('exc. surf. precip. [mm/day]')
-  axarr[0,1].set_ylabel('exc. cl. base precip. [mm/day]')
-  axarr[1,0].set_ylabel('exc. autoconv. [g/(m$^3$ day)]')
-  axarr[1,1].set_ylabel('exc. accr. [g/(m$^3$ day)]')
+
+#  z = np.polyfit(x00, y00, 1)
+#  p = np.poly1d(z)
+  #axarr[0,0].plot(lx, p(lx))
+
+  def test2(x, a, b):
+    return a*(x)**(b)
+
+  param, param_cov = curve_fit(test2, x00, y00) #TODO: sigma
+  print("y00 fit coefficients:")
+  print(param)
+  print("y00 fit covariance of coefficients:")
+  print(param_cov)
+  #plot the fit
+  lx = np.linspace(0,0.025,100)
+  axarr[0,0].plot(lx, test2(lx, param[0], param[1]))
+
+  param, param_cov = curve_fit(test2, x00, y01, sigma=[(0.03-x0)**(0.5) for x0 in x00]) #TODO: sigma
+  print("y01 fit coefficients:")
+  print(param)
+  print("y01 fit covariance of coefficients:")
+  print(param_cov)
+  #plot the fit
+  lx = np.linspace(0,0.025,100)
+  axarr[0,1].plot(lx, test2(lx, param[0], param[1]))
+
+  param, param_cov = curve_fit(test2, x00, y10) #TODO: sigma
+  print("y10 fit coefficients:")
+  print(param)
+  print("y10 fit covariance of coefficients:")
+  print(param_cov)
+  #plot the fit
+  lx = np.linspace(0,0.025,100)
+  axarr[1,0].plot(lx, test2(lx, param[0], param[1]))
+
+  param, param_cov = curve_fit(test2, x00, y11) #TODO: sigma
+  print("y11 fit coefficients:")
+  print(param)
+  print("y11 fit covariance of coefficients:")
+  print(param_cov)
+  #plot the fit
+  lx = np.linspace(0,0.025,100)
+  axarr[1,1].plot(lx, test2(lx, param[0], param[1]))
+
+if(relative):
+  axarr[0,0].set_ylabel('add. surf. precip. [mm/day]')
+  axarr[0,1].set_ylabel('add. cl. base precip. [mm/day]')
+  axarr[1,0].set_ylabel('add. autoconv. [g/(m$^3$ day)]')
+  axarr[1,1].set_ylabel('add. accr. [g/(m$^3$ day)]')
   #axarr[1,0].set_xlabel('GCCN concentration [cm$^{-3}$]')
   #axarr[1,1].set_xlabel('GCCN concentration [cm$^{-3}$]')
   axarr[1,0].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN} / N_\mathrm{CCN}$')
