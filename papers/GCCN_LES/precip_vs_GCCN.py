@@ -17,7 +17,8 @@ series_to_it = int(sys.argv[2])
 profs_from_it = int(sys.argv[3])
 profs_to_it = int(sys.argv[4])
 qlimit = float(sys.argv[5])
-relative = bool(sys.argv[6])
+relative = int(sys.argv[6]) # true/false
+print('relative = ', relative)
 
 #varlabels = ["{\it ScNc30}", "{\it ScNc40\_salt\_CCN}", "{\it ScNc45}", "{\it ScNc105}"]
 
@@ -231,6 +232,7 @@ for it in np.arange(16):
    # tot_acc_surf_precip_std_dev = [3 * x for x in tot_acc_surf_precip_std_dev] # we show errors bars with 3 std dev
     tot_acc_surf_precip = [(24. / averaging_period) * x for x in tot_acc_surf_precip] # turn into mm / day
     tot_acc_surf_precip_std_dev = [(24. / averaging_period) * x for x in tot_acc_surf_precip_std_dev] # turn into mm / day
+    print('std dev tot acc sruf: ', tot_acc_surf_precip_std_dev)
     print tot_acc_surf_precip
     print "prflux at cloud base altitude: ",prflux
     #print "prflux at cloud base altitude divided by cloud fraction: ",prfluxDivByClFrac
@@ -243,10 +245,13 @@ for it in np.arange(16):
     if(relative):
       GCCN_CCN_rat = [GCCN_con / CCN_conc[int(np.floor(it/4))] for GCCN_con in GCCN_conc]
       #GCCN_CCN_rat = [GCCN_con / nc[int(np.floor(it/4))] for GCCN_con in GCCN_conc]
-      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip - tot_acc_surf_precip[0], yerr = tot_acc_surf_precip_std_dev + tot_acc_surf_precip_std_dev[0], marker='o', fmt='.', label = varlabels[(it)/4])
-      axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0], yerr = prflux_std_dev + prflux_std_dev[0], marker='o', fmt='.')
-      axarr[1,0].errorbar(GCCN_CCN_rat, tot_acc_acnv - tot_acc_acnv[0], yerr = tot_acc_acnv_std_dev + tot_acc_acnv_std_dev[0], marker='o', fmt='.')
-      axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0], yerr = tot_acc_acnv_std_dev + tot_acc_acnv_std_dev[0], marker='o', fmt='.')
+      axarr[0,0].errorbar(GCCN_CCN_rat,\
+      tot_acc_surf_precip - tot_acc_surf_precip[0],\
+      yerr = tot_acc_surf_precip_std_dev ,\
+      marker='o', fmt='.', label = varlabels[(it)/4])
+      axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0], yerr = prflux_std_dev, marker='o', fmt='.')
+      axarr[1,0].errorbar(GCCN_CCN_rat, tot_acc_acnv - tot_acc_acnv[0], yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
+      axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0], yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
     else:
       axarr[0,0].errorbar(GCCN_conc, tot_acc_surf_precip, yerr = tot_acc_surf_precip_std_dev, marker='o', fmt='.', label = varlabels[(it)/4])
       axarr[0,1].errorbar(GCCN_conc, prflux, yerr = prflux_std_dev, marker='o', fmt='.')
