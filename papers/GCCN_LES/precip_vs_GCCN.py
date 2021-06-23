@@ -21,7 +21,7 @@ relative = int(sys.argv[6])
 
 #varlabels = ["{\it ScNc30}", "{\it ScNc40\_salt\_CCN}", "{\it ScNc45}", "{\it ScNc105}"]
 
-varlabels = ["{\it Cu38}", "{\it Cu60}", "{\it Cu85}"]
+varlabels = ["{\it Cu38}", "{\it Cu60}", "{\it Cu88}"]
 CCN_conc = [52.5, 105, 210]
 nc = [38, 60, 85]
 

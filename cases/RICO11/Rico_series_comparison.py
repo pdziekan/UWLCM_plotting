@@ -9,6 +9,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../Matplotlib_
 from plot_ranges import xscaledict, yscaledict, xlimdict_series, ylimdict_series
 from plot_series import *
 from latex_labels import labeldict
+from autoscale_y import *
+
 
 # activate latex text rendering
 rc('text', usetex=True)
@@ -17,7 +19,7 @@ rico_vars = ["lwp", "rwp", "cloud_cover_rico", "min_cloud_base_rico", "inversion
 #rico_vars = ["clb_bigrain_mean_rd","clb_bigrain_mean_kappa","clb_bigrain_mean_conc","clb_bigrain_mean_inclt", "cl_nr"]
 
 # variables that need rescaling of the yrange to the limited x range of 1-6h
-#rescale_vars = ["lwp", "er", "wvarmax", "cl_nc", "cloud_base_dycoms", "cloud_cover_dycoms"]
+rescale_vars = ["lwp", "cloud_cover_rico", "min_cloud_base_rico", "inversion_height_rico", "cl_nc"]# rico_vars
 
 # init the plot
 nplotx = 3
@@ -38,13 +40,6 @@ emptyplots = np.arange(nploty - nemptyplots, nploty)
 for empty in emptyplots:
   axarr[nplotx-1, empty].axis('off')
 
-# hide hrzntl tic labels
-x_empty_label = np.arange(0, nplotx-1)
-y_empty_label = np.arange(nploty)
-for x in x_empty_label:
-  for y in y_empty_label:
-    axarr[x,y].set_xticklabels([])
-
 #axes = plt.gca()
 #axes.tick_params(direction='in')
 x_arr = np.arange(nplotx)
@@ -62,6 +57,16 @@ for x in x_arr:
     # subplot numbering
     if y < nploty - nemptyplots or x < (nplotx - 1):
       axarr[x,y].text(0.5, 0.85, labeldict[y + x*nploty], fontsize=8, transform=axarr[x,y].transAxes)
+
+      # rescale y range to the visible x range, note: overrides ylim!
+      var = rico_vars[x*nploty + y]
+      if var in rescale_vars:
+        autoscale_y(axarr[x,y], margin=0.1)
+
+      # hide hrzntl tic labels
+      if x*nploty + y < nplotx * nploty - nemptyplots - nploty:
+        axarr[x,y].set_xticklabels([])
+
 
 #single legend for the whole figure
 handles, labels = axarr[0,0].get_legend_handles_labels()
