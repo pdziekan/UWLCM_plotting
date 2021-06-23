@@ -28,9 +28,9 @@ nc = [38, 60, 85]
 #ensemble size
 ensemble = [5,6,4]
 
-#varlabels = ["{\it Sc38}", "{\it Sc60}", "{\it Sc115}"]
+#varlabels = ["{\it Sc38}", "{\it Sc59}", "{\it Sc115}"]
 #CCN_conc = [95, 190, 475]
-#nc = [38, 60, 115]
+#nc = [38, 59, 115]
 
 averaging_period = float(profs_to_it - profs_from_it) / 3600. # period over which series are averaged [h]; NOTE: we assume that series_from(to)_it = profs_from(to)_it / outfreq!
 
