@@ -27,7 +27,7 @@ print('relative = ', relative)
 #CCN_conc = [52.5, 105, 210]
 #nc = [38, 60, 85]
 
-varlabels = ["{\it Sc38}","{\it Sc55\_salt\_CCN}", "{\it Sc60}", "{\it Sc115}"]
+varlabels = ["{\it Sc38}","{\it Sc54\_salt\_CCN}", "{\it Sc59}", "{\it Sc115}"]
 CCN_conc = [95, 210, 190, 475]
 nc = [38, 55, 60, 115]
 
