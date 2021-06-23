@@ -10,12 +10,16 @@ from Dycoms_reference_plots import plot_reference_series
 from plot_ranges import xscaledict, yscaledict, xlimdict_series, ylimdict_series
 from plot_series import *
 from latex_labels import labeldict
+from autoscale_y import *
 
 # activate latex text rendering
 rc('text', usetex=True)
 
 dycoms_vars = ["lwp", "er", "wvarmax", "surf_precip", "cl_nc", "cl_nr", "cloud_base_dycoms", "cloud_cover_dycoms", "cl_acnv25_dycoms", "cl_accr25_dycoms"]# "cloud_base"]#, "cfrac"]
 #dycoms_vars = ["clb_bigrain_mean_rd","clb_bigrain_mean_kappa","clb_bigrain_mean_conc","clb_bigrain_mean_inclt", "cl_nr"]
+
+# variables that need rescaling of the yrange to the limited x range of 1-6h
+rescale_vars = ["lwp", "er", "wvarmax", "cl_nc", "cloud_base_dycoms", "cloud_cover_dycoms"]
 
 # init the plot
 nplotx = 3
@@ -42,13 +46,6 @@ emptyplots = np.arange(nploty - nemptyplots, nploty)
 for empty in emptyplots:
   axarr[nplotx-1, empty].axis('off')
 
-# hide hrzntl tic labels
-x_empty_label = np.arange(0, nplotx-1)
-y_empty_label = np.arange(nploty)
-for x in x_empty_label:
-  for y in y_empty_label:
-    axarr[x,y].set_xticklabels([])
-
 #axes = plt.gca()
 #axes.tick_params(direction='in')
 x_arr = np.arange(nplotx)
@@ -64,8 +61,17 @@ for x in x_arr:
     for item in ([axarr[x,y].xaxis.label, axarr[x,y].yaxis.label] + axarr[x,y].get_xticklabels() + axarr[x,y].get_yticklabels()):
       item.set_fontsize(8)
     # subplot numbering
-    if y < nploty - nemptyplots or x < (nplotx - 1):
+    if y < nploty - nemptyplots or x < (nplotx - 1): #nonempty plots
       axarr[x,y].text(0.2, 0.9, labeldict[y + x*nploty], fontsize=8, transform=axarr[x,y].transAxes)
+
+      # rescale y range to the visible x range, note: overrides ylim!
+      var = dycoms_vars[x*nploty + y]
+      if var in rescale_vars:
+        autoscale_y(axarr[x,y], margin=0.3)
+      
+      # hide hrzntl tic labels
+      if x*nploty + y < nplotx * nploty - nemptyplots - nploty:
+        axarr[x,y].set_xticklabels([])
 
 #single legend for the whole figure
 handles, labels = axarr[0,0].get_legend_handles_labels()

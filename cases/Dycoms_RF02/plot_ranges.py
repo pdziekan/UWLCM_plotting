@@ -120,23 +120,23 @@ xlimdict_series = {
 
 ylimdict_series = {
   "clfrac" : None,
-  "cl_nc" : (25,70),
-  "cl_nr" : (-0.01,0.25),
-  "lwp" : (70, 155),
-  "er" : (0.5,1.15),
-  "wvarmax" : (0.1,0.5),
-  "surf_precip" : (-0.05,0.8),#(-0.01,0.5),
+  "cl_nc" : None,#(25,70),
+  "cl_nr" : None,#(-0.01,0.25),
+  "lwp" : None,#(70, 155),
+  "er" : None,#(0.5,1.15),
+  "wvarmax" : None,#(0.1,0.5),
+  "surf_precip" : None,#(-0.05,0.8),#(-0.01,0.5),
   "acc_precip" : None,#(0,0.07),
-  "cloud_base_dycoms" : (400,550),
+  "cloud_base_dycoms" : None,#(400,550),
   "cl_gccn_conc" : None,#(1e-10,1e-0)
   "clb_bigrain_mean_rd" : None,
   "clb_bigrain_mean_kappa" :  None,
   "clb_bigrain_mean_conc" :  None,
   "clb_bigrain_mean_inclt" :  None,
   "clb_bigrain_mean_gccn_fraction" :  None,
-  "cloud_cover_dycoms" :  (0.5,1.1),
-  "cl_acnv25_dycoms" : (-0.02,0.8),
-  "cl_accr25_dycoms" : (-0.2,12),
+  "cloud_cover_dycoms" :  None,#(0.5,1.1),
+  "cl_acnv25_dycoms" : None,#(-0.02,0.8),
+  "cl_accr25_dycoms" : None,#(-0.2,12),
 }
 
 
