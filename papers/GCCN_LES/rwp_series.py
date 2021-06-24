@@ -16,7 +16,7 @@ from plot_series import *
 # activate latex text rendering
 rc('text', usetex=True)
 
-series = ["cl_nr"]
+series = ["rwp"]
 nplotx = 1
 nploty = 3
 
