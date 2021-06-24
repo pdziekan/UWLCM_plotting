@@ -30,15 +30,21 @@ assert len(sys.argv) == 14
 
 
 xlimdict_series = {
-  0 : {"cl_nr" : (1,5)},
-  1 : {"cl_nr" : (0,10)},
-  2 : {"cl_nr" : (0,10)},
+  0 : {"rwp" : (0,10)},
+  1 : {"rwp" : (0,10)},
+  2 : {"rwp" : (0,10)},
 }
 
+#ylimdict_series = {
+#  "rwp" : (-0.005, 0.15),
+#  "rwp" : (-0.005, 0.15),
+#  "rwp" : (-0.005, 0.15),
+#}
+
 ylimdict_series = {
-  "cl_nr" : (-0.005, 0.15),
-  "cl_nr" : (-0.005, 0.15),
-  "cl_nr" : (-0.005, 0.15),
+  "rwp" : None,
+  "rwp" : None,
+  "rwp" : None,
 }
 
 
@@ -63,7 +69,7 @@ plt.rcParams.update({'font.size': 10})
 
 #axes = plt.gca()
 #axes.tick_params(direction='in')
-labeldict=["{\it Sc60}", "{\it Cu60}", "{\it Cu65TAdve0}"]
+labeldict=["{\it Cu38}", "{\it Cu60}", "{\it Cu65TAdve0}"]
 y_arr = np.arange(nploty)
 for y in y_arr:
   #tics inside
