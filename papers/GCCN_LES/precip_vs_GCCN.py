@@ -31,7 +31,7 @@ nplotx = 2 #int(nplots/6 + 0.5)
 nploty = 1
 fig, axarr = plt.subplots(nploty, nplotx)#), constrained_layout=True )
 
-ensemble = 4 # size of the ensemble of simulations
+ensemble = 2. # size of the ensemble of simulations
 
 #prepare a list of output files, assuming the following order: prsitine, standard, polluted, for each 4 results: no GCCN, GCCN ,GCCNx5, GCCNx10
 series_file_names = []
