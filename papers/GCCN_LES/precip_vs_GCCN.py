@@ -31,6 +31,8 @@ nplotx = 2 #int(nplots/6 + 0.5)
 nploty = 1
 fig, axarr = plt.subplots(nploty, nplotx)#), constrained_layout=True )
 
+ensemble = 4 # size of the ensemble of simulations
+
 #prepare a list of output files, assuming the following order: prsitine, standard, polluted, for each 4 results: no GCCN, GCCN ,GCCNx5, GCCNx10
 series_file_names = []
 profs_file_names = []
@@ -185,8 +187,8 @@ for it in np.arange(12):
     tot_acc_acnv_std_dev = [24. * 3600. * x for x in tot_acc_acnv_std_dev] # same
     tot_acc_accr = [24. * 3600. * x for x in tot_acc_accr] # turn into g / m^3 / day
     tot_acc_accr_std_dev = [24. * 3600. * x for x in tot_acc_accr_std_dev] # same
-    axarr[0].errorbar(GCCN_conc, tot_acc_surf_precip, yerr = tot_acc_surf_precip_std_dev, marker='o', fmt='.', label = varlabels[(it)/4])
-    axarr[1].errorbar(GCCN_conc, prflux, yerr = prflux_std_dev, marker='o', fmt='.')
+    axarr[0].errorbar(GCCN_conc, tot_acc_surf_precip, yerr = tot_acc_surf_precip_std_dev / np.sqrt(ensemble), marker='o', fmt='.', label = varlabels[(it)/4])
+    axarr[1].errorbar(GCCN_conc, prflux, yerr = prflux_std_dev / np.sqrt(ensemble), marker='o', fmt='.')
 
 axarr[0].set_ylabel('surface precipitation [mm/day]')
 axarr[1].set_ylabel('cloud base precipitation [mm/day]')
