@@ -31,7 +31,7 @@ varlabels = ["{\it Sc38}","{\it Sc54\_salt\_CCN}", "{\it Sc59}", "{\it Sc115}"]
 CCN_conc = [95, 210, 190, 475]
 nc = [38, 55, 60, 115]
 #ensemble size
-ensemble = [2,2,2]
+ensemble = [2,2,2,2]
 
 averaging_period = float(profs_to_it - profs_from_it) / 3600. # period over which series are averaged [h]; NOTE: we assume that series_from(to)_it = profs_from(to)_it / outfreq!
 
@@ -259,10 +259,10 @@ for it in np.arange(16):
      # axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0], yerr = prflux_std_dev, marker='o', fmt='.')
      # axarr[1,0].errorbar(GCCN_CCN_rat, tot_acc_acnv - tot_acc_acnv[0], yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
      # axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0], yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
-      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip - tot_acc_surf_precip[0], yerr = (tot_acc_surf_precip_std_dev + tot_acc_surf_precip_std_dev[0]) / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
-      axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0]                          , yerr = (prflux_std_dev + prflux_std_dev[0])                           / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
-      axarr[1,0].errorbar(GCCN_CCN_rat, tot_acc_acnv - tot_acc_acnv[0]              , yerr = (tot_acc_acnv_std_dev + tot_acc_acnv_std_dev[0])               / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
-      axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0]              , yerr = (tot_acc_acnv_std_dev + tot_acc_acnv_std_dev[0])               / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
+      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip - tot_acc_surf_precip[0], yerr = tot_acc_surf_precip_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
+      axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0]                          , yerr = prflux_std_dev              / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
+      axarr[1,0].errorbar(GCCN_CCN_rat, tot_acc_acnv - tot_acc_acnv[0]              , yerr = tot_acc_acnv_std_dev        / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
+      axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0]              , yerr = tot_acc_acnv_std_dev        / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
       #save the data for curve fitting
       if(it<12):
         x00.extend(GCCN_CCN_rat)
