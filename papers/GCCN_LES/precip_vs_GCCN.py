@@ -187,15 +187,17 @@ for it in np.arange(12):
    # tot_acc_surf_precip_std_dev = [3 * x for x in tot_acc_surf_precip_std_dev] # we show errors bars with 3 std dev
     tot_acc_surf_precip = [(24. / averaging_period) * x for x in tot_acc_surf_precip] # turn into mm / day
     tot_acc_surf_precip_std_dev = [(24. / averaging_period) * x for x in tot_acc_surf_precip_std_dev] # turn into mm / day
-    print tot_acc_surf_precip
-    print "prflux at cloud base altitude: ",prflux
-    #print "prflux at cloud base altitude divided by cloud fraction: ",prfluxDivByClFrac
-    print "prflux at cloud base from the prflux vs cloud height profile: ",prfluxFromPrfluxVsClhght
-    #axarr[0].plot(GCCN_conc, mean_surf_precip, 'o')
     tot_acc_acnv = [24. * 3600. * x for x in tot_acc_acnv] # turn into g / m^3 / day
     tot_acc_acnv_std_dev = [24. * 3600. * x for x in tot_acc_acnv_std_dev] # same
     tot_acc_accr = [24. * 3600. * x for x in tot_acc_accr] # turn into g / m^3 / day
     tot_acc_accr_std_dev = [24. * 3600. * x for x in tot_acc_accr_std_dev] # same
+    print "surf precip", tot_acc_surf_precip
+    print "prflux at cloud base altitude: ",prflux
+    #print "prflux at cloud base altitude divided by cloud fraction: ",prfluxDivByClFrac
+    print "prflux at cloud base from the prflux vs cloud height profile: ",prfluxFromPrfluxVsClhght
+    print "acnv", tot_acc_acnv
+    print "accr", tot_acc_accr
+    #axarr[0].plot(GCCN_conc, mean_surf_precip, 'o')
     if(relative):
       GCCN_CCN_rat = [GCCN_con / CCN_conc[int(np.floor(it/4))] for GCCN_con in GCCN_conc]
       #GCCN_CCN_rat = [GCCN_con / nc[int(np.floor(it/4))] for GCCN_con in GCCN_conc]
