@@ -25,6 +25,9 @@ varlabels = ["{\it Cu38}", "{\it Cu60}", "{\it Cu88}"]
 CCN_conc = [52.5, 105, 210]
 nc = [38, 60, 85]
 
+#ensemble size
+ensemble = [5,6,4]
+
 #varlabels = ["{\it Sc38}", "{\it Sc60}", "{\it Sc115}"]
 #CCN_conc = [95, 190, 475]
 #nc = [38, 60, 115]
@@ -196,15 +199,15 @@ for it in np.arange(12):
     if(relative):
       GCCN_CCN_rat = [GCCN_con / CCN_conc[int(np.floor(it/4))] for GCCN_con in GCCN_conc]
       #GCCN_CCN_rat = [GCCN_con / nc[int(np.floor(it/4))] for GCCN_con in GCCN_conc]
-      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip - tot_acc_surf_precip[0], yerr = tot_acc_surf_precip_std_dev + tot_acc_surf_precip_std_dev[0], marker='o', fmt='.', label = varlabels[(it)/4])
-      axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0], yerr = prflux_std_dev + prflux_std_dev[0], marker='o', fmt='.')
-      axarr[1,0].errorbar(GCCN_CCN_rat, tot_acc_acnv - tot_acc_acnv[0], yerr = tot_acc_acnv_std_dev + tot_acc_acnv_std_dev[0], marker='o', fmt='.')
-      axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0], yerr = tot_acc_acnv_std_dev + tot_acc_acnv_std_dev[0], marker='o', fmt='.')
+      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip - tot_acc_surf_precip[0], yerr = (tot_acc_surf_precip_std_dev + tot_acc_surf_precip_std_dev[0]) / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
+      axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0]                          , yerr = (prflux_std_dev + prflux_std_dev[0])                           / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
+      axarr[1,0].errorbar(GCCN_CCN_rat, tot_acc_acnv - tot_acc_acnv[0]              , yerr = (tot_acc_acnv_std_dev + tot_acc_acnv_std_dev[0])               / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
+      axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0]              , yerr = (tot_acc_acnv_std_dev + tot_acc_acnv_std_dev[0])               / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
     else:
-      axarr[0,0].errorbar(GCCN_conc, tot_acc_surf_precip, yerr = tot_acc_surf_precip_std_dev, marker='o', fmt='.', label = varlabels[(it)/4])
-      axarr[0,1].errorbar(GCCN_conc, prflux, yerr = prflux_std_dev, marker='o', fmt='.')
-      axarr[1,0].errorbar(GCCN_conc, tot_acc_acnv, yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
-      axarr[1,1].errorbar(GCCN_conc, tot_acc_accr, yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
+      axarr[0,0].errorbar(GCCN_conc, tot_acc_surf_precip, yerr = tot_acc_surf_precip_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
+      axarr[0,1].errorbar(GCCN_conc, prflux,              yerr = prflux_std_dev              / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
+      axarr[1,0].errorbar(GCCN_conc, tot_acc_acnv,        yerr = tot_acc_acnv_std_dev        / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
+      axarr[1,1].errorbar(GCCN_conc, tot_acc_accr,        yerr = tot_acc_acnv_std_dev        / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
 
 if(relative):
   axarr[0,0].set_ylabel('exc. surf. precip. [mm/day]')
