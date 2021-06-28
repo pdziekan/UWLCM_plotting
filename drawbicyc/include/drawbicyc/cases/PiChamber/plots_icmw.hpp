@@ -1,21 +1,21 @@
 #pragma once
 
 const std::vector<std::string> series_PiChamberICMW({
-"T_nowall",
-"Qv_nowall",
-"RH_nowall",
-"LWC_nowall",
-"LWC_gm-3_nowall",
-"N_drop_nowall",
-"N_aerosol_nowall",
+"T",
+"Qv",
+"RH",
+"LWC",
+"LWC_gm-3",
+"N_drop",
+"N_aerosol",
 "N_removal",
-"disp_r_nowall",
-"r_mean1_nowall",
-"r_mean2_nowall",
-"Sigma2_S_nowall",
-"Sigma2_T_nowall",
-"Sigma2_Qv_nowall",
-"epsilon_nowall"
+"disp_r",
+"r_mean1",
+"r_mean2",
+"Sigma2_S",
+"Sigma2_T",
+"Sigma2_Qv",
+"epsilon"
 });
 
 std::vector<std::string> profs_PiChamberICMW({

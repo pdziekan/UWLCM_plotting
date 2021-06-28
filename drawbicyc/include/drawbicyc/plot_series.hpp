@@ -1308,179 +1308,182 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
       // ------ plots specific to the Pi Chamber ICMW case, averaged over the domain with the exception of near-wall cells ------
 
-      else if (plt == "Qv_nowall")
+      else if (plt == "Qv")
       {
         try
         {
-          auto stats = plotter.rv_stats_nowall_timestep(at * n["outfreq"]);
+          auto stats = plotter.rv_stats_timestep(at * n["outfreq"]);
           res_prof(at) = stats.first;
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
 
-      else if (plt == "T_nowall")
+      else if (plt == "T")
       {
         try
         {
-          auto stats = plotter.T_stats_nowall_timestep(at * n["outfreq"]);
+          auto stats = plotter.T_stats_timestep(at * n["outfreq"]);
           res_prof(at) = stats.first;
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
 
-      else if (plt == "LWC_nowall")
+      else if (plt == "LWC")
       {
         try
         {
           typename Plotter_t::arr_t lwc(plotter.h5load_rc_timestep(at * n["outfreq"])); // cloud water, no rain water in pi chamber icmw
-          res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(lwc, distance_from_walls)));
+          //res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(lwc, distance_from_walls)));
+          res_prof(at) = blitz::mean(lwc);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
 
-      else if (plt == "LWC_gm-3_nowall")
+      else if (plt == "LWC_gm-3")
       {
         try
         {
           typename Plotter_t::arr_t lwc(plotter.h5load_rc_timestep(at * n["outfreq"])); // cloud water, no rain water in pi chamber icmw
           lwc *= rhod;
-          res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(lwc, distance_from_walls)));
+          res_prof(at) = blitz::mean(lwc);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
 
-      else if (plt == "RH_nowall")
+      else if (plt == "RH")
       {
         try
         {
-          auto stats = plotter.RH_stats_nowall_timestep(at * n["outfreq"]);
+          auto stats = plotter.RH_stats_timestep(at * n["outfreq"]);
           res_prof(at) = stats.first;
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
 
-      else if (plt == "N_drop_nowall")
+      else if (plt == "N_drop")
       {
         try
         {
           typename Plotter_t::arr_t nc(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           nc *= rhod; // 1/kg -> 1/m^3
-          res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(nc, distance_from_walls)));
+          res_prof(at) = blitz::mean(nc);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
 
-      else if (plt == "N_aerosol_nowall")
+      else if (plt == "N_aerosol")
       {
         try
         {
           typename Plotter_t::arr_t na(plotter.h5load_timestep("aerosol_rw_mom0", at * n["outfreq"]));
           na *= rhod; // 1/kg -> 1/m^3
-          res_prof(at) = blitz::mean(typename Plotter_t::arr_t(plotter.nowall(na, distance_from_walls)));
+          res_prof(at) = blitz::mean(na);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
 
-      else if (plt == "tot_tke_nowall")
+      else if (plt == "tot_tke")
       {
         try
         {
           typename Plotter_t::arr_t u(plotter.h5load_timestep("u", at * n["outfreq"]));
           plotter.subtract_horizontal_mean(u);
           u = u * u;
-          res_prof(at) = blitz::mean(plotter.horizontal_mean(typename Plotter_t::arr_t(plotter.nowall(u, distance_from_walls))));
+          res_prof(at) = blitz::mean(u);
 
           typename Plotter_t::arr_t w(plotter.h5load_timestep("w", at * n["outfreq"]));
           plotter.subtract_horizontal_mean(w);
           w = w * w;
-          res_prof(at) += blitz::mean(plotter.horizontal_mean(typename Plotter_t::arr_t(plotter.nowall(w, distance_from_walls))));
+          res_prof(at) += blitz::mean(w);
 
           if (Plotter_t::n_dims > 2)
           {
             typename Plotter_t::arr_t v(plotter.h5load_timestep("v", at * n["outfreq"]));
             plotter.subtract_horizontal_mean(v);
             v = v * v;
-            res_prof(at) += blitz::mean(plotter.horizontal_mean(typename Plotter_t::arr_t(plotter.nowall(v, distance_from_walls))));
+            res_prof(at) += blitz::mean(v);
           }
           
           res_prof(at) *= 0.5; // * n["dz"];
 
           typename Plotter_t::arr_t tke(plotter.h5load_timestep("tke", at * n["outfreq"]));
           typename Plotter_t::arr_t snap;
-          snap.reference(typename Plotter_t::arr_t(plotter.nowall(tke, distance_from_walls)));
+          snap.reference(tke);
 
           res_prof(at) += blitz::mean(plotter.horizontal_mean(snap));
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
-      else if (plt == "r_mean1_nowall")
+      else if (plt == "r_mean1")
       {
 	// droplets mean radius away from walls
         try
         {
           typename Plotter_t::arr_t m0(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           typename Plotter_t::arr_t m1(plotter.h5load_timestep("cloud_rw_mom1", at * n["outfreq"]));
-          auto tot_m0 = blitz::sum(typename Plotter_t::arr_t(plotter.nowall(m0, distance_from_walls)));
+          //auto tot_m0 = blitz::sum(typename Plotter_t::arr_t(plotter.nowall(m0, distance_from_walls)));
+          auto tot_m0 = blitz::sum(m0);
           if(tot_m0 > 0)
-            res_prof(at) = blitz::sum(typename Plotter_t::arr_t(plotter.nowall(m1, distance_from_walls))) / tot_m0; 
+            res_prof(at) = blitz::sum(m1) / tot_m0; 
           else
             res_prof(at) = 0;
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
-      else if (plt == "r_mean2_nowall")
+      else if (plt == "r_mean2")
       {
 	// droplets effective radius away from walls
         try
         {
           typename Plotter_t::arr_t m2(plotter.h5load_timestep("cloud_rw_mom2", at * n["outfreq"]));
           typename Plotter_t::arr_t m3(plotter.h5load_timestep("cloud_rw_mom3", at * n["outfreq"]));
-          auto tot_m2 = blitz::sum(typename Plotter_t::arr_t(plotter.nowall(m2, distance_from_walls)));
+          auto tot_m2 = blitz::sum(m2);
           if(tot_m2 > 0)
-            res_prof(at) = blitz::sum(typename Plotter_t::arr_t(plotter.nowall(m3, distance_from_walls))) / tot_m2; 
+            res_prof(at) = blitz::sum(m3) / tot_m2; 
           else
             res_prof(at) = 0;
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
       // spatial variance of supersaturation calculated away from walls [1]
-      else if (plt == "Sigma2_S_nowall")
+      else if (plt == "Sigma2_S")
       {
         try
         {
-          auto stats = plotter.RH_stats_nowall_timestep(at * n["outfreq"]);
+          auto stats = plotter.RH_stats_timestep(at * n["outfreq"]);
           res_prof(at) = stats.second * stats.second; // std_dev -> variance; sigma(RH) = sigma(S)
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
       // spatial variance of T calculated away from walls [K^2]
-      else if (plt == "Sigma2_T_nowall")
+      else if (plt == "Sigma2_T")
       {
         try
         {
-          auto stats = plotter.T_stats_nowall_timestep(at * n["outfreq"]);
+          auto stats = plotter.T_stats_timestep(at * n["outfreq"]);
           res_prof(at) = stats.second * stats.second; // std_dev -> variance
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
       // spatial variance of rv calculated away from walls [1]
-      else if (plt == "Sigma2_Qv_nowall")
+      else if (plt == "Sigma2_Qv")
       {
         try
         {
-          auto stats = plotter.rv_stats_nowall_timestep(at * n["outfreq"]);
+          auto stats = plotter.rv_stats_timestep(at * n["outfreq"]);
           res_prof(at) = stats.second * stats.second; // std_dev -> variance
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
-      else if (plt == "disp_r_nowall")
+      else if (plt == "disp_r")
       {
 	// relative dispersion (std dev / mean) of droplet radius distribution averaged over cells away from walls 
         try
         {
-          typename Plotter_t::arr_t m0(plotter.nowall(typename Plotter_t::arr_t(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"])), distance_from_walls));
-          typename Plotter_t::arr_t m1(plotter.nowall(typename Plotter_t::arr_t(plotter.h5load_timestep("cloud_rw_mom1", at * n["outfreq"])), distance_from_walls));
-          typename Plotter_t::arr_t m2(plotter.nowall(typename Plotter_t::arr_t(plotter.h5load_timestep("cloud_rw_mom2", at * n["outfreq"])), distance_from_walls));
+          //typename Plotter_t::arr_t m0(plotter.nowall(typename Plotter_t::arr_t(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"])), distance_from_walls));
+          typename Plotter_t::arr_t m0(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
+          typename Plotter_t::arr_t m1(plotter.h5load_timestep("cloud_rw_mom1", at * n["outfreq"]));
+          typename Plotter_t::arr_t m2(plotter.h5load_timestep("cloud_rw_mom2", at * n["outfreq"]));
           // calculate stddev of radius, store in m2
           m2 = where(m0 > 0,
             m2 / m0 - m1 / m0 * m1 / m0, 0.);
@@ -1500,7 +1503,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
-      else if (plt == "epsilon_nowall")
+      else if (plt == "epsilon")
       {
 	// SGS TKE dissipation rate away from walls [m^2/s^3]
         try
@@ -1509,7 +1512,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t tke(plotter.h5load_timestep("tke", at * n["outfreq"]));
           tke = pow(tke, 3./2.); 
           tke /= n_prof["mix_len"](plotter.LastIndex); // divide by SGS mixing length
-          res_prof(at) = blitz::mean(plotter.nowall(tke, distance_from_walls)) * C_E; 
+//          res_prof(at) = blitz::mean(plotter.nowall(tke, distance_from_walls)) * C_E; 
+          res_prof(at) = blitz::mean(tke) * C_E; 
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
@@ -1628,7 +1632,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     {
       res_pos *= 60.;
     }
-    else if (plt == "tot_tke" || plt == "tot_tke_nowall" || plt == "sgs_tke" || plt == "uw_resolved_tke")
+    else if (plt == "tot_tke" || plt == "tot_tke" || plt == "sgs_tke" || plt == "uw_resolved_tke")
     {
       res_pos *= 60.;
     }
@@ -1655,54 +1659,54 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       res_prof(0) = (res_prof_tmp(1) - res_prof_tmp(0)) * n["dz"] * 1e2 / (n["dt"] * n["outfreq"])  + D * (res_prof_tmp(0) - 0.5) * n["dz"] * 1e2;
       res_prof(last_timestep) = (res_prof_tmp(last_timestep) - res_prof_tmp(last_timestep-1)) * n["dz"] * 1e2 / (n["dt"] * n["outfreq"])  + D * (res_prof_tmp(last_timestep) - 0.5) * n["dz"] * 1e2;
     }
-    else if (plt == "Qv_nowall")
+    else if (plt == "Qv")
     {
       res_pos *= 3600.;
       res_prof *= 1e3; // g/kg
     }
-    else if (plt == "LWC_nowall")
+    else if (plt == "LWC")
     {
       res_pos *= 3600.;
       res_prof *= 1e3; // g/kg
     }
-    else if (plt == "LWC_gm-3_nowall")
+    else if (plt == "LWC_gm-3")
     {
       res_pos *= 3600.;
       res_prof *= 1e3; // g/m^3
     }
-    else if (plt == "T_nowall")
+    else if (plt == "T")
     {
       res_pos *= 3600.;
     }
-    else if (plt == "RH_nowall")
+    else if (plt == "RH")
     {
       res_pos *= 3600.;
     }
-    else if (plt == "N_drop_nowall")
-    {
-      res_pos *= 3600.;
-      res_prof /= 1e6; // 1/m^3 -> 1/cm^3
-    }
-    else if (plt == "N_aerosol_nowall")
+    else if (plt == "N_drop")
     {
       res_pos *= 3600.;
       res_prof /= 1e6; // 1/m^3 -> 1/cm^3
     }
-    else if (plt == "r_mean1_nowall")
+    else if (plt == "N_aerosol")
+    {
+      res_pos *= 3600.;
+      res_prof /= 1e6; // 1/m^3 -> 1/cm^3
+    }
+    else if (plt == "r_mean1")
     {
       res_pos *= 3600.;
       res_prof *= 1e6; // m -> um
     }
-    else if (plt == "r_mean2_nowall")
+    else if (plt == "r_mean2")
     {
       res_pos *= 3600.;
       res_prof *= 1e6; // m -> um
     }
-    else if (plt == "disp_r_nowall")
+    else if (plt == "disp_r")
     {
       res_pos *= 3600.;
     }
-    else if (plt == "Sigma2_Qv_nowall")
+    else if (plt == "Sigma2_Qv")
     {
       res_pos *= 3600.;
       res_prof *= 1e6; // 1 -> (g/kg)^2

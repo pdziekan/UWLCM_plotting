@@ -282,30 +282,29 @@ class PlotterMicro_t : public Plotter_t<NDims>
   }
 
   // mean and std_dev of temperature [K] (characteristics of the spatial distribution at this timestep, without near-wall cells)
-  std::pair<double, double> T_stats_nowall_timestep(int at)
+  std::pair<double, double> T_stats_timestep(int at)
   {   
     // read theta away from walls 
-    arr_t tht(this->nowall(arr_t(this->h5load_timestep("th", at)), distance_from_walls));
+    //arr_t tht(this->nowall(arr_t(this->h5load_timestep("th", at)), distance_from_walls));
+    arr_t tht(arr_t(this->h5load_timestep("th", at)));
     tht *= pow(this->map_prof["p_e"](this->LastIndex) / p_1000, R_d / c_pd); // tht -> T
     return hlpr(tht, at);
   }
 
   // mean and std_dev of r_v [1] (characteristics of the spatial distribution at this timestep)
-  std::pair<double, double> rv_stats_nowall_timestep(int at)
+  std::pair<double, double> rv_stats_timestep(int at)
   {   
-    // read rv away from walls 
-    arr_t rv(this->nowall(arr_t(this->h5load_timestep("rv", at)), distance_from_walls));
+    arr_t rv(arr_t(this->h5load_timestep("rv", at)));
     return hlpr(rv, at);
   }
 
   // mean and std_dev of RH [1] (characteristics of the spatial distribution at this timestep)
-  std::pair<double, double> RH_stats_nowall_timestep(int at)
+  std::pair<double, double> RH_stats_timestep(int at)
   {   
     if(this->micro == "blk_1m") return {0,0};
     std::pair<double, double> res;
 
-    // read RH away from walls 
-    arr_t RH(this->nowall(arr_t(this->h5load_timestep("RH", at)), distance_from_walls));
+    arr_t RH(arr_t(this->h5load_timestep("RH", at)), distance_from_walls);
     return hlpr(RH, at);
   }
 
