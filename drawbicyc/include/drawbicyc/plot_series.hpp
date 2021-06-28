@@ -82,6 +82,16 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     double tot_acc_acnv_prev = 0;
     double tot_acc_accr_prev = 0;
 
+    // used in pi chamber
+    double th_change_top = 0.;
+    double th_change_top_prev = 0.;
+    double th_change_bot = 0.;
+    double th_change_bot_prev = 0.;
+    double rv_change_top = 0.;
+    double rv_change_top_prev = 0.;
+    double rv_change_bot = 0.;
+    double rv_change_bot_prev = 0.;
+
     bool data_found = 1;
 
     for (int at = first_timestep; at <= last_timestep; ++at) // TODO: mark what time does it actually mean!
@@ -92,7 +102,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       prec_vol_prev = prec_vol;
       try
       {
-        prec_vol = plotter.puddle_liq_vol(at * n["outfreq"]);
+        prec_vol = plotter.h5load_attr(at, "liquid_volume", "puddle");
       }
       catch(...){;}
 
@@ -100,7 +110,21 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       removed_particles_prev = removed_particles;
       try
       {
-        removed_particles = plotter.puddle_prtcl_no(at * n["outfreq"]);
+        removed_particles = plotter.h5load_attr(at, "particle_number", "puddle");
+      }
+      catch(...){;}
+
+      // store accumulated th and rv flues thru top and bot
+      th_change_top_prev = th_change_top;
+      th_change_bot_prev = th_change_bot;
+      rv_change_top_prev = rv_change_top;
+      rv_change_bot_prev = rv_change_bot;
+      try
+      {
+        th_change_top = plotter.h5load_attr(at * n["outfreq"], "tot_th_change_top");
+        th_change_bot = plotter.h5load_attr(at * n["outfreq"], "tot_th_change_bot");
+        rv_change_top = plotter.h5load_attr(at * n["outfreq"], "tot_rv_change_top");
+        rv_change_bot = plotter.h5load_attr(at * n["outfreq"], "tot_rv_change_bot");
       }
       catch(...){;}
 
@@ -1328,6 +1352,16 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         catch(...) {if(at==first_timestep) data_found=0;}
       }
 
+      else if (plt == "S_drop")
+      {
+        try
+        {
+          auto stats = plotter.drop_supersat_stats_timestep(at * n["outfreq"]);
+          res_prof(at) = stats.first;
+        }
+        catch(...) {if(at==first_timestep) data_found=0;}
+      }
+
       else if (plt == "LWC")
       {
         try
@@ -1445,7 +1479,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
-      // spatial variance of supersaturation calculated away from walls [1]
+      // spatial variance of supersaturation  [1]
       else if (plt == "Sigma2_S")
       {
         try
@@ -1455,7 +1489,17 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
-      // spatial variance of T calculated away from walls [K^2]
+      // spatial variance of supersaturation weighted by droplet number [1]
+      else if (plt == "Sigma2_S_drop")
+      {
+        try
+        {
+          auto stats = plotter.drop_supersat_stats_timestep(at * n["outfreq"]);
+          res_prof(at) = stats.second * stats.second; // std_dev -> variance
+        }
+        catch(...) {if(at==first_timestep) data_found=0;}
+      }
+      // spatial variance of T [K^2]
       else if (plt == "Sigma2_T")
       {
         try
@@ -1465,7 +1509,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
-      // spatial variance of rv calculated away from walls [1]
+      // spatial variance of rv  [1]
       else if (plt == "Sigma2_Qv")
       {
         try
@@ -1519,13 +1563,51 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "N_removal")
       {
-        // droplet removal rate [1/(cm^3 * s)]
+        // droplet removal rate [1/(cm^3 * min)]
         try
         {
           res_prof(at) = plotter.calc_prtcl_removal(removed_particles - removed_particles_prev);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
+      else if (plt == "H_flux_t")
+      {
+        // heat flux at the top [W/m2]
+        try
+        {
+          res_prof(at) = plotter.calc_heat_flux_top(th_change_top);// - th_change_top_prev);
+        }
+        catch(...) {if(at==first_timestep) data_found=0;}
+      }
+      else if (plt == "H_flux_b")
+      {
+        // heat flux at the bot [W/m2]
+        try
+        {
+          res_prof(at) = plotter.calc_heat_flux_bot(th_change_bot);// - th_change_bot_prev);
+        }
+        catch(...) {if(at==first_timestep) data_found=0;}
+      }
+/*
+      else if (plt == "qv_flux_t")
+      {
+        // heat flux at the top [W/m2]
+        try
+        {
+          res_prof(at) = plotter.calc_rv_flux(rv_change_top - rv_change_top_prev);
+        }
+        catch(...) {if(at==first_timestep) data_found=0;}
+      }
+      else if (plt == "qv_flux_b")
+      {
+        // heat flux at the bot [W/m2]
+        try
+        {
+          res_prof(at) = plotter.calc_rv_flux(rv_change_bot - rv_change_bot_prev);
+        }
+        catch(...) {if(at==first_timestep) data_found=0;}
+      }
+*/
 
       else assert(false);
     } // ------- end of time loop ------
@@ -1662,12 +1744,16 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     else if (plt == "Qv")
     {
       res_pos *= 3600.;
-      res_prof *= 1e3; // g/kg
     }
     else if (plt == "LWC")
     {
       res_pos *= 3600.;
       res_prof *= 1e3; // g/kg
+    }
+    else if (plt == "N_removal")
+    {
+      res_pos *= 3600.;
+      res_prof *= 60; // per minute
     }
     else if (plt == "LWC_gm-3")
     {
@@ -1675,6 +1761,10 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       res_prof *= 1e3; // g/m^3
     }
     else if (plt == "T")
+    {
+      res_pos *= 3600.;
+    }
+    else if (plt == "S_drop")
     {
       res_pos *= 3600.;
     }
@@ -1709,7 +1799,10 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     else if (plt == "Sigma2_Qv")
     {
       res_pos *= 3600.;
-      res_prof *= 1e6; // 1 -> (g/kg)^2
+    }
+    else if (plt == "Sigma2_S_drop")
+    {
+      res_pos *= 3600.;
     }
 
     // set labels for the gnuplot plot

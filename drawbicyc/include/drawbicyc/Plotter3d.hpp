@@ -17,7 +17,7 @@ class Plotter_t<3> : public PlotterCommon
   using parent_t = PlotterCommon;
   hsize_t n[3];
   enum {x, y, z};
-  arr_t tmp, tmp_srfc;
+  arr_t tmp, tmp_srfc, dv;
   blitz::Range yrange;
 
   public:
@@ -184,6 +184,7 @@ class Plotter_t<3> : public PlotterCommon
     this->map["y"] = n[1]-1;
     this->map["z"] = n[2]-1;
     tmp.resize(n[0], n[1], n[2]);
+    dv.resize(n[0], n[1], n[2]);
     k_i.resize(n[0]-1, n[1]-1);
     tmp_int_hrzntl_slice.resize(n[0]-1, n[1]-1);
     tmp_float_hrzntl_slice.resize(n[0]-1, n[1]-1);
@@ -200,6 +201,11 @@ class Plotter_t<3> : public PlotterCommon
     this->DomainSurf = this->map["dx"] * this->map["dy"] * this->map["x"] * this->map["y"];
     this->DomainVol = this->map["dx"] * this->map["dy"] * this->map["dz"] * this->map["x"] * this->map["y"] * this->map["z"];
 
+    dv = this->CellVol;
+    // edge cells are smaller
+    dv(blitz::Range(0,0),blitz::Range::all(),blitz::Range::all()) /= 2.;
+    dv(blitz::Range::all(),blitz::Range(0,0),blitz::Range::all()) /= 2.;
+    dv(blitz::Range::all(),blitz::Range::all(),blitz::Range(0,0)) /= 2.;
 
     // other dataset are of the size x*z, resize tmp
     tmp.resize(n[0]-1, n[1]-1, n[2]-1);

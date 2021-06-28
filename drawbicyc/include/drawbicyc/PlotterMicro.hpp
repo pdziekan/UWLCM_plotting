@@ -1,6 +1,7 @@
 #pragma once
 #include "Plotter2d.hpp"
 #include "Plotter3d.hpp"
+#include <libcloudph++/common/moist_air.hpp>
 
 // TODO: make two: plotterlgrngn and plotter blk1m
 template<int NDims>
@@ -225,6 +226,37 @@ class PlotterMicro_t : public Plotter_t<NDims>
     return res;
   }
 
+  // mean and std_dev of supersaturation at droplet locations (i.e. supersat weighted by the number of droplets)
+  std::pair<double, double> drop_supersat_stats_timestep(int at)
+  {   
+    if(this->micro == "blk_1m") return {0,0};
+    std::pair<double, double> res;
+
+    // read supersat 
+    arr_t ssat(this->h5load_timestep("RH", at));
+    ssat -= 1.; 
+
+    // read number of droplets per cell
+    arr_t nc(this->h5load_timestep("cloud_rw_mom0", at));
+    nc *= rhod; // [1/m^3]
+    nc *= this->dv;
+
+
+    if(blitz::sum(nc) > 0)
+    {
+      res.first = blitz::sum(ssat * nc) / blitz::sum(nc);
+      ssat = pow(ssat - res.first, 2); 
+      res.second = blitz::sum(ssat * nc) / blitz::sum(nc);
+    }
+    else
+    {
+      res.first = 0;
+      res.second = 0;
+    }
+
+    return res;
+  }
+
   // mean and std_dev of number of SDs (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> sdconc_stats_timestep(int at)
   {   
@@ -304,7 +336,7 @@ class PlotterMicro_t : public Plotter_t<NDims>
     if(this->micro == "blk_1m") return {0,0};
     std::pair<double, double> res;
 
-    arr_t RH(arr_t(this->h5load_timestep("RH", at)), distance_from_walls);
+    arr_t RH(this->h5load_timestep("RH", at));
     return hlpr(RH, at);
   }
 
@@ -342,6 +374,29 @@ class PlotterMicro_t : public Plotter_t<NDims>
       return prtcl_removal_diff / this->DomainVol / (double(this->map["outfreq"]) * this->map["dt"]) / 1e6;
     if(this->micro == "blk_1m")
       return 0;
+  }
+
+  // heat flux thru top boundary since last output [W/m^2]
+  double calc_heat_flux(double th_diff, int z_idx) // input in [K]
+  {
+    if(this->micro == "lgrngn")
+    {
+      th_diff *= pow(this->map_prof["p_e"](z_idx) / p_1000, R_d / c_pd); // tht -> T
+      double c_pd = (libcloudphxx::common::moist_air::c_pd<double>() * si::kilograms * si::kelvins / si::joules); // [J/(kg * K)]
+      return th_diff * c_pd * this->map_prof["rhod"](z_idx) * this->map["dz"] / (double(this->map["outfreq"]) * this->map["dt"]); 
+    }
+    if(this->micro == "blk_1m")
+      return 0;
+  }
+
+  double calc_heat_flux_top(double th_diff)
+  {
+    return calc_heat_flux(th_diff, this->map["z"]-1);
+  }
+
+  double calc_heat_flux_bot(double th_diff)
+  {
+    return calc_heat_flux(th_diff, 0);
   }
 
   //ctor
