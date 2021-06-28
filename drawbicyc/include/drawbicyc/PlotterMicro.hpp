@@ -421,16 +421,20 @@ class PlotterMicro_t : public Plotter_t<NDims>
   double calc_moist_flux_top(double rv_diff, bool errfix)
   {
     if(errfix)
+    {
       rv_diff += (this->map["x"] * this->map["y"] - 1) * 0.0062192674278; // to counter to error in tot_rv_diff calculation in UWLCM
-    rv_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (0.0062192674278 - 0.00611718803008); // dont count side wall
+      rv_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (0.0062192674278 - 0.00611718803008); // dont count side wall
+    }
     return calc_moist_flux(rv_diff);
   }
 
   double calc_moist_flux_bot(double rv_diff, bool errfix)
   {
     if(errfix)
+    {
       rv_diff += (this->map["x"] * this->map["y"] - 1) * 0.0213489271007; // to counter to error in tot_rv_diff calculation in UWLCM
-    rv_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (0.0213489271007 - 0.00611718803008); // dont count side wall
+      rv_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (0.0213489271007 - 0.00611718803008); // dont count side wall
+    }
     return calc_moist_flux(rv_diff);
   }
 

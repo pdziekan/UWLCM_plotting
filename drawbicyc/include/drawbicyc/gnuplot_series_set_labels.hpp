@@ -297,6 +297,12 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set ylabel ''\n";
     gp << "set title 'TKE (resolved + sgs) [m^2 / s^2]'\n";
   }
+  else if (plt == "res_tke")
+  {
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+    gp << "set title 'resolved TKE [m^2 / s^2]'\n";
+  }
   else if (plt == "supersat")
   {
     gp << "set xlabel ''\n";
@@ -471,23 +477,27 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set title 'heat flux at the top [W/m$^2$]\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
+    gp << "set xrange[0.001:*]\n";
   }
   else if (plt == "H_flux_b")
   {
     gp << "set title 'heat flux at the bot [W/m$^2$]\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
+    gp << "set xrange[0.001:*]\n";
   }
   else if (plt == "rv_flux_t")
   {
     gp << "set title 'moist. flux at the top [kg/kg * m/s]\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
+    gp << "set xrange[0.001:*]\n";
   }
   else if (plt == "rv_flux_b")
   {
     gp << "set title 'moist. flux at the bottom [kg/kg * m/s]\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
+    gp << "set xrange[0.001:*]\n";
   }
 }

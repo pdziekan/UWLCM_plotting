@@ -859,7 +859,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
-      else if (plt == "uw_tot_tke") // As in the Thomas et al. 2019 paper about Pi chamber LES, but without substractin the running average. TODO: make it nowall?
+      else if (plt == "uw_tot_tke") // As in the Thomas et al. 2019 paper about Pi chamber LES, but without substractin the running average.
       {
         try
         {
@@ -889,7 +889,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
-      else if (plt == "uw_tot_tke_running_avg") // As in the Thomas et al. 2019 paper about Pi chamber LES. TODO: make it nowall?
+      else if (plt == "uw_tot_tke_running_avg") // As in the Thomas et al. 2019 paper about Pi chamber LES. 
       {
         try
         {
@@ -1416,6 +1416,32 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         catch(...) {if(at==first_timestep) data_found=0;}
       }
 
+      else if (plt == "res_tke") // resolved tke
+      {
+        try
+        {
+          typename Plotter_t::arr_t u(plotter.h5load_timestep("u", at * n["outfreq"]));
+          plotter.subtract_horizontal_mean(u);
+          u = u * u;
+          res_prof(at) = blitz::mean(u);
+
+          typename Plotter_t::arr_t w(plotter.h5load_timestep("w", at * n["outfreq"]));
+          plotter.subtract_horizontal_mean(w);
+          w = w * w;
+          res_prof(at) += blitz::mean(w);
+
+          if (Plotter_t::n_dims > 2)
+          {
+            typename Plotter_t::arr_t v(plotter.h5load_timestep("v", at * n["outfreq"]));
+            plotter.subtract_horizontal_mean(v);
+            v = v * v;
+            res_prof(at) += blitz::mean(v);
+          }
+          
+          res_prof(at) *= 0.5; // * n["dz"];
+        }
+        catch(...) {if(at==first_timestep) data_found=0;}
+      }
       else if (plt == "tot_tke")
       {
         try
