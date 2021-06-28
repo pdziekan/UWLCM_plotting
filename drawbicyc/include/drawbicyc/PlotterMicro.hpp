@@ -383,7 +383,7 @@ class PlotterMicro_t : public Plotter_t<NDims>
     {
       th_diff *= pow(this->map_prof["p_e"](z_idx) / p_1000, R_d / c_pd); // tht -> T
       return th_diff * c_pd * this->map_prof["rhod"](z_idx)         // sum of th diff over boundary cells since last output (K) * c_pd * density 
-             * this->map["dz"] / (this->map["x"] * this->map["y"]) // multiply by cell volume and divide by domain surface area
+             * this->map["dz"] / ((this->map["x"]-1) * (this->map["y"]-1)) // multiply by cell volume and divide by domain surface area (without walls)
              * (double(this->map["outfreq"]) * this->map["dt"]);    // divide by time since last output
     }
     if(this->micro == "blk_1m")
@@ -394,6 +394,7 @@ class PlotterMicro_t : public Plotter_t<NDims>
   {
     if(errfix)
       th_diff += (this->map["x"] * this->map["y"] - 1) * 280; // to counter to error in tot_th_diff calculation in UWLCM
+    th_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (280 - 285); // dont count side wall
     return calc_heat_flux(th_diff, this->map["z"]-1);
   }
 
@@ -401,23 +402,37 @@ class PlotterMicro_t : public Plotter_t<NDims>
   {
     if(errfix)
       th_diff += (this->map["x"] * this->map["y"] - 1) * 299;
+    th_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (299 - 285);
     return calc_heat_flux(th_diff, 0);
   }
 
-  // rv flux thru boundary since last output [kg/kg * m / s]
-//  double calc_moist_flux(double rv_diff, int z_idx) // input in [kg/kg]
-//  {
-//    if(this->micro == "lgrngn")
-//    {
-//      th_diff *= pow(this->map_prof["p_e"](z_idx) / p_1000, R_d / c_pd); // tht -> T
-//      double c_pd = (libcloudphxx::common::moist_air::c_pd<double>() * si::kilograms * si::kelvins / si::joules); // [J/(kg * K)]
-//      return th_diff * c_pd * this->map_prof["rhod"](z_idx)         // sum of th diff over boundary cells since last output (K) * c_pd * density 
-//             * this->map["dz"] / (this->map["x"] * this->map["y"]) // multiply by cell volume and divide by domain surface area
-//             * (double(this->map["outfreq"]) * this->map["dt"]);    // divide by time since last output
-//    }
-//    if(this->micro == "blk_1m")
-//      return 0;
-//  }
+  // kinematic rv flux thru boundary since last output [kg/kg * m / s]
+  double calc_moist_flux(double rv_diff) // input in [kg/kg]
+  {
+    if(this->micro == "lgrngn")
+    {
+      return rv_diff * this->map["dz"]
+             * (double(this->map["outfreq"]) * this->map["dt"]);    // divide by time since last output
+    }
+    if(this->micro == "blk_1m")
+      return 0;
+  }
+
+  double calc_moist_flux_top(double rv_diff, bool errfix)
+  {
+    if(errfix)
+      rv_diff += (this->map["x"] * this->map["y"] - 1) * 0.0062192674278; // to counter to error in tot_rv_diff calculation in UWLCM
+    rv_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (0.0062192674278 - 0.00611718803008); // dont count side wall
+    return calc_moist_flux(rv_diff);
+  }
+
+  double calc_moist_flux_bot(double rv_diff, bool errfix)
+  {
+    if(errfix)
+      rv_diff += (this->map["x"] * this->map["y"] - 1) * 0.0213489271007; // to counter to error in tot_rv_diff calculation in UWLCM
+    rv_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (0.0213489271007 - 0.00611718803008); // dont count side wall
+    return calc_moist_flux(rv_diff);
+  }
 
   //ctor
   PlotterMicro_t(const string &file, const string &micro):

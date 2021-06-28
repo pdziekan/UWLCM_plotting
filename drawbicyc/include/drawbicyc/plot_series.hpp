@@ -1588,26 +1588,24 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
-/*
       else if (plt == "qv_flux_t")
       {
-        // heat flux at the top [W/m2]
+        // moisture flux at the top [kg/kg * m/s]
         try
         {
-          res_prof(at) = plotter.calc_rv_flux(rv_change_top - rv_change_top_prev);
+          res_prof(at) = plotter.calc_moist_flux_top(rv_change_top - rv_change_top_prev, at>0);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
       else if (plt == "qv_flux_b")
       {
-        // heat flux at the bot [W/m2]
+        // moisture flux at the bot [kg/kg * m/s]
         try
         {
-          res_prof(at) = plotter.calc_rv_flux(rv_change_bot - rv_change_bot_prev);
+          res_prof(at) = plotter.calc_moist_flux_bot(rv_change_bot - rv_change_bot_prev, at>0);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
-*/
 
       else assert(false);
     } // ------- end of time loop ------

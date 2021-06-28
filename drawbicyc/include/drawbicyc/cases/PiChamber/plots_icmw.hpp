@@ -3,7 +3,8 @@
 const std::vector<std::string> series_PiChamberICMW({
 "H_flux_t",
 "H_flux_b"
-/*
+"qv_flux_t",
+"qv_flux_b"
 "S_drop",
 "Sigma2_S_drop",
 "tot_tke",
@@ -24,7 +25,6 @@ const std::vector<std::string> series_PiChamberICMW({
 "Sigma2_T",
 "Sigma2_Qv",
 "epsilon"
-*/
 });
 
 std::vector<std::string> profs_PiChamberICMW({
