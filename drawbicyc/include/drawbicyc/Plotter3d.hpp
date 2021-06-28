@@ -68,6 +68,19 @@ class Plotter_t<3> : public PlotterCommon
     return blitz::safeToReturn(mean + 0);
   }
 
+  auto horizontal_weighted_mean(
+    const arr_t &data,
+    const arr_t &weights
+  ) -> decltype(blitz::safeToReturn(blitz::Array<float, 1>() + 0))
+  {
+    using namespace blitz::tensor;
+    blitz::Array<float, 2> sum2d(blitz::sum(data(i,k,j)*weights(i,k,j), k));
+    //blitz::Array<float, 2> sum2d(tmp);
+    blitz::Array<float, 1> sum(blitz::sum(sum2d(j,i), j));
+//    blitz::Array<float, 1> sum(tmp2);
+    return blitz::safeToReturn(sum + 0);
+  }
+
   void subtract_horizontal_mean(
     arr_t &data
   )

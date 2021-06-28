@@ -64,6 +64,7 @@ class PlotterCommon
     float ret;
     auto attr = h5g.openAttribute(attr_name);
     attr.read(attr.getDataType(), &ret);
+    std::cerr << "h5load_attr: " << attr_name << " " << ret << std::endl;
     return ret;
   }
 

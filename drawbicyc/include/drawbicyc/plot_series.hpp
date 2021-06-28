@@ -122,6 +122,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       try
       {
         th_change_top = plotter.h5load_attr(at * n["outfreq"], "tot_th_change_top");
+        std::cerr << "th change top: " << th_change_top << std::endl;
         th_change_bot = plotter.h5load_attr(at * n["outfreq"], "tot_th_change_bot");
         rv_change_top = plotter.h5load_attr(at * n["outfreq"], "tot_rv_change_top");
         rv_change_bot = plotter.h5load_attr(at * n["outfreq"], "tot_rv_change_bot");
@@ -1602,6 +1603,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         try
         {
           res_prof(at) = plotter.calc_heat_flux_top(th_change_top - th_change_top_prev, at>0);
+          std::cerr << "th change top: " << th_change_top << std::endl;
+          std::cerr << "th change top prev: " << th_change_top_prev << std::endl;
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }

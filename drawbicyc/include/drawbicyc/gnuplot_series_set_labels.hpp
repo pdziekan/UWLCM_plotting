@@ -486,14 +486,14 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set ylabel ''\n";
     gp << "set xrange[0.001:*]\n";
   }
-  else if (plt == "rv_flux_t")
+  else if (plt == "qv_flux_t")
   {
     gp << "set title 'moist. flux at the top [kg/kg * m/s]\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
     gp << "set xrange[0.001:*]\n";
   }
-  else if (plt == "rv_flux_b")
+  else if (plt == "qv_flux_b")
   {
     gp << "set title 'moist. flux at the bottom [kg/kg * m/s]\n";
     gp << "set xlabel ''\n";

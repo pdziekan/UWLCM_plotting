@@ -5,7 +5,7 @@ const std::vector<std::string> series_PiChamberICMW({
 ,"H_flux_b"
 ,"qv_flux_t"
 ,"qv_flux_b"
-,"res_tke"
+,"tot_tke"
 //,"S_drop"
 //,"Sigma2_S_drop"
 //,"qv_fluxt_t"
