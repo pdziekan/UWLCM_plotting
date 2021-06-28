@@ -1575,7 +1575,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // heat flux at the top [W/m2]
         try
         {
-          res_prof(at) = plotter.calc_heat_flux_top(th_change_top);// - th_change_top_prev);
+          res_prof(at) = plotter.calc_heat_flux_top(th_change_top - th_change_top_prev);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
@@ -1584,7 +1584,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // heat flux at the bot [W/m2]
         try
         {
-          res_prof(at) = plotter.calc_heat_flux_bot(th_change_bot);// - th_change_bot_prev);
+          res_prof(at) = plotter.calc_heat_flux_bot(th_change_bot - th_change_bot_prev);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
