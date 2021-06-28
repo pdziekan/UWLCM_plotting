@@ -376,13 +376,12 @@ class PlotterMicro_t : public Plotter_t<NDims>
       return 0;
   }
 
-  // heat flux thru top boundary since last output [W/m^2]
+  // heat flux thru boundary since last output [W/m^2]
   double calc_heat_flux(double th_diff, int z_idx) // input in [K]
   {
     if(this->micro == "lgrngn")
     {
       th_diff *= pow(this->map_prof["p_e"](z_idx) / p_1000, R_d / c_pd); // tht -> T
-      double c_pd = (libcloudphxx::common::moist_air::c_pd<double>() * si::kilograms * si::kelvins / si::joules); // [J/(kg * K)]
       return th_diff * c_pd * this->map_prof["rhod"](z_idx)         // sum of th diff over boundary cells since last output (K) * c_pd * density 
              * this->map["dz"] / (this->map["x"] * this->map["y"]) // multiply by cell volume and divide by domain surface area
              * (double(this->map["outfreq"]) * this->map["dt"]);    // divide by time since last output
@@ -391,17 +390,34 @@ class PlotterMicro_t : public Plotter_t<NDims>
       return 0;
   }
 
-  double calc_heat_flux_top(double th_diff)
+  double calc_heat_flux_top(double th_diff, bool errfix)
   {
-    th_diff += (this->map["x"] * this->map["y"] - 1) * 280; // to counter to error in tot_th_diff calculation in UWLCM
+    if(errfix)
+      th_diff += (this->map["x"] * this->map["y"] - 1) * 280; // to counter to error in tot_th_diff calculation in UWLCM
     return calc_heat_flux(th_diff, this->map["z"]-1);
   }
 
-  double calc_heat_flux_bot(double th_diff)
+  double calc_heat_flux_bot(double th_diff, bool errfix)
   {
-    th_diff += (this->map["x"] * this->map["y"] - 1) * 299;
+    if(errfix)
+      th_diff += (this->map["x"] * this->map["y"] - 1) * 299;
     return calc_heat_flux(th_diff, 0);
   }
+
+  // rv flux thru boundary since last output [kg/kg * m / s]
+//  double calc_moist_flux(double rv_diff, int z_idx) // input in [kg/kg]
+//  {
+//    if(this->micro == "lgrngn")
+//    {
+//      th_diff *= pow(this->map_prof["p_e"](z_idx) / p_1000, R_d / c_pd); // tht -> T
+//      double c_pd = (libcloudphxx::common::moist_air::c_pd<double>() * si::kilograms * si::kelvins / si::joules); // [J/(kg * K)]
+//      return th_diff * c_pd * this->map_prof["rhod"](z_idx)         // sum of th diff over boundary cells since last output (K) * c_pd * density 
+//             * this->map["dz"] / (this->map["x"] * this->map["y"]) // multiply by cell volume and divide by domain surface area
+//             * (double(this->map["outfreq"]) * this->map["dt"]);    // divide by time since last output
+//    }
+//    if(this->micro == "blk_1m")
+//      return 0;
+//  }
 
   //ctor
   PlotterMicro_t(const string &file, const string &micro):

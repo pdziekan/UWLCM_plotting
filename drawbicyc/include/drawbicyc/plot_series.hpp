@@ -102,7 +102,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       prec_vol_prev = prec_vol;
       try
       {
-        prec_vol = plotter.h5load_attr(at, "liquid_volume", "puddle");
+        prec_vol = plotter.h5load_attr(at * n["outfreq"], "liquid_volume", "puddle");
       }
       catch(...){;}
 
@@ -110,7 +110,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       removed_particles_prev = removed_particles;
       try
       {
-        removed_particles = plotter.h5load_attr(at, "particle_number", "puddle");
+        removed_particles = plotter.h5load_attr(at * n["outfreq"], "particle_number", "puddle");
       }
       catch(...){;}
 
@@ -1575,7 +1575,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // heat flux at the top [W/m2]
         try
         {
-          res_prof(at) = plotter.calc_heat_flux_top(th_change_top - th_change_top_prev);
+          res_prof(at) = plotter.calc_heat_flux_top(th_change_top - th_change_top_prev, at>0);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
@@ -1584,7 +1584,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // heat flux at the bot [W/m2]
         try
         {
-          res_prof(at) = plotter.calc_heat_flux_bot(th_change_bot - th_change_bot_prev);
+          res_prof(at) = plotter.calc_heat_flux_bot(th_change_bot - th_change_bot_prev, at>0);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
