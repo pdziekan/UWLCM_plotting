@@ -144,14 +144,14 @@ class Plotter_t<3> : public PlotterCommon
     using namespace blitz::tensor;
     // select a slize in second dimension to average over
     //auto tmp3dslice = tmp3d(blitz::Range::all(), yrange_override, blitz::Range::all());
-    auto tmp3dslice = tmp3d(blitz::Range::all(), yrange_override, blitz::Range(0,220)); // dycoms
+    auto tmp3dslice = tmp3d(blitz::Range::all(), yrange_override, blitz::Range(0,200)); // dycoms
 //    auto tmp3dslice = tmp3d(blitz::Range::all(), yrange_override, blitz::Range(0,50)); // rico
     auto tmp2d = blitz::mean(tmp3dslice(i,k,j), k); // mean over second dimension
     blitz::Array<float, 2> tmp(tmp2d);
 
     gp << "set xrange [0:" << tmp.extent(0)-1 << "]\n";
     gp << "set yrange [0:" << tmp.extent(1)-1 << "]\n";
-    gp << "splot '-' binary" << gp.binfmt(tmp.transpose(blitz::secondDim, blitz::firstDim)) << " scan=yx origin=(0,0,0) with image failsafe notitle\n";
+    gp << "splot '-' binary" << gp.binfmt(tmp.transpose(blitz::secondDim, blitz::firstDim)) << " scan=yx origin=(0,0,0) with pm3d notitle\n";
     gp.sendBinary(tmp);
   }
 

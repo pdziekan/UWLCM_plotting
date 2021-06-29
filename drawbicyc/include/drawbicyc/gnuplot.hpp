@@ -50,7 +50,7 @@ void init(
 
   const int xtics = 5;
   //const int xtics = 5;
-  const int ytics = 5;//xtics * ratio + 0.5;
+  const int ytics = 7;//xtics * ratio + 0.5;
 
   gp << "set term pdfcairo enhanced size " << nx * size_scale * 5.5 << "," << ny * size_scale * 4 << " font ',14'\n";
 //  gp << "set size square\n";
@@ -59,6 +59,8 @@ void init(
   // progressive-rock connoisseur palette ;)
   gp << "set palette defined (0 '#FFFFFF', 1 '#993399', 2 '#00CCFF', 3 '#66CC00', 4 '#FFFF00', 5 '#FC8727', 6 '#FD0000')\n";
   gp << "set view map\n";
+  gp << "set pm3d interpolate 0,0\n";
+//  gp << "set pm3d interpolate 10,10\n";
   gp << "dx = " << n["dx"] << "\n"; 
   gp << "dy = " << n["dy"] << "\n"; 
   gp << "dz = " << n["dz"] << "\n"; 
@@ -67,11 +69,11 @@ void init(
 //  gp << "set format y '%3.0f'\n";
 //  gp << "set xtics out scale .5 rotate by 60 ('0' 0, '1.6' 32, '3.2' 64, '4.8' 96, '6.4' 128)\n";
 
-  gp << "set xtics out scale .5 rotate by 60 (";
+  gp << "set xtics out scale .5 (";
   for(int i=0; i<xtics; ++i)
   {
     double label = double(i) / (xtics-1)* (n["x"]-1)  * n["dx"] / 1.e3 ; 
-    gp << "'" << std::fixed << std::setprecision(1) << label << "' " << double(i * n["x"] / (xtics-1));
+    gp << "'" << std::fixed << std::setprecision(1) << label << "' " << double(i * (n["x"]-1) / (xtics-1));
     if(i < xtics-1)
       gp << ", ";
   } 
@@ -79,18 +81,18 @@ void init(
 
 //  gp << "set ytics out scale .5 rotate by 60 ('0' 0, '0.25' 50, '0.5' 100, '0.75' 150, '1' 200)\n";
 
-  gp << "set ytics out scale .1 rotate by 60 (";
+  gp << "set ytics out scale .1 offset graph 0.02,0 (";
   for(int i=0; i<ytics; ++i)
   {
     double label = double(i) / (ytics-1)* (n["z"]-1)  * n["dz"] / 1.e3; 
-    gp << "'" << std::fixed << std::setprecision(1) << label << "' " << double(i * n["z"] / (ytics-1));
+    gp << "'" << std::fixed << std::setprecision(2) << label << "' " << double(i * (n["z"]-1) / (ytics-1));
     if(i < ytics-1)
       gp << ", ";
   } 
   gp << ")\n"; 
 
-  gp << "set xlabel 'x [km]'\n";
-  gp << "set ylabel 'z [km]'\n";
+  gp << "set xlabel 'x [km]' offset graph 0,0.02\n";
+  gp << "set ylabel 'z [km]' offset graph 0.02,0\n";
   gp << "set output '" << file << "'\n";
   gp << "set grid\n";
 //  gp << "set multiplot layout " << ny << "," << nx << "\n";
