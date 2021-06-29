@@ -246,7 +246,7 @@ class PlotterMicro_t : public Plotter_t<NDims>
     {
       res.first = blitz::sum(ssat * nc) / blitz::sum(nc);
       ssat = pow(ssat - res.first, 2); 
-      res.second = blitz::sum(ssat * nc) / blitz::sum(nc);
+      res.second = sqrt(blitz::sum(ssat * nc) / blitz::sum(nc));
     }
     else
     {
