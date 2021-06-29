@@ -50,7 +50,7 @@ void init(
 
   const int xtics = 5;
   //const int xtics = 5;
-  const int ytics = 7;//xtics * ratio + 0.5;
+  const int ytics = 9;//xtics * ratio + 0.5;
 
   gp << "set term pdfcairo enhanced size " << nx * size_scale * 5.5 << "," << ny * size_scale * 4 << " font ',14'\n";
 //  gp << "set size square\n";
@@ -85,7 +85,7 @@ void init(
   for(int i=0; i<ytics; ++i)
   {
     double label = double(i) / (ytics-1)* (n["z"]-1)  * n["dz"] / 1.e3; 
-    gp << "'" << std::fixed << std::setprecision(2) << label << "' " << double(i * (n["z"]-1) / (ytics-1));
+    gp << "'" << std::fixed << std::setprecision(1) << label << "' " << double(i * (n["z"]-1) / (ytics-1));
     if(i < ytics-1)
       gp << ", ";
   } 
