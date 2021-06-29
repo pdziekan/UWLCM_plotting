@@ -1,15 +1,13 @@
 #pragma once
 
 const std::vector<std::string> series_PiChamberICMW({
-"H_flux_t"
-,"H_flux_b"
-,"qv_flux_t"
+"qv_flux_t"
 ,"qv_flux_b"
 ,"tot_tke"
+,"H_flux_t"
+,"H_flux_b"
 //,"S_drop"
 //,"Sigma2_S_drop"
-//,"qv_fluxt_t"
-//,"qv_flux_b"
 //,"T"
 //,"Qv"
 //,"RH"

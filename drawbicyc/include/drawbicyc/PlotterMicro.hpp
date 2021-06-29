@@ -377,74 +377,76 @@ class PlotterMicro_t : public Plotter_t<NDims>
   }
 
   // heat flux thru boundary since last output [W/m^2]
-  double calc_heat_flux(double th_diff, int z_idx) // input in [K]
+  double calc_heat_flux(double tot_th_diff, int z_idx) // input in [K]
   {
     if(this->micro == "lgrngn")
     {
-      th_diff *= pow(this->map_prof["p_e"](z_idx) / p_1000, R_d / c_pd); // tht -> T
-      std::cerr << "T diff: " << th_diff << std::endl;
-      double ret = th_diff * c_pd * this->map_prof["rhod"](z_idx)         // sum of th diff over boundary cells since last output (K) * c_pd * density 
+      tot_th_diff *= pow(this->map_prof["p_e"](z_idx) / p_1000, R_d / c_pd); // tht -> T
+      double ret = tot_th_diff * c_pd * this->map_prof["rhod"](z_idx)         // sum of th diff over boundary cells since last output (K) * c_pd * density 
                    * this->map["dz"] / ((this->map["x"]-1) * (this->map["y"]-1)) // multiply by cell volume and divide by domain surface area (without walls)
                    * (double(this->map["outfreq"]) * this->map["dt"]);    // divide by time since last output
-      std::cerr << "ret: " << ret << std::endl;
       return ret;
     }
     if(this->micro == "blk_1m")
       return 0;
   }
 
-  double calc_heat_flux_top(double th_diff, bool errfix)
+  double calc_heat_flux_top(double mean_th_diff, bool errfix)
   {
-    std::cerr << "top th diff: " << th_diff << std::endl;
+    double tot_th_diff = mean_th_diff * this->map["x"] * this->map["y"]; 
     if(errfix)
     {
-      th_diff += (this->map["x"] * this->map["y"] - 1) * 280; // to counter to error in tot_th_diff calculation in UWLCM
-      th_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (280 - 285); // dont count side wall
+ //     th_diff += (this->map["x"] * this->map["y"] - 1) * 280; // to counter to error in tot_th_diff calculation in UWLCM
+      tot_th_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (280 - 285); // dont count side wall
     }
-    std::cerr << "top th diff post err: " << th_diff << std::endl;
-    return calc_heat_flux(th_diff, this->map["z"]-1);
+    return calc_heat_flux(tot_th_diff, this->map["z"]-1);
   }
 
-  double calc_heat_flux_bot(double th_diff, bool errfix)
+  double calc_heat_flux_bot(double mean_th_diff, bool errfix)
   {
+    double tot_th_diff = mean_th_diff * this->map["x"] * this->map["y"]; 
     if(errfix)
     {
-      th_diff += (this->map["x"] * this->map["y"] - 1) * 299;
-      th_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (299 - 285);
+ //     th_diff += (this->map["x"] * this->map["y"] - 1) * 299;
+      tot_th_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (299 - 285);
     }
-    return calc_heat_flux(th_diff, 0);
+    return calc_heat_flux(tot_th_diff, 0);
   }
 
   // kinematic rv flux thru boundary since last output [kg/kg * m / s]
-  double calc_moist_flux(double rv_diff) // input in [kg/kg]
+  double calc_moist_flux(double tot_rv_diff) // rv change summed over horizontal plane  [kg/kg]
   {
     if(this->micro == "lgrngn")
     {
-      return rv_diff * this->map["dz"]
+      return tot_rv_diff * this->map["dz"]
              * (double(this->map["outfreq"]) * this->map["dt"]);    // divide by time since last output
     }
     if(this->micro == "blk_1m")
       return 0;
   }
 
-  double calc_moist_flux_top(double rv_diff, bool errfix)
+  double calc_moist_flux_top(double mean_rv_diff, bool errfix)
   {
+    // 3D assumed here!
+    double tot_rv_diff = mean_rv_diff * this->map["x"] * this->map["y"]; 
     if(errfix)
     {
-      rv_diff += (this->map["x"] * this->map["y"] - 1) * 0.0062192674278; // to counter to error in tot_rv_diff calculation in UWLCM
-      rv_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (0.0062192674278 - 0.00611718803008); // dont count side wall
+//      rv_diff += (this->map["x"] * this->map["y"] - 1) * 0.0062192674278; // to counter to error in tot_rv_diff calculation in UWLCM
+      tot_rv_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (0.0062192674278 - 0.00611718803008); // dont count side wall
     }
-    return calc_moist_flux(rv_diff);
+    return calc_moist_flux(tot_rv_diff);
   }
 
-  double calc_moist_flux_bot(double rv_diff, bool errfix)
+  double calc_moist_flux_bot(double mean_rv_diff, bool errfix)
   {
+    // 3D assumed here!
+    double tot_rv_diff = mean_rv_diff * this->map["x"] * this->map["y"]; 
     if(errfix)
     {
-      rv_diff += (this->map["x"] * this->map["y"] - 1) * 0.0213489271007; // to counter to error in tot_rv_diff calculation in UWLCM
-      rv_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (0.0213489271007 - 0.00611718803008); // dont count side wall
+//      rv_diff += (this->map["x"] * this->map["y"] - 1) * 0.0213489271007; // to counter to error in tot_rv_diff calculation in UWLCM
+      tot_rv_diff -= (2*this->map["x"] + 2*(this->map["y"] - 1)) * (0.0213489271007 - 0.00611718803008); // dont count side wall
     }
-    return calc_moist_flux(rv_diff);
+    return calc_moist_flux(tot_rv_diff);
   }
 
   //ctor

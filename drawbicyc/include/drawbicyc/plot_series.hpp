@@ -84,13 +84,9 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
     // used in pi chamber
     double th_change_top = 0.;
-    double th_change_top_prev = 0.;
     double th_change_bot = 0.;
-    double th_change_bot_prev = 0.;
     double rv_change_top = 0.;
-    double rv_change_top_prev = 0.;
     double rv_change_bot = 0.;
-    double rv_change_bot_prev = 0.;
 
     bool data_found = 1;
 
@@ -114,18 +110,14 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       catch(...){;}
 
-      // store accumulated th and rv flues thru top and bot
-      th_change_top_prev = th_change_top;
-      th_change_bot_prev = th_change_bot;
-      rv_change_top_prev = rv_change_top;
-      rv_change_bot_prev = rv_change_bot;
+      // th and rv flues thru top and bot
       try
       {
-        th_change_top = plotter.h5load_attr(at * n["outfreq"], "tot_th_change_top");
+        th_change_top = plotter.h5load_attr(at * n["outfreq"], "acc_mean_th_change_top");
+        th_change_bot = plotter.h5load_attr(at * n["outfreq"], "acc_mean_th_change_bot");
+        rv_change_top = plotter.h5load_attr(at * n["outfreq"], "acc_mean_rv_change_top");
+        rv_change_bot = plotter.h5load_attr(at * n["outfreq"], "acc_mean_rv_change_bot");
         std::cerr << "th change top: " << th_change_top << std::endl;
-        th_change_bot = plotter.h5load_attr(at * n["outfreq"], "tot_th_change_bot");
-        rv_change_top = plotter.h5load_attr(at * n["outfreq"], "tot_rv_change_top");
-        rv_change_bot = plotter.h5load_attr(at * n["outfreq"], "tot_rv_change_bot");
       }
       catch(...){;}
 
@@ -1602,9 +1594,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // heat flux at the top [W/m2]
         try
         {
-          res_prof(at) = plotter.calc_heat_flux_top(th_change_top - th_change_top_prev, at>0);
+          res_prof(at) = plotter.calc_heat_flux_top(th_change_top, at>0);
           std::cerr << "th change top: " << th_change_top << std::endl;
-          std::cerr << "th change top prev: " << th_change_top_prev << std::endl;
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
@@ -1613,7 +1604,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // heat flux at the bot [W/m2]
         try
         {
-          res_prof(at) = plotter.calc_heat_flux_bot(th_change_bot - th_change_bot_prev, at>0);
+          res_prof(at) = plotter.calc_heat_flux_bot(th_change_bot, at>0);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
@@ -1622,7 +1613,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // moisture flux at the top [kg/kg * m/s]
         try
         {
-          res_prof(at) = plotter.calc_moist_flux_top(rv_change_top - rv_change_top_prev, at>0);
+          res_prof(at) = plotter.calc_moist_flux_top(rv_change_top, at>0);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
@@ -1631,7 +1622,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // moisture flux at the bot [kg/kg * m/s]
         try
         {
-          res_prof(at) = plotter.calc_moist_flux_bot(rv_change_bot - rv_change_bot_prev, at>0);
+          res_prof(at) = plotter.calc_moist_flux_bot(rv_change_bot, at>0);
         }
         catch(...) {if(at==first_timestep) data_found=0;}
       }
