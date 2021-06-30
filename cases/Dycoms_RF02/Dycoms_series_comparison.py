@@ -66,7 +66,7 @@ for x in x_arr:
       item.set_fontsize(8)
     # subplot numbering
     if y < nploty - nemptyplots or x < (nplotx - 1): #nonempty plots
-      axarr[x,y].text(0.2, 0.9, labeldict[y + x*nploty], fontsize=8, transform=axarr[x,y].transAxes)
+      axarr[x,y].text(0.2, 0.875, labeldict[y + x*nploty], fontsize=8, transform=axarr[x,y].transAxes)
 
       # rescale y range to the visible x range, note: overrides ylim!
       var = dycoms_vars[x*nploty + y]
