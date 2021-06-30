@@ -69,7 +69,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           gp << "set logscale cb\n";
           gp << "set cblabel '[g/kg]' offset -2,0\n";
           gp << "set rmargin at screen 0.85\n";
-          gp << "set lmargin at screen 0.08\n";
+          gp << "set lmargin at screen 0.085\n";
           gp << "unset xlabel\n";
           gp << "set title '" +title + "' offset 0,-1.2\n";
 //          gp << "set cbrange [0:2]\n";
@@ -128,7 +128,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           gp << "set logscale cb\n";
           gp << "set cblabel '[cm^{-1}]' offset -0.5,0\n";
           gp << "set rmargin at screen 0.85\n";
-          gp << "set lmargin at screen 0.08\n";
+          gp << "set lmargin at screen 0.085\n";
           gp << "unset xlabel\n";
           //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
           gp << "set title '" +title + "' offset 0,-1.2\n";
@@ -336,7 +336,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
           gp << "set cbrange [0:5]\n";
           gp << "set cblabel '[cm^{-1}]' offset 0.5,0\n";
           gp << "set rmargin at screen 0.85\n";
-          gp << "set lmargin at screen 0.08\n";
+          gp << "set lmargin at screen 0.085\n";
           typename Plotter_t::arr_t tmp(plotter.h5load_timestep("rd_geq_0.8um_rw_mom0", at * n["outfreq"]) * 1e-6 * rhod);
           gp << "set xlabel 'x [km]'\n";
           plotter.plot(gp, tmp, blitz::Range(yslice_idx, yslice_idx));
@@ -360,7 +360,7 @@ void plot_fields(Plotter_t plotter, Plots plots, std::string type)
 
           gp << "set cblabel '[cm^{-1}]' offset -0.5,0\n";
           gp << "set rmargin at screen 0.85\n";
-          gp << "set lmargin at screen 0.08\n";
+          gp << "set lmargin at screen 0.085\n";
           std::string title = "CCN conc."; 
           //gp << "set title '" + title + " t = " << std::fixed << std::setprecision(2) << (double(at) * n["outfreq"] * n["dt"] / 60.) << "min'\n";
           gp << "set title '" +title + "' offset 0,-1.2\n";
