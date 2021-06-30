@@ -890,6 +890,36 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
         res = res_tmp;
         res_prof_hlpr = plotter.horizontal_mean(res); // average in x
       }
+      else if (plt == "Sigma2_S") // variance of supersaturation
+      {
+	typename Plotter_t::arr_t S(plotter.h5load_timestep("RH", at * n["outfreq"])-1);
+        plotter.subtract_horizontal_mean(S);
+        res = S * S;
+        res_prof_hlpr = plotter.horizontal_mean(res); // average in x
+      }
+//      else if (plt == "Sigma2_S_drop") // variance of supersaturation weighted by nc
+//      {
+//	Plotter_t::arr_t nc(plotter.h5load_timestep("cloud_drop_rw_mom0", at * n["outfreq"])-1);
+//        nc *= rhod * this->dv;
+//	Plotter_t::arr_t S(plotter.h5load_timestep("RH", at * n["outfreq"])-1);
+//
+//        if(blitz::sum(nc) > 0)
+//        {
+//          double mean = blitz::sum(ssat * nc) / blitz::sum(nc);
+//          ssat = pow(ssat - res.first, 2);
+//          res.second = blitz::sum(ssat * nc) / blitz::sum(nc);
+//        }
+//        else
+//        {
+//          res.first = 0;
+//          res.second = 0;
+//        }
+//
+//
+//        plotter.subtract_horizontal_mean(S);
+//        res = S * S;
+//        res_prof_hlpr = plotter.horizontal_mean(res); // average in x
+//      }
 
 
 

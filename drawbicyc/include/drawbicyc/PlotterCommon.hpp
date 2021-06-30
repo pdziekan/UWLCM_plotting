@@ -49,7 +49,7 @@ class PlotterCommon
 
   public:
 
-  float puddle_liq_vol(int at)
+  float h5load_attr(int at, const std::string attr_name, const std::string group_name = "/")
   {
     notice_macro("about to close current file")
     h5f.close();
@@ -58,49 +58,24 @@ class PlotterCommon
     notice_macro("about to open file: " << timestep_file)
     h5f.openFile(timestep_file, H5F_ACC_RDONLY);
   
-    notice_macro("about to read group: puddle")
-    h5g = h5f.openGroup("puddle");
+    notice_macro(std::string("about to read group: " + group_name))
+    h5g = h5f.openGroup(group_name);
 
     float ret;
-    auto attr = h5g.openAttribute("liquid_volume");
+    auto attr = h5g.openAttribute(attr_name);
     attr.read(attr.getDataType(), &ret);
+    std::cerr << "h5load_attr: " << attr_name << " " << ret << std::endl;
     return ret;
+  }
+
+  float puddle_liq_vol(int at)
+  {
+    return h5load_attr(at, "liquid_volume", "puddle");
   }
 
   float puddle_prtcl_no(int at)
   {
-    notice_macro("about to close current file")
-    h5f.close();
-  
-    string timestep_file = file + "/timestep" + zeropad(at, 10) + ".h5";
-    notice_macro("about to open file: " << timestep_file)
-    h5f.openFile(timestep_file, H5F_ACC_RDONLY);
-  
-    notice_macro("about to read group: puddle")
-    h5g = h5f.openGroup("puddle");
-
-    float ret;
-    auto attr = h5g.openAttribute("particle_number");
-    attr.read(attr.getDataType(), &ret);
-    return ret;
-  }
-
-  float acnv25(int at)
-  {
-    notice_macro("about to close current file")
-    h5f.close();
-  
-    string timestep_file = file + "/timestep" + zeropad(at, 10) + ".h5";
-    notice_macro("about to open file: " << timestep_file)
-    h5f.openFile(timestep_file, H5F_ACC_RDONLY);
-  
-    notice_macro("about to read group: /")
-    h5g = h5f.openGroup("/");
-
-    float ret;
-    auto attr = h5g.openAttribute("acnv25");
-    attr.read(attr.getDataType(), &ret);
-    return ret;
+    return h5load_attr(at, "particle_number", "puddle");
   }
 
   //ctor
@@ -142,6 +117,12 @@ class PlotterCommon
       h5s.getSimpleExtentDims(&n, NULL);
       map_prof.emplace("mix_len", arr_prof_t(n));
       h5d.read(map_prof["mix_len"].data(), H5::PredType::NATIVE_FLOAT);
+
+      // read dry air density profile
+      h5load(file + "/const.h5", "rhod");
+      h5s.getSimpleExtentDims(&n, NULL);
+      map_prof.emplace("rhod", arr_prof_t(n));
+      h5d.read(map_prof["rhod"].data(), H5::PredType::NATIVE_FLOAT);
 
       // read output frequency
       float outfreq;
