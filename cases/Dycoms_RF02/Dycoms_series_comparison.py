@@ -24,7 +24,13 @@ rescale_vars = ["lwp", "er", "wvarmax", "cl_nc", "cloud_base_dycoms", "cloud_cov
 # init the plot
 nplotx = 3
 nploty= 4
+x_arr = np.arange(nplotx)
+y_arr = np.arange(nploty)
 fig, axarr = plt.subplots(nplotx,nploty)
+
+for x in x_arr:
+  for y in y_arr:
+    axarr[x,y].margins(y=0.2)
 
 #plot_reference_series(dycoms_vars, 0, nplotx, nploty, axarr)
 plot_series(dycoms_vars, 0, nplotx, nploty, axarr, xscaledict, yscaledict, xlimdict_series, ylimdict_series, xlabel='Time [h]')
@@ -48,8 +54,6 @@ for empty in emptyplots:
 
 #axes = plt.gca()
 #axes.tick_params(direction='in')
-x_arr = np.arange(nplotx)
-y_arr = np.arange(nploty)
 for x in x_arr:
   for y in y_arr:
     #tics inside
