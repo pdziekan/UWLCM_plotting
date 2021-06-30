@@ -1,5 +1,6 @@
 from matplotlib import rc
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 from matplotlib.ticker import AutoMinorLocator, MultipleLocator
 
 import os
@@ -25,6 +26,14 @@ rescale_vars = ["lwp", "cloud_cover_rico", "min_cloud_base_rico", "inversion_hei
 nplotx = 3
 nploty= 4
 fig, axarr = plt.subplots(nplotx,nploty)
+x_arr = np.arange(nplotx)
+y_arr = np.arange(nploty)
+
+if len(rico_vars) % nploty == 0:
+  nemptyplots = 0
+else:
+  nemptyplots = nploty - len(rico_vars) % nploty
+emptyplots = np.arange(nploty - nemptyplots, nploty)
 
 plot_series(rico_vars, 0, nplotx, nploty, axarr, xscaledict, yscaledict, xlimdict_series, ylimdict_series, xlabel='Time [h]')
 
@@ -32,18 +41,11 @@ plot_series(rico_vars, 0, nplotx, nploty, axarr, xscaledict, yscaledict, xlimdic
 plt.rcParams.update({'font.size': 8})
 
 # hide axes on empty plots
-if len(rico_vars) % nploty == 0:
-  nemptyplots = 0
-else:
-  nemptyplots = nploty - len(rico_vars) % nploty
-emptyplots = np.arange(nploty - nemptyplots, nploty)
 for empty in emptyplots:
   axarr[nplotx-1, empty].axis('off')
 
 #axes = plt.gca()
 #axes.tick_params(direction='in')
-x_arr = np.arange(nplotx)
-y_arr = np.arange(nploty)
 for x in x_arr:
   for y in y_arr:
     #tics inside
@@ -56,12 +58,14 @@ for x in x_arr:
       item.set_fontsize(8)
     # subplot numbering
     if y < nploty - nemptyplots or x < (nplotx - 1):
-      axarr[x,y].text(0.5, 0.85, labeldict[y + x*nploty], fontsize=8, transform=axarr[x,y].transAxes)
+      axarr[x,y].text(0.2, 0.875, labeldict[y + x*nploty], fontsize=8, transform=axarr[x,y].transAxes)
 
       # rescale y range to the visible x range, note: overrides ylim!
       var = rico_vars[x*nploty + y]
       if var in rescale_vars:
         autoscale_y(axarr[x,y], margin=0.1)
+      if(var == "cloud_cover_rico" or var == "cl_nr"):
+        axarr[x,y].yaxis.set_major_formatter(ticker.FormatStrFormatter('%0.2f'))
 
       # hide hrzntl tic labels
       if x*nploty + y < nplotx * nploty - nemptyplots - nploty:
