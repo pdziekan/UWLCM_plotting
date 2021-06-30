@@ -378,7 +378,7 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   }
   else if (plt == "Qv")
   {
-    gp << "set title 'q_v [g/kg]'\n";
+    gp << "set title 'q_v [kg/kg]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
@@ -450,7 +450,7 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   }
   else if (plt == "Sigma2_Qv")
   {
-    gp << "set title 'q_v variance [(g/kg)^2]'\n";
+    gp << "set title 'q_v variance [(kg/kg)^2]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
