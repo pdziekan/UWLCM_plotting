@@ -1634,6 +1634,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
   // processing done after reading whole time series
   for (auto &plt : plots.series)
   {
+    std::cerr << "post processing: " << plt << std::endl;
     // if no data was found, skip to the next var, dont save the data=0 as it was confusing
     if(!data_found[plt])
       continue;

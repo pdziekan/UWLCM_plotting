@@ -57,7 +57,9 @@ class PlotterCommon
     h5g = h5f.openGroup(group_name);
 
     float ret;
+    notice_macro(std::string("about to open attribute: " + attr_name))
     auto attr = h5g.openAttribute(attr_name);
+    notice_macro(std::string("about to read attribute value"))
     attr.read(attr.getDataType(), &ret);
     return ret;
   }
@@ -76,16 +78,6 @@ class PlotterCommon
   {
     string timestep_file = file + "/timestep" + zeropad(at, 10) + ".h5";
     return h5load_attr(timestep_file, attr_name, group_name);
-  }
-
-  float puddle_liq_vol(int at)
-  {
-    return h5load_attr_timestep(at, "liquid_volume", "puddle");
-  }
-
-  float puddle_prtcl_no(int at)
-  {
-    return h5load_attr_timestep(at, "particle_number", "puddle");
   }
 
   //ctor
