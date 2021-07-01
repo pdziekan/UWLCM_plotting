@@ -64,16 +64,18 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
   oprof_file << "position" << endl;
   oprof_file << plotter.timesteps;
 
+  std::map<std::string, bool> data_found;
+  std::map<std::string, Array<double, 1>> res_series, res_series_std_dev;
 
   for (auto &plt : plots.series)
   {
-    bool plot_std_dev = 0;
-    res_prof_std_dev = 0;
-    res_prof = 0;
-    res_pos = 0;
+    data_found[plt] = true;
+    res_series.emplace(plt, last_timestep - first_timestep + 1);
+    res_series_std_dev.emplace(plt, last_timestep - first_timestep + 1);
+  }
 
-    //std::ifstream f_precip(plotter.file + "/prec_vol.dat");
-    std::string row;
+  for (int at = first_timestep; at <= last_timestep; ++at) // TODO: mark what time does it actually mean!
+  {
     double prec_vol = 0.;
     double prec_vol_prev;
     double removed_particles = 0.;
@@ -88,38 +90,43 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     double rv_change_top = 0.;
     double rv_change_bot = 0.;
 
-    bool data_found = 1;
+    res_pos(at) = at * n["outfreq"] * n["dt"] / 3600.;
 
-    for (int at = first_timestep; at <= last_timestep; ++at) // TODO: mark what time does it actually mean!
+    // store accumulated precip volume
+    prec_vol_prev = prec_vol;
+    try
     {
-      res_pos(at) = at * n["outfreq"] * n["dt"] / 3600.;
+      prec_vol = plotter.h5load_attr_timestep(at * n["outfreq"], "liquid_volume", "puddle");
+    }
+    catch(...){;}
 
-      // store accumulated precip volume
-      prec_vol_prev = prec_vol;
-      try
-      {
-        prec_vol = plotter.h5load_attr_timestep(at * n["outfreq"], "liquid_volume", "puddle");
-      }
-      catch(...){;}
+    // store accumulated number of removed droplets
+    removed_particles_prev = removed_particles;
+    try
+    {
+      removed_particles = plotter.h5load_attr_timestep(at * n["outfreq"], "particle_number", "puddle");
+    }
+    catch(...){;}
 
-      // store accumulated number of removed droplets
-      removed_particles_prev = removed_particles;
-      try
-      {
-        removed_particles = plotter.h5load_attr_timestep(at * n["outfreq"], "particle_number", "puddle");
-      }
-      catch(...){;}
+    // th and rv flues thru top and bot
+    try
+    {
+      th_change_top = plotter.h5load_attr_timestep(at * n["outfreq"], "acc_mean_th_change_top");
+      th_change_bot = plotter.h5load_attr_timestep(at * n["outfreq"], "acc_mean_th_change_bot");
+      rv_change_top = plotter.h5load_attr_timestep(at * n["outfreq"], "acc_mean_rv_change_top");
+      rv_change_bot = plotter.h5load_attr_timestep(at * n["outfreq"], "acc_mean_rv_change_bot");
+      std::cerr << "th change top: " << th_change_top << std::endl;
+    }
+    catch(...){;}
 
-      // th and rv flues thru top and bot
-      try
-      {
-        th_change_top = plotter.h5load_attr_timestep(at * n["outfreq"], "acc_mean_th_change_top");
-        th_change_bot = plotter.h5load_attr_timestep(at * n["outfreq"], "acc_mean_th_change_bot");
-        rv_change_top = plotter.h5load_attr_timestep(at * n["outfreq"], "acc_mean_rv_change_top");
-        rv_change_bot = plotter.h5load_attr_timestep(at * n["outfreq"], "acc_mean_rv_change_bot");
-        std::cerr << "th change top: " << th_change_top << std::endl;
-      }
-      catch(...){;}
+    for (auto &plt : plots.series)
+    {
+      bool plot_std_dev = 0;
+      res_prof_std_dev = 0;
+      res_prof = 0;
+      res_pos = 0;
+
+      bool data_found = 1;
 
       if (plt == "cloud_cover_dycoms")
       {
@@ -212,14 +219,14 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       {
         try
         {
-/*
+/*  
           {
             auto tmp = plotter.h5load_timestep("aerosol_rw_mom3", at * n["outfreq"]) * 4./3. * 3.1416 * 1e3;
             typename Plotter_t::arr_t snap(tmp);
             snap *= rhod;
             res_prof(at) = blitz::mean(snap);
           }
-*/
+*/  
           {
             auto tmp = plotter.h5load_timestep("cloud_rw_mom3", at * n["outfreq"]) * 4./3. * 3.1416 * 1e3;
             typename Plotter_t::arr_t snap(tmp);
@@ -243,7 +250,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "ract_com")
       {
-	// center of mass of activated droplets
+        // center of mass of activated droplets
         try
         {
           res_prof(at) = plotter.act_com_z_timestep(at * n["outfreq"]);
@@ -252,7 +259,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "com_vel")
       {
-	// vertical velocity at the center of mass of activated droplets
+        // vertical velocity at the center of mass of activated droplets
         try
         {
           auto tmp = plotter.h5load_ract_timestep(at * n["outfreq"]);
@@ -277,7 +284,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "com_supersat")
       {
-	// supersaturation at the center of mass of activated droplets
+        // supersaturation at the center of mass of activated droplets
         try
         {
           auto tmp = plotter.h5load_ract_timestep(at * n["outfreq"]);
@@ -302,7 +309,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "com_mom0")
       {
-	// 0th moment of rw distribution at the center of mass of activated droplets (particles concentration), 2D only
+        // 0th moment of rw distribution at the center of mass of activated droplets (particles concentration), 2D only
         try
         {
           auto tmp = plotter.h5load_ract_timestep(at * n["outfreq"]);
@@ -398,7 +405,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "th_com")
       {
-	// center of mass of temp perturb
+        // center of mass of temp perturb
         try
         {
           auto tmp = plotter.h5load_timestep("th", at * n["outfreq"]);
@@ -417,7 +424,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "inversion_height_rico")
       {
-	// height of cells with largest gradient of theta
+        // height of cells with largest gradient of theta
         try
         {
           typename Plotter_t::arr_t th(plotter.h5load_timestep("th", at * n["outfreq"]));
@@ -429,7 +436,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "nc")
       {
-	// cloud droplet (0.5um < r < 25 um) concentration
+        // cloud droplet (0.5um < r < 25 um) concentration
         try
         {
           auto tmp = plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]);
@@ -455,7 +462,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "nr")
       {
-	// rain droplet ( r > 25 um) concentration
+        // rain droplet ( r > 25 um) concentration
         try
         {
           auto tmp = plotter.h5load_timestep("rain_rw_mom0", at * n["outfreq"]);
@@ -468,7 +475,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "cl_nc")
       {
-	// cloud droplet (0.5um < r < 25 um) concentration in cloudy grid cells
+        // cloud droplet (0.5um < r < 25 um) concentration in cloudy grid cells
         try
         {
           // cloud fraction (cloudy if N_c > 20/cm^3)
@@ -490,7 +497,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "cl_nr")
       {
-	// rain drop (25um < r) concentration in cloudy grid cells
+        // rain drop (25um < r) concentration in cloudy grid cells
         try
         {
           // cloud fraction (cloudy if N_c > 20/cm^3)
@@ -602,7 +609,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
       else if (plt == "mass_dry")
       {
-	// total dry mass
+        // total dry mass
         double rho_dry = 1769; //[kg/m^3] - density of ammonium sulfate from wikipedia
         try
         {
@@ -811,7 +818,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         {
           auto tmp = plotter.h5load_timestep("w", at * n["outfreq"]);
           typename Plotter_t::arr_t snap(tmp);
-    //      Array<double, 1> mean(n["z"]);
+            Array<double, 1> mean(n["z"]);
           snap = snap * snap; // 2nd power, w_mean = 0
           // mean variance of w in horizontal
 //          mean = blitz::mean(snap(tensor::j, tensor::i), tensor::j); // mean over x and y
@@ -981,7 +988,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "cl_gccn_conc")
       {
-	// gccn (r_d > 2 um) concentration in cloudy grid cells
+        // gccn (r_d > 2 um) concentration in cloudy grid cells
         try
         {
           // cloud fraction (cloudy if N_c > 20/cm^3)
@@ -1002,7 +1009,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "cl_non_gccn_conc")
       {
-	// gccn (r_d < 2 um) concentration in cloudy grid cells
+        // gccn (r_d < 2 um) concentration in cloudy grid cells
         try
         {
           // cloud fraction (cloudy if N_c > 20/cm^3)
@@ -1045,7 +1052,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "cl_gccn_meanr")
       {
-	// gccn (r_d > 2 um) mean radius in cloudy grid cells
+        // gccn (r_d > 2 um) mean radius in cloudy grid cells
         try
         {
           // cloud fraction (cloudy if N_c > 20/cm^3)
@@ -1067,7 +1074,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "gccn_conc")
       {
-	// gccn (r_d > 2 um) concentration
+        // gccn (r_d > 2 um) concentration
         try
         {
           typename Plotter_t::arr_t snap2(plotter.h5load_timestep("gccn_rw_mom0", at * n["outfreq"]));
@@ -1079,7 +1086,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "non_gccn_conc")
       {
-	// gccn (r_d > 2 um) concentration
+        // gccn (r_d > 2 um) concentration
         try
         {
           typename Plotter_t::arr_t snap2(plotter.h5load_timestep("non_gccn_rw_mom0", at * n["outfreq"]));
@@ -1093,7 +1100,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
       else if (plt == "cl_rd_geq_0.8um_conc")
       {
-	// gccn (r_d >= 0.8 um) concentration in cloudy grid cells
+        // gccn (r_d >= 0.8 um) concentration in cloudy grid cells
         try
         {
           // cloud fraction (cloudy if N_c > 20/cm^3)
@@ -1114,7 +1121,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "rd_geq_0.8um_conc")
       {
-	// gccn (r_d >= 0.8 um) concentration
+        // gccn (r_d >= 0.8 um) concentration
         try
         {
           typename Plotter_t::arr_t snap2(plotter.h5load_timestep("rd_geq_0.8um_rw_mom0", at * n["outfreq"]));
@@ -1160,7 +1167,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
       else if (plt == "cl_meanr")
       {
-	// cloud droplets mean radius in cloudy grid cells
+        // cloud droplets mean radius in cloudy grid cells
         try
         {
           // cloud fraction (cloudy if N_c > 20/cm^3)
@@ -1469,7 +1476,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "r_mean1")
       {
-	// droplets mean radius away from walls
+        // droplets mean radius away from walls
         try
         {
           typename Plotter_t::arr_t m0(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
@@ -1485,7 +1492,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "r_mean2")
       {
-	// droplets effective radius away from walls
+        // droplets effective radius away from walls
         try
         {
           typename Plotter_t::arr_t m2(plotter.h5load_timestep("cloud_rw_mom2", at * n["outfreq"]));
@@ -1540,7 +1547,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "disp_r")
       {
-	// relative dispersion (std dev / mean) of droplet radius distribution averaged over cells away from walls 
+        // relative dispersion (std dev / mean) of droplet radius distribution averaged over cells away from walls 
         try
         {
           //typename Plotter_t::arr_t m0(plotter.nowall(typename Plotter_t::arr_t(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"])), distance_from_walls));
@@ -1568,7 +1575,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
       else if (plt == "epsilon")
       {
-	// SGS TKE dissipation rate away from walls [m^2/s^3]
+        // SGS TKE dissipation rate away from walls [m^2/s^3]
         try
         {
           const float C_E = 0.845;
@@ -1628,13 +1635,16 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       }
 
       else assert(false);
-    } // ------- end of time loop ------
+    } // var loop
+  } // ------- end of time loop ------
 
+  // processing done after reading whole time series
+  for (auto &plt : plots.series)
+  {
     // if no data was found, skip to the next var, dont save the data=0 as it was confusing
     if(!data_found)
       continue;
 
-    // processing done after reading whole time series
     if (plt == "ract_com")
     {
       res_prof /= 1000.;
