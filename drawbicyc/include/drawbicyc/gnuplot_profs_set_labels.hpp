@@ -199,6 +199,10 @@ void gnuplot_profs_set_labels(Gnuplot &gp, std::string plt, const bool normalize
   {
     gp << "set title 'ssat. variance'\n";
   }
+  else if (plt == "S_drop")
+  {
+    gp << "set title 'ssat. weighted by nc'\n";
+  }
   else if (plt == "Sigma2_S_drop")
   {
     gp << "set title 'ssat. weighted by nc, variance'\n";

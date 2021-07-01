@@ -892,10 +892,10 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
       }
       else if (plt == "S_drop") // supersat. weighted by nc
       {
-	typename Plotter_t::arr_t nc(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"])-1);
+	typename Plotter_t::arr_t nc(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
         nc *= rhod * plotter.dv;
 	typename Plotter_t::arr_t S(plotter.h5load_timestep("RH", at * n["outfreq"])-1);
-        res_prof_hlpr = plotter.horizontal_weighted_mean(res, nc);
+        res_prof_hlpr = plotter.horizontal_weighted_mean(S, nc);
       }
       else if (plt == "Sigma2_S") // variance of supersaturation
       {
@@ -906,7 +906,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
       }
       else if (plt == "Sigma2_S_drop") // variance of supersaturation weighted by nc
       {
-	typename Plotter_t::arr_t nc(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"])-1);
+	typename Plotter_t::arr_t nc(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
         nc *= rhod * plotter.dv;
 	typename Plotter_t::arr_t S(plotter.h5load_timestep("RH", at * n["outfreq"])-1);
 
