@@ -78,7 +78,8 @@ class Plotter_t<3> : public PlotterCommon
     blitz::Array<float, 2> sum2d(blitz::sum(data(i,k,j)*weights(i,k,j), k));
     blitz::Array<float, 2> w_sum2d(blitz::sum(weights(i,k,j), k));
     //blitz::Array<float, 2> sum2d(tmp);
-    blitz::Array<float, 1> mean(blitz::sum(sum2d(j,i), j) / blitz::sum(w_sum2d(j,i), j));
+    blitz::Array<float, 1> mean(n[2]);
+    mean = blitz::where(blitz::sum(w_sum2d(j,i), j) > 0, blitz::sum(sum2d(j,i), j) / blitz::sum(w_sum2d(j,i), j), 0);
 //    blitz::Array<float, 1> sum(tmp2);
     return blitz::safeToReturn(mean + 0);
   }
