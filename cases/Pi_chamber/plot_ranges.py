@@ -1,5 +1,6 @@
 xscaledict = {
   "Q_v" : "linear",
+  "Qv" : "linear",
   "LWC_gm-3" : "linear",
   "N_drop" : "linear",
   "N_aerosol" : "linear",
@@ -59,6 +60,7 @@ xscaledict = {
 
 yscaledict = {
   "Q_v" : "linear",
+  "Qv" : "linear",
   "LWC_gm-3" : "linear",
   "N_drop" : "linear",
   "N_aerosol" : "linear",
@@ -169,7 +171,15 @@ ylimdict_profs = {
 }
 
 xlimdict_series = {
-  "Q_v" : None,
+  "T" : None,
+  "rv" : None,
+  "RH" : None,
+  "S_drop" : None,
+  "Sigma2_S" : None,
+  "Sigma2_S_drop" : None,
+  "N_c" : None,
+  "r_mean1" : None,
+  "Qv" : None,
   "LWC_gm-3" : None,
   "N_drop" : None,
   "N_aerosol" : None,
@@ -208,7 +218,15 @@ xlimdict_series = {
 }
 
 ylimdict_series = {
-  "Q_v" : None,
+  "T" : None,
+  "rv" : None,
+  "RH" : None,
+  "S_drop" : None,
+  "Sigma2_S" : None,
+  "Sigma2_S_drop" : None,
+  "N_c" : None,
+  "r_mean1" : None,
+  "Qv" : None,
   "LWC_gm-3" : None,
   "N_drop" : None,
   "N_aerosol" : None,

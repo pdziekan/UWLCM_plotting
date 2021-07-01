@@ -6,7 +6,6 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../Matplotlib_common/")
 
-from Dycoms_reference_plots import plot_reference_series
 from plot_ranges import xscaledict, yscaledict, xlimdict_series, ylimdict_series
 from plot_series import *
 from latex_labels import labeldict
@@ -38,7 +37,7 @@ Pi_chamber_vars = [
 ,"H_flux_b"
 ,"qv_flux_t"
 ,"qv_flux_b"
-}
+]
 
 # variables that need rescaling of the yrange to the limited x range of 1-6h
 #rescale_vars = ["lwp", "er", "wvarmax", "cl_nc", "cloud_base_dycoms", "cloud_cover_dycoms"]
@@ -105,7 +104,7 @@ handles, labels = axarr[0,0].get_legend_handles_labels()
 lgd = fig.legend(handles, labels, handlelength=4, loc='lower center', bbox_to_anchor=(0.45,0))
 
 #figure size
-fig.set_size_inches(7.874, 5. + (len(labels) - 2) * 0.2)# 5.214)#20.75,13.74)
+fig.set_size_inches(2* 7.874, 2*( 5. + (len(labels) - 2) * 0.2))# 5.214)#20.75,13.74)
 #distances between subplots and from bottom of the plot
 fig.subplots_adjust(bottom=0.18 + (len(labels) - 2) * 0.03, hspace=0.1, wspace=0.4)
 
