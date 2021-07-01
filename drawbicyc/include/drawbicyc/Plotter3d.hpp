@@ -12,12 +12,13 @@ class Plotter_t<3> : public PlotterCommon
   blitz::Array<int, 2> k_i, tmp_int_hrzntl_slice;
   blitz::Array<float, 2> tmp_float_hrzntl_slice, tmp_float_hrzntl_slice2;
   blitz::thirdIndex LastIndex;
+  arr_t dv;
 
   protected:
   using parent_t = PlotterCommon;
   hsize_t n[3];
   enum {x, y, z};
-  arr_t tmp, tmp_srfc, dv;
+  arr_t tmp, tmp_srfc;
   blitz::Range yrange;
 
   public:
@@ -75,10 +76,11 @@ class Plotter_t<3> : public PlotterCommon
   {
     using namespace blitz::tensor;
     blitz::Array<float, 2> sum2d(blitz::sum(data(i,k,j)*weights(i,k,j), k));
+    blitz::Array<float, 2> w_sum2d(blitz::sum(weights(i,k,j), k));
     //blitz::Array<float, 2> sum2d(tmp);
-    blitz::Array<float, 1> sum(blitz::sum(sum2d(j,i), j));
+    blitz::Array<float, 1> mean(blitz::sum(sum2d(j,i), j) / blitz::sum(w_sum2d(j,i), j));
 //    blitz::Array<float, 1> sum(tmp2);
-    return blitz::safeToReturn(sum + 0);
+    return blitz::safeToReturn(mean + 0);
   }
 
   void subtract_horizontal_mean(
@@ -86,6 +88,15 @@ class Plotter_t<3> : public PlotterCommon
   )
   {
     blitz::Array<float, 1> mean(horizontal_mean(data));
+    data = data(blitz::tensor::i, blitz::tensor::j, blitz::tensor::k) - mean(blitz::tensor::k);
+  }
+
+  void subtract_horizontal_weighted_mean(
+    arr_t &data,
+    const arr_t &weights
+  )
+  {
+    blitz::Array<float, 1> mean(horizontal_weighted_mean(data, weights));
     data = data(blitz::tensor::i, blitz::tensor::j, blitz::tensor::k) - mean(blitz::tensor::k);
   }
 

@@ -195,4 +195,16 @@ void gnuplot_profs_set_labels(Gnuplot &gp, std::string plt, const bool normalize
   {
     gp << "set title 'sgs u flux [TODO]'\n";
   }
+  else if (plt == "Sigma2_S")
+  {
+    gp << "set title 'ssat. variance'\n";
+  }
+  else if (plt == "Sigma2_S_drop")
+  {
+    gp << "set title 'ssat. weighted by nc, variance'\n";
+  }
+  else if (plt == "r_mean1")
+  {
+    gp << "set title 'mean cloud droplet radius [um]'\n";
+  }
 }

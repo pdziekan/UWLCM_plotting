@@ -29,7 +29,11 @@ std::vector<std::string> profs_PiChamberICMW({
 "T"
 ,"rv"
 ,"RH"
+,"S_drop"
 ,"Sigma2_S"
+,"Sigma2_S_drop"
+,"N_c"
+,"r_mean1"
 }); // rtot has to be first
 
 
