@@ -69,7 +69,7 @@ print directories, labels
 
 #levels = ["ground", "cloud_base"]
 #levels = ["all", "pi_chamber_measurement_location"]
-levels = ["all", "icmw_pi_chamber_nowall"]
+levels = ["all"]#, "icmw_pi_chamber_nowall"]
 
 if plot_dry == True:
   all_data_names = np.append(data_names["rw"], data_names["rd"])
