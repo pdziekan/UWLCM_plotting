@@ -28,15 +28,38 @@ class PlotterCommon
     bool srfc = false
   )
   {
-    notice_macro("about to close current file")
-    h5f.close();
+    if(h5f.getFileName() != file)
+    {
+      notice_macro("about to close current file: " << h5f.getFileName())
+      h5f.close();
 
-    notice_macro("about to open file: " << file)
-    h5f.openFile(file, H5F_ACC_RDONLY);
+      notice_macro("about to open file: " << file)
+      h5f.openFile(file, H5F_ACC_RDONLY);
+    }
 
     notice_macro("about to read dataset: " << dataset)
     h5d = h5f.openDataSet(dataset);
     h5s = h5d.getSpace();
+  }
+
+  float h5load_attr(const string &file, const string &attr_name, const string &group_name)
+  {
+    if(h5f.getFileName() != file)
+    {
+      notice_macro("about to close current file: " << h5f.getFileName())
+      h5f.close();
+  
+      notice_macro("about to open file: " << file)
+      h5f.openFile(file, H5F_ACC_RDONLY);
+    }
+  
+    notice_macro(std::string("about to read group: " + group_name))
+    h5g = h5f.openGroup(group_name);
+
+    float ret;
+    auto attr = h5g.openAttribute(attr_name);
+    attr.read(attr.getDataType(), &ret);
+    return ret;
   }
 
   template <class gp_t>
@@ -49,33 +72,20 @@ class PlotterCommon
 
   public:
 
-  float h5load_attr(int at, const std::string attr_name, const std::string group_name = "/")
+  float h5load_attr_timestep(int at, const std::string attr_name, const std::string group_name = "/")
   {
-    notice_macro("about to close current file")
-    h5f.close();
-  
     string timestep_file = file + "/timestep" + zeropad(at, 10) + ".h5";
-    notice_macro("about to open file: " << timestep_file)
-    h5f.openFile(timestep_file, H5F_ACC_RDONLY);
-  
-    notice_macro(std::string("about to read group: " + group_name))
-    h5g = h5f.openGroup(group_name);
-
-    float ret;
-    auto attr = h5g.openAttribute(attr_name);
-    attr.read(attr.getDataType(), &ret);
-    std::cerr << "h5load_attr: " << attr_name << " " << ret << std::endl;
-    return ret;
+    return h5load_attr(timestep_file, attr_name, group_name);
   }
 
   float puddle_liq_vol(int at)
   {
-    return h5load_attr(at, "liquid_volume", "puddle");
+    return h5load_attr_timestep(at, "liquid_volume", "puddle");
   }
 
   float puddle_prtcl_no(int at)
   {
-    return h5load_attr(at, "particle_number", "puddle");
+    return h5load_attr_timestep(at, "particle_number", "puddle");
   }
 
   //ctor
