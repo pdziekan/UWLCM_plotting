@@ -1,4 +1,12 @@
 var_labels = {
+  "T" : "T [K]",
+  "rv" : "$q_v$ [kg/kg]",
+  "RH" : "RH",
+  "S_drop" : "$S_{drop}$",
+  "Sigma2_S" : "$S$ variance",
+  "Sigma2_S_drop" : "$S_{drop}$ variance",
+  "N_c" : "$N_c$ [cm$^{-3}$]",
+  "r_mean1" : "$<r>$",
   "sgs_tke" : 'SGS TKE (Smagorinsky) [m$^{2}$ s$^{-2}$]',
   "sgs_tke_sd" : 'SGS TKE (Super-droplets) [m$^{2}$ s$^{-2}$]',
   "lwp" : 'LWP [g m$^{-2}$]',
