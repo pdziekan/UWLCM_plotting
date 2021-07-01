@@ -76,16 +76,16 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
   res_pos = 0;
 
+  double prec_vol = 0.;
+  double prec_vol_prev;
+  double removed_particles = 0.;
+  double removed_particles_prev;
+
+  double tot_acc_acnv_prev = 0;
+  double tot_acc_accr_prev = 0;
+
   for (int at = first_timestep; at <= last_timestep; ++at) // TODO: mark what time does it actually mean!
   {
-    double prec_vol = 0.;
-    double prec_vol_prev;
-    double removed_particles = 0.;
-    double removed_particles_prev;
-
-    double tot_acc_acnv_prev = 0;
-    double tot_acc_accr_prev = 0;
-
     // used in pi chamber
     double th_change_top = 0.;
     double th_change_bot = 0.;
@@ -117,7 +117,6 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       th_change_bot = plotter.h5load_attr_timestep(at * n["outfreq"], "acc_mean_th_change_bot");
       rv_change_top = plotter.h5load_attr_timestep(at * n["outfreq"], "acc_mean_rv_change_top");
       rv_change_bot = plotter.h5load_attr_timestep(at * n["outfreq"], "acc_mean_rv_change_bot");
-      std::cerr << "th change top: " << th_change_top << std::endl;
     }
     catch(...){;}
 
@@ -1597,7 +1596,6 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         try
         {
           res_series[plt](at) = plotter.calc_heat_flux_top(th_change_top, at>0);
-          std::cerr << "th change top: " << th_change_top << std::endl;
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
