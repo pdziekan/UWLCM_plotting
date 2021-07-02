@@ -2,7 +2,7 @@ var_labels = {
   "Q_v" : "$q_v$ [g/kg]",
   "Qv" : "$q_v$ [g/kg]",
   "LWC_gm-3" : "LWC [$g m^{-3}$]" ,
-  "N_drop" : "$N_c$ [cm$^{-3}$]",
+  "N_drop" : "$N_{drop}$ [cm$^{-3}$]",
   "N_aerosol" : "$N_{aerosol}$ [cm$^{-3}$]",
   "N_removal" : "$N_{removal}$ [cm$^{-3}$]",
   "disp_r" : "rel. disp. of r",

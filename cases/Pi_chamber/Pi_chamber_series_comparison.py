@@ -39,8 +39,8 @@ Pi_chamber_vars = [
 ,"qv_flux_b"
 ]
 
-# variables that need rescaling of the yrange to the limited x range of 1-6h
-#rescale_vars = ["lwp", "er", "wvarmax", "cl_nc", "cloud_base_dycoms", "cloud_cover_dycoms"]
+# variables that need rescaling of the yrange to the limited x range 
+rescale_vars = ["disp_r", "Sigma2_T", "Sigma2_Qv", "epsilon",  "tot_tke" ,  "H_flux_t" ,  "H_flux_b" ,  "qv_flux_t",  "qv_flux_b"]
 
 # init the plot
 nplotx = 4
@@ -90,13 +90,13 @@ for x in x_arr:
 #      axarr[x,y].text(0.2, 0.875, labeldict[y + x*nploty], fontsize=8, transform=axarr[x,y].transAxes)
 
       # rescale y range to the visible x range, note: overrides ylim!
-#      var = Pi_chamber_vars[x*nploty + y]
-#      if var in rescale_vars:
-#        autoscale_y(axarr[x,y], margin=0.3)
+      var = Pi_chamber_vars[x*nploty + y]
+      if var in rescale_vars:
+        autoscale_y(axarr[x,y], margin=0.3)
       
       # hide hrzntl tic labels
-      if x*nploty + y < nplotx * nploty - nemptyplots - nploty:
-        axarr[x,y].set_xticklabels([])
+#      if x*nploty + y < nplotx * nploty - nemptyplots - nploty:
+#        axarr[x,y].set_xticklabels([])
 
 #single legend for the whole figure
 handles, labels = axarr[0,0].get_legend_handles_labels()
@@ -106,7 +106,7 @@ lgd = fig.legend(handles, labels, handlelength=4, loc='lower center', bbox_to_an
 #figure size
 fig.set_size_inches(2* 7.874, 2*( 5. + (len(labels) - 2) * 0.2))# 5.214)#20.75,13.74)
 #distances between subplots and from bottom of the plot
-fig.subplots_adjust(bottom=0.18 + (len(labels) - 2) * 0.03, hspace=0.1, wspace=0.4)
+fig.subplots_adjust(bottom=0.05 + (len(labels) - 2) * 0.03, hspace=0.1, wspace=0.4)
 
 #fig.tight_layout(pad=0, w_pad=0, h_pad=0)
 
