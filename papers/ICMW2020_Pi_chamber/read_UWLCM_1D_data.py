@@ -31,7 +31,7 @@ def read_UWLCM_array(file_obj):
   line = line.split(" ")
   del line[0]
   del line[len(line)-1]
-  arr = map(float,line)
+  arr = [float(x) for x in line]
   return np.array(arr), arr_name
 
 def read_UWLCM_var(file_obj, var_name):
