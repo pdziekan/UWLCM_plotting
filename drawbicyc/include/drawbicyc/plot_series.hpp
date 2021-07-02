@@ -68,8 +68,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
   for (auto &plt : plots.series)
   {
     data_found[plt] = true;
-    res_series.emplace(plt, last_timestep - first_timestep + 1);
-    res_series_std_dev.emplace(plt, last_timestep - first_timestep + 1);
+    res_series.emplace(std::make_pair(plt, Array<double, 1>(last_timestep - first_timestep + 1)));
+    res_series_std_dev.emplace(std::make_pair(plt, Array<double, 1>(last_timestep - first_timestep + 1)));
     res_series[plt] = 0;
     res_series_std_dev[plt] = 0;
   }
