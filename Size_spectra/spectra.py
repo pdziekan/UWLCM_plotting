@@ -168,7 +168,7 @@ for lvl in levels:
       r_max = max(r_max, left_edges[rwrd][last_nonzero_idx+1])
       print 'r_min = ', r_min, ' r_max = ', r_max
       avg_conc_arr[rwrd][lab] =  avg_conc_arr[rwrd][lab] / bin_width[rwrd] / 1e12 / 2 # / 1e12 to adjust for width in microns and to have concentration per cm^3; /2 to get diameters
-      plt.step(bin_centers[rwrd] * 1e6 * 2, avg_conc_arr[rwrd][lab], where='mid', label=rwrd + '_' + lab, linewidth=6) # *1e6 to have microns on x; *2 to get diameters
+      plt.step(bin_centers[rwrd] * 1e6 * 2, avg_conc_arr[rwrd][lab], where='mid', label='N=' + lab, linewidth=6) # *1e6 to have microns on x; *2 to get diameters
       np.savetxt("LES_N"+lab+"_dsd", avg_conc_arr[rwrd][lab])
 
 #    data = total_arr["rain_rw_mom3"].values()
