@@ -39,7 +39,7 @@ def read_UWLCM_var(file_obj, var_name):
       break
   return arr
 
-time_points = np.arange(0,3601,30)
+time_points = np.arange(0,5401,30)
 
 for inj_rate in inj_rate_to_N:
   for var in ["T", "RH", "Qv"]:
@@ -49,5 +49,5 @@ for inj_rate in inj_rate_to_N:
     out_file=open(out_file_name,'a')
     for time in time_points:
       arr = read_UWLCM_var(open("/scratch/plgdziekan/output_pichamber_3D_sgs_turbadve0_source"+inj_rate+"SD1000@center_Coal0_out_lgrngn_pi_chamber_icmw_profiles_"+str(time)+"_"+str(time)+".dat","r"), ICMW_UWLCM_names[var])
-      np.savetxt(out_file, arr[5:28], newline=" ", delimiter=" ", fmt="%1.5f")
+      np.savetxt(out_file, arr, newline=" ", delimiter=" ", fmt="%1.5f")
       out_file.write("\n")
