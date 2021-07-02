@@ -3,10 +3,15 @@ import os
 from sys import argv
 
 ICMW_UWLCM_names = {
-  "time" : "position",
+  "z" : "position",
   "T" : "T",
   "Qv" : "rv",
-  "RH" : "RH"
+  "RH" : "RH",
+  "Sigma2_S" : "Sigma2_S",
+  "Sigma2_S_drop" : "Sigma2_S_drop",
+  "S_drop" : "S_drop",
+  "N_drop" : "N_c",
+  "r_mean1" : "r_mean1",
 }
 
 inj_rate_to_N = {
@@ -48,7 +53,7 @@ assert(len(argv)==2)
 data_dir = argv[1]
 
 for inj_rate in inj_rate_to_N:
-  for var in ["T", "RH", "Qv"]:
+  for var in ["T", "RH", "Qv", "z", "Sigma2_S", "Sigma2_S_drop",  "S_drop",  "N_drop",  "r_mean1"]:
     out_file_name = data_dir+"/LES_N"+inj_rate_to_N[inj_rate]+"_2D_"+var
     if os.path.exists(out_file_name):
       os.remove(out_file_name)
