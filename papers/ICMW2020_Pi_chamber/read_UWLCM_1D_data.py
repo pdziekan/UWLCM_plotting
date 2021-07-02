@@ -2,21 +2,26 @@ import numpy as np
 
 ICMW_UWLCM_names = {
   "time" : "position",
-  "T" : "T_nowall",
-  "Qv" : "Qv_nowall",
-  "RH" : "RH_nowall",
-  "LWC" : "LWC_nowall",
-  "LWC_gm-3" : "LWC_gm-3_nowall",
-  "N_drop" : "N_drop_nowall",
-  "N_aerosol" : "N_aerosol_nowall",
+  "T" : "T",
+  "Qv" : "Qv",
+  "RH" : "RH",
+  "S_drop" : "S_drop",
+  "LWC" : "LWC_gm-3",
+  "N_drop" : "N_drop",
+  "N_aerosol" : "N_aerosol",
   "N_removal" : "N_removal",
-  "disp_r" : "disp_r_nowall",
-  "r_mean1" : "r_mean1_nowall",
-  "r_mean2" : "r_mean2_nowall",
-  "Sigma2_S" : "Sigma2_S_nowall",
-  "Sigma2_T" : "Sigma2_T_nowall",
-  "Sigma2_Qv" : "Sigma2_Qv_nowall",
-  "epsilon" : "epsilon_nowall"
+  "disp_r" : "disp_r",
+  "r_mean1" : "r_mean1",
+  "Sigma2_S" : "Sigma2_S",
+  "Sigma2_T" : "Sigma2_T",
+  "Sigma2_Qv" : "Sigma2_Qv",
+  "Sigma2_S_drop" : "Sigma2_S_drop",
+  "epsilon" : "epsilon",
+  "TKE" : "tot_tke",
+  "H_flux_t" : "H_flux_t",
+  "H_flux_b" : "H_flux_b",
+  "qv_flux_t" : "qv_flux_t",
+  "qv_flux_b" : "qv_flux_b"
 }
 
 def read_UWLCM_array(file_obj):
@@ -40,6 +45,7 @@ def read_UWLCM_var(file_obj, var_name):
 def read_ICMW_var(file_obj, ICMW_var_name):
   return read_UWLCM_var(file_obj, ICMW_UWLCM_names[ICMW_var_name])
 
+#example use:
 for key in ICMW_UWLCM_names:
   print key
-  print read_ICMW_var(open("/home/piotr/praca/ICMW_Pi_chamber_LES/wyniki/series_and_profs/output_pichamber_3D_sgs_turbadve0_source5e9SD1000@center_Coal0_out_lgrngn_pi_chamber_icmw_series.dat","r"), key)
+  print read_ICMW_var(open("/home/piotr/praca/ICMW_Pi_chamber_LES/wyniki/series/output_pichamber_3D_sgs_turbadve0_source1e5SD1@domainSstp70_SideRH80_Coal0_out_lgrngn_pi_chamber_icmw_series.dat","r"), key)
