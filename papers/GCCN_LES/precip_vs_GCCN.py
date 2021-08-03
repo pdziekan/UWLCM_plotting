@@ -300,10 +300,10 @@ else:
   axarr[0,1].set_ylabel('cloud base precipitation [mm/day]')
   axarr[1,0].set_ylabel('autoconversion [g/(m$^3$ day)]')
   axarr[1,1].set_ylabel('accretion [g/(m$^3$ day)]')
-  #axarr[1,0].set_xlabel('GCCN concentration [cm$^{-3}$]')
-  #axarr[1,1].set_xlabel('GCCN concentration [cm$^{-3}$]')
-  axarr[1,0].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
-  axarr[1,1].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
+  axarr[1,0].set_xlabel('GCCN concentration [cm$^{-3}$]')
+  axarr[1,1].set_xlabel('GCCN concentration [cm$^{-3}$]')
+  #axarr[1,0].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
+  #axarr[1,1].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
 
 # legend font size
 #plt.rcParams.update({'font.size': 10})
@@ -342,8 +342,9 @@ for x in x_arr:
 #single legend for the whole figure
 handles, labels = axarr[0,0].get_legend_handles_labels()
 #rearrange order of labels
-labels = [labels[1], labels[2], labels[3], labels[0]]
-handles = [handles[1], handles[2], handles[3], handles[0]]
+if relative:
+  labels = [labels[1], labels[2], labels[3], labels[0]]
+  handles = [handles[1], handles[2], handles[3], handles[0]]
 lgd = fig.legend(handles, labels, handlelength=4, loc='lower center', bbox_to_anchor=(0.475,0))
 
 
