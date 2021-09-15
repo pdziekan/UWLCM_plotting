@@ -289,8 +289,8 @@ for it in np.arange(16):
 #      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip - tot_acc_surf_precip[0], yerr = tot_acc_surf_precip_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
 #      axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0]                          , yerr = prflux_std_dev              / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
 
-      axarr[0,0].errorbar(GCCN_conc, tot_acc_surf_precip_over_tot_cl_cover_mean - tot_acc_surf_precip_over_tot_cl_cover_mean[0], yerr = tot_acc_surf_precip_over_tot_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
-      axarr[0,1].errorbar(GCCN_conc, tot_prflux_over_tot_cl_cover_mean - tot_prflux_over_tot_cl_cover_mean[0], yerr = tot_prflux_over_tot_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
+      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip_over_tot_cl_cover_mean - tot_acc_surf_precip_over_tot_cl_cover_mean[0], yerr = tot_acc_surf_precip_over_tot_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
+      axarr[0,1].errorbar(GCCN_CCN_rat, tot_prflux_over_tot_cl_cover_mean - tot_prflux_over_tot_cl_cover_mean[0], yerr = tot_prflux_over_tot_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
 
       axarr[1,0].errorbar(GCCN_CCN_rat, tot_acc_acnv - tot_acc_acnv[0]              , yerr = tot_acc_acnv_std_dev        / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
       axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0]              , yerr = tot_acc_acnv_std_dev        / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
