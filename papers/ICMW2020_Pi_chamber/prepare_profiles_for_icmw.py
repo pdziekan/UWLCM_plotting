@@ -19,6 +19,8 @@ inj_rate_to_N = {
   "3e5" : "18",
   "1e6" : "120",
   "3e6" : "700",
+  "5e6" : "1800",
+  "1e7" : "6500",
 }
 
 inj_rate_SstpSrc = {
@@ -26,6 +28,8 @@ inj_rate_SstpSrc = {
   "3e5" : "70",
   "1e6" : "100",
   "3e6" : "100",
+  "5e6" : "100",
+  "1e7" : "100",
 }
 
 def read_UWLCM_array(file_obj):
