@@ -536,6 +536,41 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
+      else if (plt == "cloud_base_precip_dycoms")
+      {
+        // domain-averaged (all columns) precipitation at the average cloud base height [mm/day]
+        try
+        {
+          // -- average cloud base, almost exactly as in "cloud_base_dycoms"... --
+          // cloud fraction (cloudy if N_c > 20/cm^3)
+          auto tmp = plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]);
+          typename Plotter_t::arr_t snap(tmp);
+          snap *= rhod; // b4 it was specific moment
+          snap /= 1e6; // per cm^3
+          snap = iscloudy(snap); // cloudiness mask
+          snap(plotter.hrzntl_slice(0)) = 0; // cheat to avoid occasional "cloudy" cell at ground level due to activation from surf flux
+          plotter.k_i = blitz::first((snap == 1), plotter.LastIndex); 
+          auto cloudy_column = plotter.k_i.copy();
+          cloudy_column = blitz::sum(snap, plotter.LastIndex);
+          cloudy_column = where(cloudy_column > 0, 1, 0);
+          plotter.k_i = where(cloudy_column == 0, 0, plotter.k_i);
+          int cloud_base_idx;
+          if(blitz::sum(cloudy_column) > 0)
+            cloud_base_idx = double(blitz::sum(plotter.k_i)) / blitz::sum(cloudy_column) + 0.5;
+          else
+            cloud_base_idx = 0;
+
+          if(cloud_base_idx == 0)
+            res_series[plt](at) = 0;
+          else
+          {
+            // -- precipitation at this height averaged over all cells, cloudy or not -- 
+            auto prflux = plotter.h5load_prflux_timestep(at * n["outfreq"]); // prflux in [W/m^2]
+            res_series[plt](at) = blitz::mean(prflux(plotter.hrzntl_slice(cloud_base_idx))) / 2264.705 * 3.6 * 24; // convert to [mm/day]
+          }
+        }
+        catch(...) {if(at==first_timestep) data_found[plt]=0;}
+      }
       else if (plt == "min_cloud_base_rico")
       {
         // lowest cloud base in the domain
