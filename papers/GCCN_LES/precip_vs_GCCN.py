@@ -32,7 +32,7 @@ else:
   varlabels = ["{\it Sc38}", "{\it Sc59}", "{\it Sc115}"]
   CCN_conc = [95, 190, 475]
   nc = [38, 59, 115]
-  ensemble = [2,2,2]
+  ensemble = [4,2,2]
   cl_cover_series_name = "cloud_cover_dycoms"
 
 averaging_period = float(profs_to_it - profs_from_it) / 3600. # period over which series are averaged [h]; NOTE: we assume that series_from(to)_it = profs_from(to)_it / outfreq!
@@ -63,6 +63,8 @@ for it in np.arange(12):
   print(profs_file_names[it])
 
   if(it % 4 == 0):
+    tot_cl_cover_mean = []
+    tot_cl_cover_std_dev = []
     mean_surf_precip = []
     tot_acc_surf_precip = []
     tot_acc_surf_precip_std_dev = []
@@ -72,6 +74,8 @@ for it in np.arange(12):
     prflux_std_dev = []
     prflux_over_cl_cover = []
     prflux_over_cl_cover_std_dev = []
+    tot_prflux_over_tot_cl_cover_mean = []
+    tot_prflux_over_tot_cl_cover_std_dev = []
     prfluxDivByClFrac= []
     prfluxDivByClFrac_std_dev = []
     prfluxFromPrfluxVsClhght = []
@@ -110,6 +114,9 @@ for it in np.arange(12):
   except:
     print "Could not find acc_precip_std_dev, setting to 0"
     cl_cover_std_dev = np.zeros(len(cl_cover))
+
+  tot_cl_cover_mean.append(np.mean(cl_cover[series_from_it:series_to_it]))
+  tot_cl_cover_std_dev.append(np.sqrt(np.sum(np.power(cl_cover_std_dev[series_from_it:series_to_it],2)))) # propagation of uncertainty (wikipedia)
 
   tot_acc_surf_precip.append(acc_surf_precip[series_to_it] - acc_surf_precip[series_from_it])
   tot_acc_surf_precip_std_dev.append(acc_surf_precip_std_dev[series_to_it] + acc_surf_precip_std_dev[series_from_it])
@@ -217,6 +224,15 @@ for it in np.arange(12):
     tot_acc_acnv_std_dev = [24. * 3600. * x for x in tot_acc_acnv_std_dev] # same
     tot_acc_accr = [24. * 3600. * x for x in tot_acc_accr] # turn into g / m^3 / day
     tot_acc_accr_std_dev = [24. * 3600. * x for x in tot_acc_accr_std_dev] # same
+
+    tot_acc_surf_precip_over_tot_cl_cover_mean = [x / y for x,y in zip(tot_acc_surf_precip, tot_cl_cover_mean)]
+    tot_acc_surf_precip_over_tot_cl_cover_std_dev = [x / y * np.sqrt(np.power(sx/x,2) + np.power(sy/y,2)) for x,sx,y,sy in zip(tot_acc_surf_precip, tot_acc_surf_precip_std_dev, tot_cl_cover_mean, tot_cl_cover_std_dev)]
+
+    tot_prflux_over_tot_cl_cover_mean = [x / y for x,y in zip(prflux, tot_cl_cover_mean)]
+    tot_prflux_over_tot_cl_cover_std_dev = [x / y * np.sqrt(np.power(sx/x,2) + np.power(sy/y,2)) for x,sx,y,sy in zip(prflux, prflux_std_dev, tot_cl_cover_mean, tot_cl_cover_std_dev)]
+    
+#    tot_acc_surf_precip / tot_cl_cover_mean * np.sqrt(np.power(tot_acc_surf_precip_std_dev / tot_acc_surf_precip,2) + np.power(tot_cl_cover_std_dev / tot_cl_cover_mean,2))
+
     print "surf precip", tot_acc_surf_precip
     print "surf precip divided by cloud cover", tot_acc_surf_precip_over_cl_cover
     print "prflux at cloud base altitude: ",prflux
@@ -225,6 +241,8 @@ for it in np.arange(12):
     print "prflux at cloud base altitude divided by cloud cover: ",prflux_over_cl_cover
     print "acnv", tot_acc_acnv
     print "accr", tot_acc_accr
+    print "tot_acc_surf_precip_over_tot_cl_cover_mean", tot_acc_surf_precip_over_tot_cl_cover_mean
+    print "tot_acc_surf_precip_over_tot_cl_cover_std_dev", tot_acc_surf_precip_over_tot_cl_cover_std_dev
     #axarr[0].plot(GCCN_conc, mean_surf_precip, 'o')
     if(relative):
       GCCN_CCN_rat = [GCCN_con / CCN_conc[int(np.floor(it/4))] for GCCN_con in GCCN_conc]
@@ -235,9 +253,11 @@ for it in np.arange(12):
       axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0]              , yerr = (tot_acc_acnv_std_dev + tot_acc_acnv_std_dev[0])               / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
     else:
 #      axarr[0,0].errorbar(GCCN_conc, tot_acc_surf_precip,               yerr = tot_acc_surf_precip_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
-      axarr[0,0].errorbar(GCCN_conc, tot_acc_surf_precip_over_cl_cover, yerr = tot_acc_surf_precip_over_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
+      axarr[0,0].errorbar(GCCN_conc, tot_acc_surf_precip_over_tot_cl_cover_mean,  yerr = tot_acc_surf_precip_over_tot_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
+#      axarr[0,0].errorbar(GCCN_conc, tot_acc_surf_precip_over_cl_cover, yerr = tot_acc_surf_precip_over_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
 #      axarr[0,1].errorbar(GCCN_conc, prflux,                            yerr = prflux_std_dev              / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
-      axarr[0,1].errorbar(GCCN_conc, prflux_over_cl_cover,              yerr = prflux_over_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
+      axarr[0,1].errorbar(GCCN_conc, tot_prflux_over_tot_cl_cover_mean,           yerr = tot_prflux_over_tot_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
+#      axarr[0,1].errorbar(GCCN_conc, prflux_over_cl_cover,              yerr = prflux_over_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
       axarr[1,0].errorbar(GCCN_conc, tot_acc_acnv,                      yerr = tot_acc_acnv_std_dev        / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
       axarr[1,1].errorbar(GCCN_conc, tot_acc_accr,                      yerr = tot_acc_acnv_std_dev        / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
 
