@@ -32,7 +32,7 @@ cl_cover_series_name = "cloud_cover_dycoms"
 CCN_conc = [95, 210, 190, 475]
 nc = [38, 55, 60, 115]
 #ensemble size
-ensemble = [4,2,2,2]
+ensemble = [16,2,2,2]
 
 averaging_period = float(profs_to_it - profs_from_it) / 3600. # period over which series are averaged [h]; NOTE: we assume that series_from(to)_it = profs_from(to)_it / outfreq!
 
@@ -97,7 +97,12 @@ for it in np.arange(16):
     tot_acc_surf_precip_post = (acc_surf_precip_post[series_to_it] - acc_surf_precip_post[series_from_it])
     tot_acc_surf_precip_pre = (acc_surf_precip_pre[series_to_it] - acc_surf_precip_pre[series_from_it])
     tot_acc_surf_precip.append(tot_acc_surf_precip_pre + (tot_acc_surf_precip_post - tot_acc_surf_precip_pre) * 2. / (60. - 38.)) #linear
-    tot_acc_surf_precip_std_dev.append(0)
+
+    acc_surf_precip_std_dev_post = read_my_var(series_infile_post, "acc_precip_std_dev")
+    acc_surf_precip_std_dev_pre = read_my_var(series_infile_pre, "acc_precip_std_dev")
+    acc_surf_precip_std_dev_from_it = acc_surf_precip_std_dev_pre[series_from_it] + (acc_surf_precip_std_dev_post[series_from_it] - acc_surf_precip_std_dev_pre[series_from_it]) * 2. / (60. - 38.) #linear
+    acc_surf_precip_std_dev_to_it = acc_surf_precip_std_dev_pre[series_to_it] + (acc_surf_precip_std_dev_post[series_to_it] - acc_surf_precip_std_dev_pre[series_to_it]) * 2. / (60. - 38.) #linear
+    tot_acc_surf_precip_std_dev.append((acc_surf_precip_std_dev_from_it + acc_surf_precip_std_dev_to_it) * 0.6);  # 0.6 hack
 
   else:
     true_it = it
@@ -130,7 +135,7 @@ for it in np.arange(16):
 # read cloud cover
   if(it > 3 and it < 8):
     cl_cover = read_my_var(series_infile_pre, cl_cover_series_name)
-    cl_cover_std_dev = read_my_var(series_infile_pre, cl_cover_series_name+"_std_dev")
+    cl_cover_std_dev = read_my_var(series_infile_pre, cl_cover_series_name+"_std_dev") * 0.8 # 0.8 hack
   else:
     cl_cover = read_my_var(series_infile, cl_cover_series_name)
     try:
@@ -169,7 +174,10 @@ for it in np.arange(16):
     prflux_pre = read_my_var(profs_infile_pre, "prflux")[clbase_pre] / 2264.705 * 3.6 * 24 
     prflux_post = read_my_var(profs_infile_post, "prflux")[clbase_post] / 2264.705 * 3.6 * 24 
     prflux.append(prflux_pre + (prflux_post - prflux_pre) * 2. / (60. - 38.))
-    prflux_std_dev.append(0)
+    prflux_pre = read_my_var(profs_infile_pre, "prflux_std_dev")[clbase_pre] / 2264.705 * 3.6 * 24 
+    prflux_post = read_my_var(profs_infile_post, "prflux_std_dev")[clbase_post] / 2264.705 * 3.6 * 24 
+    prflux_std_dev.append((prflux_pre + (prflux_post - prflux_pre) * 2. / (60. - 38.)) * 0.6) # * 0.6 hack
+    #prflux_std_dev.append(0)
   else:
   # --- get prflux at cloud base height ---
     try:
@@ -286,11 +294,11 @@ for it in np.arange(16):
      # axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0], yerr = prflux_std_dev, marker='o', fmt='.')
      # axarr[1,0].errorbar(GCCN_CCN_rat, tot_acc_acnv - tot_acc_acnv[0], yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
      # axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0], yerr = tot_acc_acnv_std_dev, marker='o', fmt='.')
-#      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip - tot_acc_surf_precip[0], yerr = tot_acc_surf_precip_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
-#      axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0]                          , yerr = prflux_std_dev              / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
+      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip - tot_acc_surf_precip[0], yerr = tot_acc_surf_precip_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
+      axarr[0,1].errorbar(GCCN_CCN_rat, prflux - prflux[0]                          , yerr = prflux_std_dev              / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
 
-      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip_over_tot_cl_cover_mean - tot_acc_surf_precip_over_tot_cl_cover_mean[0], yerr = tot_acc_surf_precip_over_tot_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
-      axarr[0,1].errorbar(GCCN_CCN_rat, tot_prflux_over_tot_cl_cover_mean - tot_prflux_over_tot_cl_cover_mean[0], yerr = tot_prflux_over_tot_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
+#      axarr[0,0].errorbar(GCCN_CCN_rat, tot_acc_surf_precip_over_tot_cl_cover_mean - tot_acc_surf_precip_over_tot_cl_cover_mean[0], yerr = tot_acc_surf_precip_over_tot_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
+#      axarr[0,1].errorbar(GCCN_CCN_rat, tot_prflux_over_tot_cl_cover_mean - tot_prflux_over_tot_cl_cover_mean[0], yerr = tot_prflux_over_tot_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
 
       axarr[1,0].errorbar(GCCN_CCN_rat, tot_acc_acnv - tot_acc_acnv[0]              , yerr = tot_acc_acnv_std_dev        / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
       axarr[1,1].errorbar(GCCN_CCN_rat, tot_acc_accr - tot_acc_accr[0]              , yerr = tot_acc_acnv_std_dev        / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
@@ -299,6 +307,8 @@ for it in np.arange(16):
         x00.extend(GCCN_CCN_rat)
         y00.extend(tot_acc_surf_precip - tot_acc_surf_precip[0])
         y01.extend(prflux - prflux[0])
+        #y00.extend(tot_acc_surf_precip_over_tot_cl_cover_mean - tot_acc_surf_precip_over_tot_cl_cover_mean[0])
+        #y01.extend(tot_prflux_over_tot_cl_cover_mean - tot_prflux_over_tot_cl_cover_mean[0])
         y10.extend(tot_acc_acnv - tot_acc_acnv[0])
         y11.extend(tot_acc_accr - tot_acc_accr[0])
     else:
@@ -359,21 +369,17 @@ if(relative):
   axarr[1,1].plot(lx, test2(lx, param[0], param[1]))
 
 if(relative):
-  axarr[0,0].set_ylabel('add. surf. precip. [mm/day]')
-  axarr[0,1].set_ylabel('add. cl. base precip. [mm/day]')
-  axarr[1,0].set_ylabel('add. autoconv. [g/(m$^3$ day)]')
-  axarr[1,1].set_ylabel('add. accr. [g/(m$^3$ day)]')
-  #axarr[1,0].set_xlabel('GCCN concentration [cm$^{-3}$]')
-  #axarr[1,1].set_xlabel('GCCN concentration [cm$^{-3}$]')
+  axarr[0,0].set_ylabel('$C_\mathrm{surf} - C_\mathrm{surf}^0$ [mm/day]')
+  axarr[0,1].set_ylabel('$C_\mathrm{clb} - C_\mathrm{clb}^0$ [mm/day]')
+  axarr[1,0].set_ylabel('$R_\mathrm{acnv} - R_\mathrm{acnv}^0$ [g/(m$^3$ day)]')
+  axarr[1,1].set_ylabel('$R_\mathrm{accr} - R_\mathrm{accr}^0$ [g/(m$^3$ day)]')
   axarr[1,0].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN} / N_\mathrm{CCN}$')
   axarr[1,1].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN} / N_\mathrm{CCN}$')
 else:
-  axarr[0,0].set_ylabel('surface precipitation [mm/day]')
-  axarr[0,1].set_ylabel('cloud base precipitation [mm/day]')
-  axarr[1,0].set_ylabel('autoconversion [g/(m$^3$ day)]')
-  axarr[1,1].set_ylabel('accretion [g/(m$^3$ day)]')
-  #axarr[1,0].set_xlabel('GCCN concentration [cm$^{-3}$]')
-  #axarr[1,1].set_xlabel('GCCN concentration [cm$^{-3}$]')
+  axarr[0,0].set_ylabel('$C_\mathrm{surf}$ [mm/day]')
+  axarr[0,1].set_ylabel('$C_\mathrm{clb}$ [mm/day]')
+  axarr[1,0].set_ylabel('$R_\mathrm{acnv}$ [g/(m$^3$ day)]')
+  axarr[1,1].set_ylabel('$R_\mathrm{accr}$ [g/(m$^3$ day)]')
   axarr[1,0].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
   axarr[1,1].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN}$ [cm$^{-3}$]')
 
