@@ -19,6 +19,8 @@ profs_to_it = int(sys.argv[4])
 qlimit = float(sys.argv[5])
 
 varlabels = ["{\it Sc30\_wash}", "{\it Sc40\_salt\_CCN\_wash}", "{\it Sc45\_wash}", "{\it Sc105\_wash}"]
+cl_cover_series_name = "cloud_cover_dycoms"
+
 #varlabels = ["{\it Cu38}", "{\it Cu60}", "{\it Cu85}"]
 #varlabels = ["{\it Sc38}", "{\it Sc60}", "{\it Sc115}"]
 averaging_period = float(profs_to_it - profs_from_it) / 3600. # period over which series are averaged [h]; NOTE: we assume that series_from(to)_it = profs_from(to)_it / outfreq!
@@ -51,6 +53,8 @@ for it in np.arange(16):
   print(profs_file_names[it])
 
   if(it % 4 == 0):
+    tot_cl_cover_mean = []
+    tot_cl_cover_std_dev = []
     mean_surf_precip = []
     tot_acc_surf_precip = []
     tot_acc_surf_precip_std_dev = []
@@ -88,6 +92,17 @@ for it in np.arange(16):
 
   tot_acc_surf_precip.append(acc_surf_precip[series_to_it] - acc_surf_precip[series_from_it])
   tot_acc_surf_precip_std_dev.append(acc_surf_precip_std_dev[series_to_it] + acc_surf_precip_std_dev[series_from_it])
+
+# read cloud cover
+  cl_cover = read_my_var(series_infile, cl_cover_series_name)
+  try:
+    cl_cover_std_dev = read_my_var(series_infile, cl_cover_series_name+"_std_dev")
+  except:
+    print "Could not find acc_precip_std_dev, setting to 0"
+    cl_cover_std_dev = np.zeros(len(cl_cover))
+
+  tot_cl_cover_mean.append(np.mean(cl_cover[series_from_it:series_to_it]))
+  tot_cl_cover_std_dev.append(np.sqrt(np.sum(np.power(cl_cover_std_dev[series_from_it:series_to_it],2)))) # propagation of uncertainty (wikipedia)
 
 # find cloud base
   try:
@@ -178,6 +193,13 @@ for it in np.arange(16):
    # tot_acc_surf_precip_std_dev = [3 * x for x in tot_acc_surf_precip_std_dev] # we show errors bars with 3 std dev
     tot_acc_surf_precip = [(24. / averaging_period) * x for x in tot_acc_surf_precip] # turn into mm / day
     tot_acc_surf_precip_std_dev = [(24. / averaging_period) * x for x in tot_acc_surf_precip_std_dev] # turn into mm / day
+
+    tot_acc_surf_precip_over_tot_cl_cover_mean = [x / y for x,y in zip(tot_acc_surf_precip, tot_cl_cover_mean)]
+    tot_acc_surf_precip_over_tot_cl_cover_std_dev = [x / y * np.sqrt(np.power(sx/x,2) + np.power(sy/y,2)) for x,sx,y,sy in zip(tot_acc_surf_precip, tot_acc_surf_precip_std_dev, tot_cl_cover_mean, tot_cl_cover_std_dev)]
+
+    tot_prflux_over_tot_cl_cover_mean = [x / y for x,y in zip(prflux, tot_cl_cover_mean)]
+    tot_prflux_over_tot_cl_cover_std_dev = [x / y * np.sqrt(np.power(sx/x,2) + np.power(sy/y,2)) for x,sx,y,sy in zip(prflux, prflux_std_dev, tot_cl_cover_mean, tot_cl_cover_std_dev)]
+
     print tot_acc_surf_precip
     print "prflux at cloud base altitude: ",prflux
     #print "prflux at cloud base altitude divided by cloud fraction: ",prfluxDivByClFrac
@@ -187,11 +209,15 @@ for it in np.arange(16):
     tot_acc_acnv_std_dev = [24. * 3600. * x for x in tot_acc_acnv_std_dev] # same
     tot_acc_accr = [24. * 3600. * x for x in tot_acc_accr] # turn into g / m^3 / day
     tot_acc_accr_std_dev = [24. * 3600. * x for x in tot_acc_accr_std_dev] # same
-    axarr[0].errorbar(GCCN_conc, tot_acc_surf_precip, yerr = tot_acc_surf_precip_std_dev / np.sqrt(ensemble), marker='o', fmt='.', label = varlabels[(it)/4])
-    axarr[1].errorbar(GCCN_conc, prflux, yerr = prflux_std_dev / np.sqrt(ensemble), marker='o', fmt='.')
+    #axarr[0].errorbar(GCCN_conc, tot_acc_surf_precip, yerr = tot_acc_surf_precip_std_dev / np.sqrt(ensemble), marker='o', fmt='.', label = varlabels[(it)/4])
+    #axarr[1].errorbar(GCCN_conc, prflux, yerr = prflux_std_dev / np.sqrt(ensemble), marker='o', fmt='.')
+    axarr[0].errorbar(GCCN_conc, tot_acc_surf_precip_over_tot_cl_cover_mean, yerr = tot_acc_surf_precip_over_tot_cl_cover_std_dev / np.sqrt(ensemble), marker='o', fmt='.', label = varlabels[(it)/4])
+    axarr[1].errorbar(GCCN_conc, tot_prflux_over_tot_cl_cover_mean, yerr = tot_prflux_over_tot_cl_cover_std_dev / np.sqrt(ensemble), marker='o', fmt='.')
 
-axarr[0].set_ylabel('surface precipitation [mm/day]')
-axarr[1].set_ylabel('cloud base precipitation [mm/day]')
+#axarr[0].set_ylabel('surface precipitation [mm/day]')
+#axarr[1].set_ylabel('cloud base precipitation [mm/day]')
+axarr[0].set_ylabel('$C_\mathrm{surf}$ [mm/day]')
+axarr[1].set_ylabel('$C_\mathrm{clb}$ [mm/day]')
 
 #axarr[1,0].set_xlabel('GCCN concentration [cm$^{-3}$]')
 #axarr[1,1].set_xlabel('GCCN concentration [cm$^{-3}$]')
