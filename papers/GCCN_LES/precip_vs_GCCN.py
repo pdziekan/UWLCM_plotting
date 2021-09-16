@@ -369,8 +369,8 @@ if(relative):
   axarr[1,1].plot(lx, test2(lx, param[0], param[1]))
 
 if(relative):
-  axarr[0,0].set_ylabel('$C_\mathrm{surf} - C_\mathrm{surf}^0$ [mm/day]')
-  axarr[0,1].set_ylabel('$C_\mathrm{clb} - C_\mathrm{clb}^0$ [mm/day]')
+  axarr[0,0].set_ylabel('$P_\mathrm{surf} - P_\mathrm{surf}^0$ [mm/day]')
+  axarr[0,1].set_ylabel('$P_\mathrm{clb} - P_\mathrm{clb}^0$ [mm/day]')
   axarr[1,0].set_ylabel('$R_\mathrm{acnv} - R_\mathrm{acnv}^0$ [g/(m$^3$ day)]')
   axarr[1,1].set_ylabel('$R_\mathrm{accr} - R_\mathrm{accr}^0$ [g/(m$^3$ day)]')
   axarr[1,0].set_xlabel('$N^\mathrm{init}_\mathrm{GCCN} / N_\mathrm{CCN}$')
