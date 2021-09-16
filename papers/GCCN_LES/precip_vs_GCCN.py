@@ -214,8 +214,9 @@ for it in np.arange(12):
     axarr[0].errorbar(GCCN_conc, tot_acc_surf_precip_over_tot_cl_cover_mean, yerr = tot_acc_surf_precip_over_tot_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.', label = varlabels[(it)/4])
     axarr[1].errorbar(GCCN_conc, tot_prflux_over_tot_cl_cover_mean, yerr = tot_prflux_over_tot_cl_cover_std_dev / np.sqrt(ensemble[(it)/4]), marker='o', fmt='.')
 
-axarr[0].set_ylabel('surface precipitation [mm/day]')
-axarr[1].set_ylabel('cloud base precipitation [mm/day]')
+
+axarr[0].set_ylabel('$C_\mathrm{surf}$ [mm/day]')
+axarr[1].set_ylabel('$C_\mathrm{clb}$ [mm/day]')
 
 #axarr[1,0].set_xlabel('GCCN concentration [cm$^{-3}$]')
 #axarr[1,1].set_xlabel('GCCN concentration [cm$^{-3}$]')
