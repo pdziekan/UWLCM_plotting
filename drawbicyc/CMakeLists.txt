@@ -23,17 +23,23 @@ endif()
 
 ############################################################################################
 # Blitz++
-find_package(PkgConfig)
-pkg_check_modules(BLITZ QUIET blitz>=0.10)
-if (NOT BLITZ_FOUND)
-  message(FATAL_ERROR "Blitz++ library not found or Blitz++ version requirement not met (>=0.10)
+# with pkgconfig
+#find_package(PkgConfig)
+#pkg_check_modules(BLITZ blitz>=0.10)
+#if (NOT BLITZ_FOUND)
+#  message(FATAL_ERROR "Blitz++ library not found or Blitz++ version requirement not met (>=0.10)
+#
+#* To insall Blitz++, please try:
+#*   Debian/Ubuntu: sudo apt-get install libblitz0-dev
+#*   Fedora: sudo yum install blitz-devel
+#*   Homebrew: brew install blitz
+#  ")
+#endif()
 
-* To insall Blitz++, please try:
-*   Debian/Ubuntu: sudo apt-get install libblitz0-dev
-*   Fedora: sudo yum install blitz-devel
-*   Homebrew: brew install blitz
-  ")
-endif()
+#message("Blitz include dirs: ${BLITZ_INCLUDE_DIRS}")
+
+# with CMake
+find_package(blitz REQUIRED)
 ############################################################################################
 
 
@@ -52,8 +58,14 @@ foreach(exe drawbicyc plot_series_compare average)
   target_link_libraries(${exe} PRIVATE uwlcm::uwlcm_includes)
   target_link_libraries(${exe} PRIVATE ${HDF5_LIBRARIES})
   target_include_directories(${exe} PUBLIC ${HDF5_INCLUDE_DIRS})
-  target_link_libraries(${exe} PRIVATE ${BLITZ_LIBRARIES})
-  target_include_directories(${exe} PUBLIC ${BLITZ_INCLUDE_DIRS})
+
+# blitz from pkgconfig
+#  target_link_libraries(${exe} PRIVATE ${BLITZ_LIBRARIES})
+#  target_include_directories(${exe} PUBLIC ${BLITZ_INCLUDE_DIRS})
+
+# blitz from cmake
+  target_link_libraries(${exe} PRIVATE blitz)
+
   if(TARGET Boost::iostreams AND TARGET Boost::program_options AND TARGET Boost::filesystem)
     message("linkiing boost targets")
     target_link_libraries(${exe} PRIVATE Boost::iostreams Boost::program_options Boost::filesystem) 
