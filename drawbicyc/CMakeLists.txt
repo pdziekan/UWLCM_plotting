@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8.6) # not sure, simply copied from UWLCM
 cmake_policy(SET CMP0028 NEW)
-find_package(HDF5 COMPONENTS CXX HL REQUIRED)
-find_package(Boost COMPONENTS iostreams program_options filesystem REQUIRED)
+find_package(Boost COMPONENTS tuple REQUIRED)
 
 ############################################################################################
 #libcloudphxx
@@ -22,26 +21,6 @@ if (NOT TARGET uwlcm::uwlcm)
 endif()
 
 ############################################################################################
-# Blitz++
-# with pkgconfig
-#find_package(PkgConfig)
-#pkg_check_modules(BLITZ blitz>=0.10)
-#if (NOT BLITZ_FOUND)
-#  message(FATAL_ERROR "Blitz++ library not found or Blitz++ version requirement not met (>=0.10)
-#
-#* To insall Blitz++, please try:
-#*   Debian/Ubuntu: sudo apt-get install libblitz0-dev
-#*   Fedora: sudo yum install blitz-devel
-#*   Homebrew: brew install blitz
-#  ")
-#endif()
-
-#message("Blitz include dirs: ${BLITZ_INCLUDE_DIRS}")
-
-# with CMake
-find_package(blitz REQUIRED)
-############################################################################################
-
 
 foreach(exe drawbicyc plot_series_compare average)
   add_executable(${exe} ${exe}.cpp)
@@ -66,46 +45,18 @@ foreach(exe drawbicyc plot_series_compare average)
 # blitz from cmake
   target_link_libraries(${exe} PRIVATE blitz)
 
-  if(TARGET Boost::iostreams AND TARGET Boost::program_options AND TARGET Boost::filesystem)
-    message("linkiing boost targets")
-    target_link_libraries(${exe} PRIVATE Boost::iostreams Boost::program_options Boost::filesystem) 
-  else()
-    message("linkiing boost without targets")
-    # we dont link using targets, because they are not set if there is some discrepancy between cmake and boost version
-    target_link_libraries(${exe} PRIVATE ${Boost_LIBRARIES})
-    target_include_directories(${exe} PUBLIC ${Boost_INCLUDE_DIRS})
-  endif()
+#  if(TARGET Boost::tuple)
+#    message("linkiing boost targets")
+#    target_link_libraries(${exe} PRIVATE Boost::tuple)
+#  else()
+#    message("linkiing boost without targets")
+#    # we dont link using targets, because they are not set if there is some discrepancy between cmake and boost version
+#    target_link_libraries(${exe} PRIVATE ${Boost_LIBRARIES})
+#    target_include_directories(${exe} PUBLIC ${Boost_INCLUDE_DIRS})
+#  endif()
 endforeach()
 
 
-############################################################################################
-# installation
-
-install(
-  DIRECTORY
-    include/drawbicyc
-  DESTINATION
-    include
-)
-
-install(TARGETS drawbicyc EXPORT drawbicyc-targets DESTINATION bin)
-install(EXPORT drawbicyc-targets DESTINATION share/drawbicyc)
-
-# generate and install a config file
-include(CMakePackageConfigHelpers)
-
-configure_package_config_file(
-  drawbicyc-config.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/drawbicyc-config.cmake"
-  INSTALL_DESTINATION
-    share/drawbicyc
-)
-install(
-  FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/drawbicyc-config.cmake"
-  DESTINATION
-    share/drawbicyc
-)
 ############################################################################################
 
 
