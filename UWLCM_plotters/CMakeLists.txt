@@ -35,6 +35,13 @@ add_library(UWLCM_plotters INTERFACE)
 file(GLOB_RECURSE UWLCM_PLOTTERS_INCLUDE_FILES "include/*.hpp*")
 set_target_properties(UWLCM_plotters PROPERTIES PUBLIC_HEADER "${UWLCM_PLOTTERS_INCLUDE_FILES}")
 
+target_include_directories(UWLCM_plotters
+  INTERFACE
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+)
+
+
 target_compile_features(UWLCM_plotters INTERFACE cxx_std_14)
 target_link_libraries(UWLCM_plotters INTERFACE ${HDF5_LIBRARIES})
 target_include_directories(UWLCM_plotters INTERFACE ${HDF5_INCLUDE_DIRS})
