@@ -63,21 +63,21 @@ INSTALL(TARGETS UWLCM_plotters
         PUBLIC_HEADER DESTINATION include/UWLCM_plotters
 )
 
-install(TARGETS UWLCM_plotters EXPORT UWLCM_plotters-targets)
-install(EXPORT UWLCM_plotters-targets DESTINATION share/UWLCM_plotters)
+install(TARGETS UWLCM_plotters EXPORT uwlcm_plotters-targets)
+install(EXPORT uwlcm_plotters-targets DESTINATION share/UWLCM_plotters)
 
 # generate and install a config file
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  UWLCM_plotters-config.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/UWLCM_plotters-config.cmake"
+  uwlcm_plotters-config.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/uwlcm_plotters-config.cmake"
   INSTALL_DESTINATION
     share/UWLCM_plotters
 )
 install(
   FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/UWLCM_plotters-config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/uwlcm_plotters-config.cmake"
   DESTINATION
     share/UWLCM_plotters
 )

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.6) # not sure, simply copied from UWLCM
+project(drawbicyc)
 cmake_policy(SET CMP0028 NEW)
-find_package(Boost COMPONENTS tuple REQUIRED)
+find_package(Boost COMPONENTS program_options filesystem iostreams)
 
 ############################################################################################
 #libcloudphxx
@@ -21,6 +22,7 @@ if (NOT TARGET uwlcm::uwlcm)
 endif()
 
 ############################################################################################
+find_package(UWLCM_plotters REQUIRED)
 
 foreach(exe drawbicyc plot_series_compare average)
   add_executable(${exe} ${exe}.cpp)
@@ -37,6 +39,7 @@ foreach(exe drawbicyc plot_series_compare average)
   target_link_libraries(${exe} PRIVATE uwlcm::uwlcm_includes)
   target_link_libraries(${exe} PRIVATE ${HDF5_LIBRARIES})
   target_include_directories(${exe} PUBLIC ${HDF5_INCLUDE_DIRS})
+  target_link_libraries(${exe} PRIVATE UWLCM_plotters)
 
 # blitz from pkgconfig
 #  target_link_libraries(${exe} PRIVATE ${BLITZ_LIBRARIES})
@@ -45,15 +48,15 @@ foreach(exe drawbicyc plot_series_compare average)
 # blitz from cmake
   target_link_libraries(${exe} PRIVATE blitz)
 
-#  if(TARGET Boost::tuple)
-#    message("linkiing boost targets")
-#    target_link_libraries(${exe} PRIVATE Boost::tuple)
-#  else()
-#    message("linkiing boost without targets")
-#    # we dont link using targets, because they are not set if there is some discrepancy between cmake and boost version
-#    target_link_libraries(${exe} PRIVATE ${Boost_LIBRARIES})
-#    target_include_directories(${exe} PUBLIC ${Boost_INCLUDE_DIRS})
-#  endif()
+  if(TARGET Boost::iostreams AND TARGET Boost::program_options AND TARGET Boost::filesystem)
+    message("linkiing boost targets")
+    target_link_libraries(${exe} PRIVATE Boost::iostreams Boost::program_options Boost::filesystem)
+  else()
+    message("linkiing boost without targets")
+    # we dont link using targets, because they are not set if there is some discrepancy between cmake and boost version
+    target_link_libraries(${exe} PRIVATE ${Boost_LIBRARIES})
+    target_include_directories(${exe} PUBLIC ${Boost_INCLUDE_DIRS})
+  endif()
 endforeach()
 
 

@@ -3,5 +3,5 @@
 get_filename_component(UWLCM_PLOTTERS_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
 if(NOT TARGET UWLCM_PLOTTERS)
-    include("${UWLCM_PLOTTERS_CMAKE_DIR}/UWLCM_plotters-targets.cmake")
+    include("${UWLCM_PLOTTERS_CMAKE_DIR}/uwlcm_plotters-targets.cmake")
 endif()
