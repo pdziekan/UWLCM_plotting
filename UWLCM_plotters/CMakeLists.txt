@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.6) # not sure, simply copied from UWLCM
 project(UWLCM_plotters)
 cmake_policy(SET CMP0028 NEW)
 find_package(HDF5 COMPONENTS CXX HL REQUIRED)
-find_package(Boost COMPONENTS units program_options REQUIRED)
+find_package(Boost COMPONENTS program_options REQUIRED)
 
 ############################################################################################
 #libcloudphxx
@@ -26,57 +26,44 @@ endif()
 #  ")
 #endif()
 
-#message("Blitz include dirs: ${BLITZ_INCLUDE_DIRS}")
-
 # with CMake
 find_package(blitz REQUIRED)
 ############################################################################################
 
-add_library(UWLCM_plotters STATIC)
+add_library(UWLCM_plotters INTERFACE)
 
-target_compile_features(${exe} PUBLIC cxx_std_14)
-target_link_libraries(${exe} PRIVATE ${HDF5_LIBRARIES})
-target_include_directories(${exe} PUBLIC ${HDF5_INCLUDE_DIRS})
+file(GLOB_RECURSE UWLCM_PLOTTERS_INCLUDE_FILES "include/*.hpp*")
+set_target_properties(UWLCM_plotters PROPERTIES PUBLIC_HEADER "${UWLCM_PLOTTERS_INCLUDE_FILES}")
+
+target_compile_features(UWLCM_plotters INTERFACE cxx_std_14)
+target_link_libraries(UWLCM_plotters INTERFACE ${HDF5_LIBRARIES})
+target_include_directories(UWLCM_plotters INTERFACE ${HDF5_INCLUDE_DIRS})
 
 # blitz from pkgconfig
-#  target_link_libraries(${exe} PRIVATE ${BLITZ_LIBRARIES})
-#  target_include_directories(${exe} PUBLIC ${BLITZ_INCLUDE_DIRS})
+#  target_link_libraries(UWLCM_plotters INTERFACE ${BLITZ_LIBRARIES})
+#  target_include_directories(UWLCM_plotters INTERFACE ${BLITZ_INCLUDE_DIRS})
 
 # blitz from cmake
-target_link_libraries(${exe} PRIVATE blitz)
+target_link_libraries(UWLCM_plotters INTERFACE blitz)
 
 if(TARGET Boost::units AND TARGET Boost::program_options)
   message("linkiing boost targets")
-  target_link_libraries(${exe} PRIVATE Boost::units Boost::program_options)
+  target_link_libraries(UWLCM_plotters INTERFACE Boost::units Boost::program_options)
 else()
   message("linkiing boost without targets")
   # we dont link using targets, because they are not set if there is some discrepancy between cmake and boost version
-  target_link_libraries(${exe} PRIVATE ${Boost_LIBRARIES})
-  target_include_directories(${exe} PUBLIC ${Boost_INCLUDE_DIRS})
+  target_link_libraries(UWLCM_plotters INTERFACE ${Boost_LIBRARIES})
+  target_include_directories(UWLCM_plotters INTERFACE ${Boost_INCLUDE_DIRS})
 endif()
-
-#if(TARGET Boost::iostreams AND TARGET Boost::program_options AND TARGET Boost::filesystem)
-#  message("linkiing boost targets")
-#  target_link_libraries(${exe} PRIVATE Boost::iostreams Boost::program_options Boost::filesystem)
-#else()
-#  message("linkiing boost without targets")
-#  # we dont link using targets, because they are not set if there is some discrepancy between cmake and boost version
-#  target_link_libraries(${exe} PRIVATE ${Boost_LIBRARIES})
-#  target_include_directories(${exe} PUBLIC ${Boost_INCLUDE_DIRS})
-#endif()
-
 
 ############################################################################################
 # installation
 
-install(
-  DIRECTORY
-    include/UWLCM_plotters
-  DESTINATION
-    include
+INSTALL(TARGETS UWLCM_plotters
+        PUBLIC_HEADER DESTINATION include/UWLCM_plotters
 )
 
-#install(TARGETS UWLCM_plotters EXPORT UWLCM_plotters-targets DESTINATION bin)
+install(TARGETS UWLCM_plotters EXPORT UWLCM_plotters-targets)
 install(EXPORT UWLCM_plotters-targets DESTINATION share/UWLCM_plotters)
 
 # generate and install a config file
