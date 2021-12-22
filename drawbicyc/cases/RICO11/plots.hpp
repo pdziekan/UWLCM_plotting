@@ -7,22 +7,22 @@ const std::vector<std::string> series_rico({
 // "clb_bigrain_mean_inclt",
 //, "clb_bigrain_mean_gccn_fraction"
 
-//"cl_acnv25_rico",
-//"cl_accr25_rico",
-//"cloud_cover_rico",
-//"min_cloud_base_rico",
-//"inversion_height_rico",
-//"lwp",
-//"rwp",
-//"surf_precip",
-//"acc_precip",
-"cl_nc"
+"cl_acnv25_rico",
+"cl_accr25_rico",
+"cloud_cover_rico",
+"min_cloud_base_rico",
+"inversion_height_rico",
+"lwp",
+"rwp",
+"surf_precip",
+"acc_precip"
+,"cl_nc"
 ,"cl_nr"
-,"rd_lt_0.8um_conc"
-,"rd_geq_0.8um_conc"
-,"cl_rd_lt_0.8um_conc"
-,"cl_rd_geq_0.8um_conc"
-//"sd_conc"
+//,"rd_lt_0.8um_conc"
+//,"rd_geq_0.8um_conc"
+//,"cl_rd_lt_0.8um_conc"
+//,"cl_rd_geq_0.8um_conc"
+,"sd_conc"
 
 /*
  "cloud_base",

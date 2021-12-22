@@ -1,21 +1,25 @@
 #pragma once
 
 const std::vector<std::string> series_dycoms({
+// "cl_nr",
+//"cl_acnv25_dycoms",
+//"cl_accr25_dycoms",
+//"wvarmax", "cloud_cover_dycoms", "lwp", "er",
+// "surf_precip",
+// "acc_precip",
+// "cl_nc",
+// "cloud_base_dycoms",
+ "cloud_base_precip_dycoms"
+
+
+
+
 // "clb_bigrain_mean_rd",
 // "clb_bigrain_mean_kappa",
 // "clb_bigrain_mean_conc",
 // "clb_bigrain_mean_inclt",
 //, "clb_bigrain_mean_gccn_fraction"
-
- "cl_nr",
-"cl_acnv25_dycoms",
-"cl_accr25_dycoms",
-"wvarmax", "cloud_cover_dycoms", "lwp", "er",
- "surf_precip",
 ////"mass_dry",
- "acc_precip",
- "cl_nc",
- "cloud_base_dycoms"
 // ,"cl_gccn_meanr"
 // ,"cl_avg_cloud_rad"
 // ,"cl_gccn_conc", "gccn_conc"
