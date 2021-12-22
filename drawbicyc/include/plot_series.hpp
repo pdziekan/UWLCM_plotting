@@ -1,5 +1,4 @@
-#include "common.hpp" // common has some ugly global constants
-#include "PlotterMicro.hpp"
+#include <UWLCM_plotters/PlotterMicro.hpp>
 #include <boost/tuple/tuple.hpp>
 #include "plots.hpp"
 #include "gnuplot_series_set_labels.hpp"

@@ -1,9 +1,8 @@
 //#include <blitz/array.h>
 //#include <fstream>
 #include <boost/tuple/tuple.hpp>
-#include <drawbicyc/common.hpp>
-#include <drawbicyc/PlotterMicro.hpp>
-#include <drawbicyc/plots.hpp>
+#include <UWLCM_plotters/PlotterMicro.hpp>
+#include "include/plots.hpp"
 
 using namespace blitz;
 

@@ -1,5 +1,4 @@
-#include "common.hpp"
-#include "PlotterMicro.hpp"
+#include <UWLCM_plotters/PlotterMicro.hpp>
 #include <boost/tuple/tuple.hpp>
 //#include <libcloudph++/common/const_cp.hpp>
 #include "plots.hpp"

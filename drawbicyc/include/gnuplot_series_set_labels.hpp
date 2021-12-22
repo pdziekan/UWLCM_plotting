@@ -1,4 +1,4 @@
-#include "common.hpp"
+#include <UWLCM_plotters/common.hpp>
 
 void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
 {

@@ -1,9 +1,7 @@
 #include <unordered_set>
 #include <iomanip> 
-
-#include "common.hpp"
-#include "PlotterMicro.hpp"
 #include <boost/tuple/tuple.hpp>
+#include <UWLCM_plotters/PlotterMicro.hpp>
 #include "plots.hpp"
 
 template<class Plotter_t>

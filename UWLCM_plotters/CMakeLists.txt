@@ -46,6 +46,8 @@ target_compile_features(UWLCM_plotters INTERFACE cxx_std_14)
 target_link_libraries(UWLCM_plotters INTERFACE ${HDF5_LIBRARIES})
 target_include_directories(UWLCM_plotters INTERFACE ${HDF5_INCLUDE_DIRS})
 
+target_link_libraries(UWLCM_plotters INTERFACE libcloudph++)
+
 # blitz from pkgconfig
 #  target_link_libraries(UWLCM_plotters INTERFACE ${BLITZ_LIBRARIES})
 #  target_include_directories(UWLCM_plotters INTERFACE ${BLITZ_INCLUDE_DIRS})

@@ -1,8 +1,7 @@
-#include "common.hpp"
-#include "PlotterMicro.hpp"
+#include <map>
+#include <UWLCM_plotters/PlotterMicro.hpp>
 #include "plots.hpp"
 #include "focus.hpp"
-#include <map>
 
 namespace
 {
