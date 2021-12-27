@@ -38,7 +38,6 @@ set_target_properties(UWLCM_plotters PROPERTIES PUBLIC_HEADER "${UWLCM_PLOTTERS_
 target_include_directories(UWLCM_plotters
   INTERFACE
     $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
 )
 
 
@@ -46,7 +45,7 @@ target_compile_features(UWLCM_plotters INTERFACE cxx_std_14)
 target_link_libraries(UWLCM_plotters INTERFACE ${HDF5_LIBRARIES})
 target_include_directories(UWLCM_plotters INTERFACE ${HDF5_INCLUDE_DIRS})
 
-target_link_libraries(UWLCM_plotters INTERFACE clphxx::cloudphxx_lgrngn)
+target_link_libraries(UWLCM_plotters INTERFACE clphxx::cloudphxx_headers)
 
 # blitz from pkgconfig
 #target_link_libraries(UWLCM_plotters INTERFACE ${BLITZ_LIBRARIES})
@@ -68,11 +67,10 @@ endif()
 ############################################################################################
 # installation
 
-INSTALL(TARGETS UWLCM_plotters
+install(TARGETS UWLCM_plotters EXPORT uwlcm_plotters-targets
         PUBLIC_HEADER DESTINATION include/UWLCM_plotters
 )
 
-install(TARGETS UWLCM_plotters EXPORT uwlcm_plotters-targets)
 install(EXPORT uwlcm_plotters-targets DESTINATION share/UWLCM_plotters)
 
 # generate and install a config file
