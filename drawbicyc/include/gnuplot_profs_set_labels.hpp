@@ -1,4 +1,7 @@
+#pragma once
+
 #include <UWLCM_plotters/common.hpp>
+#include "gnuplot.hpp"
 
 void gnuplot_profs_set_labels(Gnuplot &gp, std::string plt, const bool normalize)
 {

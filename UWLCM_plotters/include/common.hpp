@@ -6,7 +6,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include "gnuplot.hpp"
+#include <blitz/array.h>
 #include "notice_macros.hpp"
 #include "common_filters.hpp"
 #include <boost/units/systems/si.hpp>

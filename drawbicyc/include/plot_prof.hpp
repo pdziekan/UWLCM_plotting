@@ -3,6 +3,7 @@
 //#include <libcloudph++/common/const_cp.hpp>
 #include "plots.hpp"
 #include "gnuplot_profs_set_labels.hpp"
+#include "gnuplot.hpp"
 
 template<class Plotter_t>
 void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool normalize)

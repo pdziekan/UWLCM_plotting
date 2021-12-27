@@ -2,6 +2,7 @@
 #include <boost/tuple/tuple.hpp>
 #include "plots.hpp"
 #include "gnuplot_series_set_labels.hpp"
+#include "gnuplot.hpp"
 
 template<class Plotter_t>
 void plot_series(Plotter_t plotter, Plots plots, std::string type)

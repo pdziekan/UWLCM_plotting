@@ -3,6 +3,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <UWLCM_plotters/PlotterMicro.hpp>
 #include "plots.hpp"
+#include "gnuplot.hpp"
 
 template<class Plotter_t>
 void plot_fields(Plotter_t plotter, Plots plots, std::string type)

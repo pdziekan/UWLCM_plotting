@@ -4,6 +4,7 @@
 #include <UWLCM_plotters/PlotterMicro.hpp>
 #include <boost/tuple/tuple.hpp>
 #include "plots.hpp"
+#include "gnuplot.hpp"
 
 template<class Plotter_t>
 void plot_qv_qc_2_6_10_min(Plotter_t plotter)

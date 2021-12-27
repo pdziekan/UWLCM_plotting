@@ -24,7 +24,7 @@ endif()
 ############################################################################################
 find_package(UWLCM_plotters REQUIRED)
 
-foreach(exe drawbicyc plot_series_compare average)
+foreach(exe drawbicyc)# plot_series_compare average)
   add_executable(${exe} ${exe}.cpp)
   # pointing to drawbicyc headers
   target_include_directories(${exe}

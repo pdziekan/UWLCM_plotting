@@ -2,6 +2,7 @@
 #include <UWLCM_plotters/PlotterMicro.hpp>
 #include "plots.hpp"
 #include "focus.hpp"
+#include "gnuplot.hpp"
 
 namespace
 {

@@ -1,6 +1,9 @@
 @PACKAGE_INIT@
 
 get_filename_component(UWLCM_PLOTTERS_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+find_dependency(libcloudph++ REQUIRED)
 
 if(NOT TARGET UWLCM_PLOTTERS)
     include("${UWLCM_PLOTTERS_CMAKE_DIR}/uwlcm_plotters-targets.cmake")

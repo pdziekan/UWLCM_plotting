@@ -1,4 +1,6 @@
+#pragma once
 #include <UWLCM_plotters/common.hpp>
+#include "gnuplot.hpp"
 
 void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
 {
