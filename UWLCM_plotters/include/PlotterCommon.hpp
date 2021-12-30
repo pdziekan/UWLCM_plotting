@@ -84,6 +84,10 @@ class PlotterCommon
   PlotterCommon(const string &file):
     file(file)
   {
+    // init h5f
+    notice_macro("about to open file: " << file << "/const.h5")
+    h5f.openFile(file + "/const.h5", H5F_ACC_RDONLY);
+
     // init dt and outfreq
     {
       map["dt"] = h5load_attr(file + "/const.h5", "dt", "advection");
