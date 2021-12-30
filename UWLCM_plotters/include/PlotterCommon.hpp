@@ -86,18 +86,9 @@ class PlotterCommon
   {
     // init dt and outfreq
     {
-      notice_macro("about to open file: " << file << "/const.h5")
-      h5f.openFile(file + "/const.h5", H5F_ACC_RDONLY);
-
-      notice_macro("about to read group: advection")
-      h5g = h5f.openGroup("advection");
-
-      float dt;
-      {
-        auto attr = h5g.openAttribute("dt");
-        attr.read(attr.getDataType(), &dt);
-      }
-      map["dt"] = dt;
+      map["dt"] = h5load_attr(file + "/const.h5", "dt", "advection");
+      map["outfreq"] = h5load_attr(file + "/const.h5", "user_params outfreq", "/");
+      map["MPI_compiler"] = h5load_attr(file + "/const.h5", "MPI compiler (true/false)", "MPI details");
 
       // read number of timesteps
       hsize_t n;
@@ -125,15 +116,6 @@ class PlotterCommon
       h5s.getSimpleExtentDims(&n, NULL);
       map_prof.emplace("rhod", arr_prof_t(n));
       h5d.read(map_prof["rhod"].data(), H5::PredType::NATIVE_FLOAT);
-
-      // read output frequency
-      float outfreq;
-      {
-        auto root_group = h5f.openGroup("/");
-        auto attr = root_group.openAttribute("user_params outfreq");
-        attr.read(attr.getDataType(), &outfreq);
-      }
-      map["outfreq"] = outfreq;
     }
   }
 };
