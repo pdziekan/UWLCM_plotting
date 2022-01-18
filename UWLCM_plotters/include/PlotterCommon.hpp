@@ -91,7 +91,7 @@ class PlotterCommon
     // init dt and outfreq
     {
       map["dt"] = h5load_attr(file + "/const.h5", "dt", "advection");
-      map["outfreq"] = h5load_attr(file + "/const.h5", "user_params outfreq", "/");
+      map["outfreq"] = h5load_attr(file + "/const.h5", "outfreq", "user_params");
       map["MPI_compiler"] = h5load_attr(file + "/const.h5", "MPI compiler (true/false)", "MPI details");
 
       // read number of timesteps
