@@ -204,8 +204,8 @@ class PlotterMicro_t : public Plotter_t<NDims>
     arr_t actconc;
     // read concentration of activated droplets
     if(this->micro == "blk_1m") return {0,0};
-    else if(this->micro == "lgrngn") actconc = arr_t(this->h5load_timestep("actrw_rw_mom0", at));
-    else if(this->micro == "blk_2m") actconc = arr_t(this->h5load_timestep("nc", at)) + arr_t(this->h5load_timestep("nr", at));
+    else if(this->micro == "lgrngn") actconc = arr_t(this->h5load_timestep("actrw_rw_mom0", at)).copy();
+    else if(this->micro == "blk_2m") actconc = arr_t(this->h5load_timestep("nc", at)) + arr_t(this->h5load_timestep("nr", at)).copy();
     actconc *= rhod; // b4 it was specific moment
     actconc /= 1e6; // per cm^3
     return cloud_hlpr(actconc, at);
