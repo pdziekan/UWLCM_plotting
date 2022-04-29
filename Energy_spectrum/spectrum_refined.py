@@ -5,76 +5,106 @@ import numpy as np
 from sys import argv
 import matplotlib.pyplot as plt
 
-#velocities = ["u", "v", "w"]
-#velocities = ["u", "v", "w", "cloud_rw_mom3", "rv", "th", "RH", "aerosol_rw_mom3"]
-#velocities = ["cloud_rw_mom3"]
-#velocities = ["w"]
+# names of arrays with data to be analyzed (in timestep files)
+velocities = ["u", "v", "w"]
+velocities = ["w"]
 
-velocities = ["u reconstructed"]
+vel_suffices = ["", " reconstructed", " refined"]
+pos_suffices = ["", " refined", " refined"]
 
 time_start = int(argv[1])
 time_end = int(argv[2])
 outfreq = int(argv[3])
-from_lvl = int(argv[4])
-to_lvl = int(argv[5])
+_from_lvl = int(argv[4])
+_to_lvl = int(argv[5])
 
 directories = argv[6:len(argv):2]
 labels = argv[7:len(argv):2]
 print directories, labels
 
-# read in nx, ny, nz
+# directories loop
 for directory, lab in zip(directories, labels):
-  w3d = h5py.File(directory + "/timestep" + str(time_start).zfill(10) + ".h5", "r")["u"][:,:,:]
-  # TODO: in refined, read shape refined
-  nx, ny, nz = w3d.shape
-  nx *= 4
-  ny *= 4
-  nz *= 4
   Exy_avg = {}
-  for vel in velocities:
-    Exy_avg[vel] = np.zeros(((nx+1)/2) - 1)
-  
-  for t in range(time_start, time_end+1, outfreq):
-    filename = directory + "/timestep" + str(t).zfill(10) + ".h5"
-    print filename
+  #dx = {}
+  #ref = {} # refinement = dx / dx_refined
+  #suffixes loop, suffix are for resolved/refined/reconstructed data
+  for vel_suf, pos_suf in zip(vel_suffices, pos_suffices):
+    # read nx, ny, nz, dx, dy, dz
+    w3d = h5py.File(directory + "/const.h5", "r")["X"+pos_suf][:,:,:]
+    nx, ny, nz = w3d.shape
+    dx =  w3d[1][0][0] - w3d[0][0][0]
+    # it is asumed that dx == dy
+    ref = int(h5py.File(directory + "/const.h5", "r")['advection'].attrs['di'][0] / dx)
+    print dx,ref
 
-    for vel in velocities:
-      print vel
-  
-      w3d = h5py.File(filename, "r")[vel][:,:,:] # * 4. / 3. * 3.1416 * 1e3 
-      
-      for lvl in range(from_lvl, to_lvl+1):
-        w2d = w3d[:, :, lvl]
-        print w2d
-        
-        wkx = 1.0 / np.sqrt(nx - 1) * np.fft.rfft(w2d, axis = 0)
-        wky = 1.0 / np.sqrt(ny - 1) * np.fft.rfft(w2d, axis = 1)
-        
-        #Ex = 0.5 * (np.abs(wkx) ** 2)
-        Ex = (np.abs(wkx) ** 2)
-        Ex = np.mean(Ex, axis = 1)
-        #Ey = 0.5 * (np.abs(wky) ** 2)
-        Ey = (np.abs(wky) ** 2)
-        Ey = np.mean(Ey, axis = 0)
-        
-        Exy = 0.5 * (Ex + Ey)
-        Exy_avg[vel] += Exy
-  
-      K = np.fft.rfftfreq(nx - 1 - 2)
-  #    plt.loglog(K, Exy)
-      lmbd = 50. / K # assume dx=50m
+    # initiliaze average for each velocity
+    for _vel in velocities:
+      vel = _vel + vel_suf
+      Exy_avg[vel] = np.zeros((nx-1)/2 + 1)
+
+#      pos = _pos + pos_suf
+#      pos_arr = h5py.File(directory + "/const.h5", "r")[pos]
+#      dx[vel] = pos_arr[1][1][1] - pos_arr[0][0][0]
+#      print dx[vel]
+#      ref[vel_suf] = int(dx[_vel + vel_suffices[0]]/dx[vel])
+#      print ref[vel_suf]
+#      print fconst.keys()
+#      adve_group = fconst["advection"]
+#      print adve_group
+#      dx[vel] = h5py.File(directory + "/const.h5", "r")[cs]
+#      print dx
+
+    from_lvl = _from_lvl * ref
+    to_lvl =   _to_lvl * ref
     
-    if (t == time_start and lab==labels[0]):
-      plt.loglog(lmbd, 2e-1* K**(-5./3.) )
+    for t in range(time_start, time_end+1, outfreq):
+      filename = directory + "/timestep" + str(t).zfill(10) + ".h5"
+      print filename
   
-  for vel in velocities:
-    Exy_avg[vel] /= (time_end - time_start) / outfreq + 1
-    Exy_avg[vel] /= to_lvl+1 - from_lvl
-  #crudely scale
-  #  Exy_avg[vel] /= Exy_avg[vel][len(Exy_avg[vel])-1]
-    plt.loglog(lmbd, Exy_avg[vel] , linewidth=2, label=lab+"_"+vel)
+      for _vel in velocities:
+        vel = _vel + vel_suf
+        print vel
+    
+        print nx,ny
+        w3d = h5py.File(filename, "r")[vel][0:nx-1,0:ny-1,:] # * 4. / 3. * 3.1416 * 1e3 
+        
+        for lvl in range(from_lvl, to_lvl+1):
+          w2d = w3d[:, :, lvl]
+          #print w2d
+          
+          wkx = 1.0 / np.sqrt(nx - 1) * np.fft.rfft(w2d, axis = 0)
+          wky = 1.0 / np.sqrt(ny - 1) * np.fft.rfft(w2d, axis = 1)
+          
+          Ex = 0.5 * (np.abs(wkx) ** 2)
+#          Ex = (np.abs(wkx) ** 2)
+          Ex = np.mean(Ex, axis = 1)
+          Ey = 0.5 * (np.abs(wky) ** 2)
+          #Ey = (np.abs(wky) ** 2)
+          Ey = np.mean(Ey, axis = 0)
+          
+#          Exy = 0.5 * (Ex + Ey)
+          Exy = Ex
+          Exy_avg[vel] += Exy
+    
+        K = np.fft.rfftfreq(nx - 1) / dx
+    #    plt.loglog(K, Exy)
+        #lmbd = dx[vel] / K
+        lmbd = 1 / K
+        print K, lmbd
+      
+      if (t == time_start and lab==labels[0]):
+        plt.loglog(lmbd, 2e-7* K**(-5./3.) )
+    
+    for _vel in velocities:
+      vel = _vel + vel_suf
+      Exy_avg[vel] /= (time_end - time_start) / outfreq + 1
+      Exy_avg[vel] /= to_lvl+1 - from_lvl
+    #crudely scale
+    #  Exy_avg[vel] /= Exy_avg[vel][len(Exy_avg[vel])-1]
+      plt.loglog(lmbd, Exy_avg[vel] , linewidth=2, label=lab+"_"+vel)
  
-plt.xlim(10**4,10**2)
+#plt.xlim(10**4,10**2)
+plt.gca().invert_xaxis()
 plt.xlabel("l[m]")
 plt.ylabel("PSD")
 plt.legend()

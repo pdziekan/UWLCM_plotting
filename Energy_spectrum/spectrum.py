@@ -5,10 +5,10 @@ import numpy as np
 from sys import argv
 import matplotlib.pyplot as plt
 
-#velocities = ["u", "v", "w"]
+velocities = ["u", "v", "w"]
 #velocities = ["u", "v", "w", "cloud_rw_mom3", "rv", "th", "RH", "aerosol_rw_mom3"]
 #velocities = ["cloud_rw_mom3"]
-velocities = ["w"]
+#velocities = ["w"]
 
 time_start = int(argv[1])
 time_end = int(argv[2])
