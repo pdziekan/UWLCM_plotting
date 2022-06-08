@@ -9,8 +9,11 @@ import matplotlib.pyplot as plt
 velocities = ["u", "v", "w"]
 velocities = ["w"]
 
-vel_suffices = ["", " reconstructed", " refined"]
-pos_suffices = ["", " refined", " refined"]
+#vel_suffices = ["", " reconstructed", " refined"]
+#pos_suffices = ["", " refined", " refined"]
+
+vel_suffices = ["", " reconstructed"]
+pos_suffices = ["", " refined"]
 
 time_start = int(argv[1])
 time_end = int(argv[2])
@@ -93,7 +96,7 @@ for directory, lab in zip(directories, labels):
         print K, lmbd
       
       if (t == time_start and lab==labels[0]):
-        plt.loglog(lmbd, 2e-7* K**(-5./3.) )
+        plt.loglog(lmbd, 2e-6* K**(-5./3.) )
     
     for _vel in velocities:
       vel = _vel + vel_suf
@@ -106,7 +109,7 @@ for directory, lab in zip(directories, labels):
 #plt.xlim(10**4,10**2)
 plt.gca().invert_xaxis()
 plt.xlabel("l[m]")
-plt.ylabel("PSD")
+plt.ylabel("E")
 plt.legend()
 plt.grid(True, which='both', linestyle='--')
 #plt.title("Mean PSD of w 322m<z<642m @3h")
