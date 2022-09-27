@@ -7,6 +7,7 @@
 #include "cases/PiChamber/plots_icmw.hpp"
 #include "cases/Lasher_Trapp/plots.hpp"
 #include "cases/common_plots/GCCN_CCN_conc/plots.hpp"
+#include "cases/Cumulus_Congestus/plots.hpp"
 
 const std::vector<std::string> series_sgs({
 // "tot_tke"
@@ -57,6 +58,11 @@ class Plots
      // profs.insert(profs.end(), profs_Lasher_Trapp.begin(), profs_Lasher_Trapp.end());
       series.insert(series.end(), series_Lasher_Trapp.begin(), series_Lasher_Trapp.end());
       fields.insert(fields.end(), fields_Lasher_Trapp.begin(), fields_Lasher_Trapp.end());
+    }
+    else if(type == "cumulus_congestus") {
+     // profs.insert(profs.end(), profs_Cumulus_Congestus.begin(), profs_Cumulus_Congestus.end());
+      series.insert(series.end(), series_Cumulus_Congestus.begin(), series_Cumulus_Congestus.end());
+     // fields.insert(fields.end(), fields_Cumulus_Congestus.begin(), fields_Cumulus_Congestus.end());
     }
     else if(type == "pi_chamber_icmw") { 
       profs.insert(profs.end(), profs_PiChamberICMW.begin(), profs_PiChamberICMW.end());
