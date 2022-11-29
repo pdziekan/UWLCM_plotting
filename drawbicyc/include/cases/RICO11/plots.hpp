@@ -7,17 +7,29 @@ const std::vector<std::string> series_rico({
 // "clb_bigrain_mean_inclt",
 //, "clb_bigrain_mean_gccn_fraction"
 
-"cl_acnv25_rico",
-"cl_accr25_rico",
+//"cl_acnv25_rico",
+//"cl_accr25_rico",
+"RH_max",
 "cloud_cover_rico",
 "min_cloud_base_rico",
 "inversion_height_rico",
+"tot_water",
 "lwp",
 "rwp",
 "surf_precip",
 "acc_precip"
-,"cl_nc"
-,"cl_nr"
+,"nc"
+,"nr"
+,"cl_nc_rico"
+,"cl_nr_rico"
+,"cloud_avg_supersat"
+,"wvarmax"
+,"cl_meanr" //TODO: zmienic maske na rico
+//TODO (po usprawnieniu cloud mask i ujednoliceniu tego:
+/*
+,"cl_avg_cloud_rad"
+"cloud_avg_std_dev_act_rad"
+ * */
 //,"rd_lt_0.8um_conc"
 //,"rd_geq_0.8um_conc"
 //,"cl_rd_lt_0.8um_conc"
