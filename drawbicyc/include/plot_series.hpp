@@ -489,6 +489,30 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
+      else if (plt == "cl_nc_rico")
+      {
+        // cloud droplet (0.5um < r < 25 um) concentration in cloudy grid cells
+        try
+        {
+	  // rico cloud mask
+          auto tmp = plotter.h5load_rc_timestep(at * n["outfreq"]);
+          typename Plotter_t::arr_t snap(tmp);
+          snap = iscloudy_rc_rico(snap); // find cells with rc>1e-5
+          snap(plotter.hrzntl_slice(0)) = 0; // cheat to avoid occasional "cloudy" cell at ground level due to activation from surf flux
+
+          auto tmp = plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]);
+          typename Plotter_t::arr_t snap2(tmp);
+          snap2 *= rhod; // b4 it was specific moment
+          snap2 /= 1e6; // per cm^3
+
+          snap2 *= snap;
+          if(blitz::sum(snap) > 0)
+            res_series[plt](at) = blitz::sum(snap2) / blitz::sum(snap); 
+          else
+            res_series[plt](at) = 0;
+        }
+        catch(...) {if(at==first_timestep) data_found[plt]=0;}
+      }
       else if (plt == "cl_nr")
       {
         // rain drop (25um < r) concentration in cloudy grid cells
@@ -504,6 +528,30 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap2(tmp2);
           snap2 *= rhod; // b4 it was specific moment
           snap2 /= 1e6; // per cm^3
+          snap2 *= snap;
+          if(blitz::sum(snap) > 0)
+            res_series[plt](at) = blitz::sum(snap2) / blitz::sum(snap); 
+          else
+            res_series[plt](at) = 0;
+        }
+        catch(...) {if(at==first_timestep) data_found[plt]=0;}
+      }
+      else if (plt == "cl_nr_rico")
+      {
+        // rain drop (25um < r) concentration in cloudy grid cells
+        try
+        {
+	  // rico cloud mask
+          auto tmp = plotter.h5load_rc_timestep(at * n["outfreq"]);
+          typename Plotter_t::arr_t snap(tmp);
+          snap = iscloudy_rc_rico(snap); // find cells with rc>1e-5
+          snap(plotter.hrzntl_slice(0)) = 0; // cheat to avoid occasional "cloudy" cell at ground level due to activation from surf flux
+
+          auto tmp2 = plotter.h5load_timestep("rain_rw_mom0", at * n["outfreq"]);
+          typename Plotter_t::arr_t snap2(tmp2);
+          snap2 *= rhod; // b4 it was specific moment
+          snap2 /= 1e6; // per cm^3
+
           snap2 *= snap;
           if(blitz::sum(snap) > 0)
             res_series[plt](at) = blitz::sum(snap2) / blitz::sum(snap); 
