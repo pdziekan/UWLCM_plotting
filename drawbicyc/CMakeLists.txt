@@ -62,5 +62,31 @@ endforeach()
 
 ############################################################################################
 
+############################################################################################
+# installation
+
+install(TARGETS drawbicyc EXPORT drawbicyc-targets
+  RUNTIME DESTINATION bin)
+
+install(EXPORT drawbicyc-targets DESTINATION share/drawbicyc)
+
+# generate and install a config file
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+  drawbicyc-config.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/drawbicyc-config.cmake"
+  INSTALL_DESTINATION
+    share/drawbicyc
+)
+install(
+  FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/drawbicyc-config.cmake"
+  DESTINATION
+    share/drawbicyc
+)
+############################################################################################
+
+
 
 
