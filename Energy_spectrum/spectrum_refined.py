@@ -1,55 +1,89 @@
-# (C) Maciej Waruszewski
+# (C) Maciej Waruszewski, Piotr Dziekan
 
+import argparse
 import h5py
 import numpy as np
 from sys import argv
 import matplotlib.pyplot as plt
 
+parser = argparse.ArgumentParser(description='Plot energy spectra from UWLCM output.')
+
+parser.add_argument("-v", "--vars", action="extend", nargs="+", type=str, help="list of variables to be plotted", required=True)
+parser.add_argument("-ts", "--time_start", type=int, required=True, help="start of the averaging period [s]")
+parser.add_argument("-te", "--time_end", type=int, required=True, help="end of the averaging period [s]")
+parser.add_argument("-ls", "--level_start", type=int, required=True, help="lowest level of the averaging area [m]")
+parser.add_argument("-le", "--level_end", type=int, required=True, help="highest level of the averaging area [m]")
+parser.add_argument("-d", "--dirs", action="extend", nargs="+", type=str, help="list of directories with the data", required=True)
+parser.add_argument("-l", "--labels", action="extend", nargs="+", type=str, help="list of labels of the data (same order as --dirs)", required=True)
+parser.add_argument("-of", "--outfig", help="output file name", required=True)
+args = parser.parse_args()
+
+
 # names of arrays with data to be analyzed (in timestep files)
-velocities = ["u", "v", "w"]
-velocities = ["w"]
+#args.vars = ["u", "v", "w"]
+#args.vars = ["w"]
 
 #vel_suffices = ["", " reconstructed", " refined"]
 #pos_suffices = ["", " refined", " refined"]
 
-vel_suffices = ["", " reconstructed"]
-pos_suffices = ["", " refined"]
+#vel_suffices = ["", " reconstructed"]
+#pos_suffices = ["", " refined"]
 
-time_start = int(argv[1])
-time_end = int(argv[2])
-outfreq = int(argv[3])
-_from_lvl = int(argv[4])
-_to_lvl = int(argv[5])
+#TODO: plotting refined arrays still needs work
+vel_suffices = [""]
+pos_suffices = [""]
 
-directories = argv[6:len(argv):2]
-labels = argv[7:len(argv):2]
-print((directories, labels))
+#time_start = int(argv[1])
+#time_end = int(argv[2])
+#outfreq = int(argv[3])
+#_from_lvl = int(argv[4])
+#_to_lvl = int(argv[5])
+
+#directories = argv[6:len(argv):2]
+#labels = argv[7:len(argv):2]
+#print((directories, labels))
 
 # directories loop
-for directory, lab in zip(directories, labels):
+for directory, lab in zip(args.dirs, args.labels):
   Exy_avg = {}
+
+  # read some constant parameters
+  with h5py.File(directory + "/const.h5", 'r') as consth5:
+    user_params = consth5.get("user_params")
+    outfreq = int(user_params.attrs["outfreq"][0])
+    advection = consth5.get("advection")
+    dx_adve = advection.attrs["di"] # its the resolved dx
+    dz_adve = advection.attrs["dk"] # its the resolved dx
+    dt = advection.attrs["dt"]
+
+  time_start_idx = int(args.time_start / dt)
+  time_end_idx = int(args.time_end / dt)
+  level_start_idx = int(args.level_start / dz_adve)
+  level_end_idx = int(args.level_end / dz_adve)
+
+
   #dx = {}
   #ref = {} # refinement = dx / dx_refined
   #suffixes loop, suffix are for resolved/refined/reconstructed data
   for vel_suf, pos_suf in zip(vel_suffices, pos_suffices):
     # read nx, ny, nz, dx, dy, dz
     w3d = h5py.File(directory + "/const.h5", "r")["X"+pos_suf][:,:,:]
-    nx, ny, nz = w3d.shape
+    nx, ny, nz = tuple(x-1 for x in w3d.shape)
     dx =  w3d[1][0][0] - w3d[0][0][0]
     # it is asumed that dx == dy
-    ref = int(h5py.File(directory + "/const.h5", "r")['advection'].attrs['di'][0] / dx)
-    print((dx,ref))
+    ref = int(dx_adve / dx)
+    print((nx,dx,ref))
 
     # initiliaze average for each velocity
-    for _vel in velocities:
-      vel = _vel + vel_suf
-      Exy_avg[vel] = np.zeros((nx-1)/2 + 1)
+    for _var in args.vars:
+      vel = _var + vel_suf
+      Exy_avg[vel] = np.zeros(int((nx-1)/2 + 1))
 
 #      pos = _pos + pos_suf
 #      pos_arr = h5py.File(directory + "/const.h5", "r")[pos]
 #      dx[vel] = pos_arr[1][1][1] - pos_arr[0][0][0]
 #      print dx[vel]
-#      ref[vel_suf] = int(dx[_vel + vel_suffices[0]]/dx[vel])
+#      ref[vel_suf] = int(dx[_var + vel_suffices[0]]/dx[vel])
 #      print ref[vel_suf]
 #      print fconst.keys()
 #      adve_group = fconst["advection"]
@@ -57,15 +91,15 @@ for directory, lab in zip(directories, labels):
 #      dx[vel] = h5py.File(directory + "/const.h5", "r")[cs]
 #      print dx
 
-    from_lvl = _from_lvl * ref
-    to_lvl =   _to_lvl * ref
+    from_lvl = level_start_idx * ref
+    to_lvl =   level_end_idx * ref
     
-    for t in range(time_start, time_end+1, outfreq):
+    for t in range(time_start_idx, time_end_idx+1, outfreq):
       filename = directory + "/timestep" + str(t).zfill(10) + ".h5"
       print(filename)
   
-      for _vel in velocities:
-        vel = _vel + vel_suf
+      for _var in args.vars:
+        vel = _var + vel_suf
         print(vel)
     
         print(nx,ny)
@@ -95,12 +129,12 @@ for directory, lab in zip(directories, labels):
         lmbd = 1 / K
         print(K, lmbd)
       
-      if (t == time_start and lab==labels[0]):
+      if (t == time_start_idx and lab==args.labels[0]):
         plt.loglog(lmbd, 2e-6* K**(-5./3.) )
     
-    for _vel in velocities:
-      vel = _vel + vel_suf
-      Exy_avg[vel] /= (time_end - time_start) / outfreq + 1
+    for _var in args.vars:
+      vel = _var + vel_suf
+      Exy_avg[vel] /= (time_end_idx - time_start_idx) / outfreq + 1
       Exy_avg[vel] /= to_lvl+1 - from_lvl
     #crudely scale
     #  Exy_avg[vel] /= Exy_avg[vel][len(Exy_avg[vel])-1]
@@ -112,5 +146,6 @@ plt.xlabel("l[m]")
 plt.ylabel("E")
 plt.legend()
 plt.grid(True, which='both', linestyle='--')
-#plt.title("Mean PSD of w 322m<z<642m @3h")
+plt.title("Mean PSD z=["+str(args.level_start)+"m, "+str(args.level_end)+"m] @["+str(args.time_start)+"s, "+str(args.time_end)+"s]")
+plt.savefig(args.outfig)
 plt.show()

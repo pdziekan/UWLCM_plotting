@@ -1,4 +1,5 @@
 # (C) Maciej Waruszewski
+# obsolete, use spectrum_refined even for data without refinemenet
 
 import h5py
 import numpy as np
