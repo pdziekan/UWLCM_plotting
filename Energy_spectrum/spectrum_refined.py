@@ -23,7 +23,7 @@ _to_lvl = int(argv[5])
 
 directories = argv[6:len(argv):2]
 labels = argv[7:len(argv):2]
-print directories, labels
+print((directories, labels))
 
 # directories loop
 for directory, lab in zip(directories, labels):
@@ -38,7 +38,7 @@ for directory, lab in zip(directories, labels):
     dx =  w3d[1][0][0] - w3d[0][0][0]
     # it is asumed that dx == dy
     ref = int(h5py.File(directory + "/const.h5", "r")['advection'].attrs['di'][0] / dx)
-    print dx,ref
+    print((dx,ref))
 
     # initiliaze average for each velocity
     for _vel in velocities:
@@ -62,13 +62,13 @@ for directory, lab in zip(directories, labels):
     
     for t in range(time_start, time_end+1, outfreq):
       filename = directory + "/timestep" + str(t).zfill(10) + ".h5"
-      print filename
+      print(filename)
   
       for _vel in velocities:
         vel = _vel + vel_suf
-        print vel
+        print(vel)
     
-        print nx,ny
+        print(nx,ny)
         w3d = h5py.File(filename, "r")[vel][0:nx-1,0:ny-1,:] # * 4. / 3. * 3.1416 * 1e3 
         
         for lvl in range(from_lvl, to_lvl+1):
@@ -93,7 +93,7 @@ for directory, lab in zip(directories, labels):
     #    plt.loglog(K, Exy)
         #lmbd = dx[vel] / K
         lmbd = 1 / K
-        print K, lmbd
+        print(K, lmbd)
       
       if (t == time_start and lab==labels[0]):
         plt.loglog(lmbd, 2e-6* K**(-5./3.) )
