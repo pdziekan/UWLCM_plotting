@@ -18,7 +18,7 @@ to_lvl = int(argv[5])
 
 directories = argv[6:len(argv):2]
 labels = argv[7:len(argv):2]
-print directories, labels
+print(directories, labels)
 
 # read in nx, ny, nz
 for directory, lab in zip(directories, labels):
@@ -30,7 +30,7 @@ for directory, lab in zip(directories, labels):
   
   for t in range(time_start, time_end+1, outfreq):
     filename = directory + "/timestep" + str(t).zfill(10) + ".h5"
-    print filename
+    print(filename)
   
     for vel in velocities:
   
