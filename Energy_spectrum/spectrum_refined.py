@@ -5,6 +5,9 @@ import h5py
 import numpy as np
 from sys import argv
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+mpl.rcParams['figure.figsize'] = 10, 10
 
 parser = argparse.ArgumentParser(description='Plot energy spectra from UWLCM output.')
 
@@ -23,14 +26,14 @@ args = parser.parse_args()
 #args.vars = ["u", "v", "w"]
 #args.vars = ["w"]
 
-#vel_suffices = ["", " reconstructed", " refined"]
+#var_suffices = ["", " reconstructed", " refined"]
 #pos_suffices = ["", " refined", " refined"]
 
-#vel_suffices = ["", " reconstructed"]
+#var_suffices = ["", " reconstructed"]
 #pos_suffices = ["", " refined"]
 
 #TODO: plotting refined arrays still needs work
-vel_suffices = [""]
+var_suffices = [""]
 pos_suffices = [""]
 
 #time_start = int(argv[1])
@@ -65,7 +68,7 @@ for directory, lab in zip(args.dirs, args.labels):
   #dx = {}
   #ref = {} # refinement = dx / dx_refined
   #suffixes loop, suffix are for resolved/refined/reconstructed data
-  for vel_suf, pos_suf in zip(vel_suffices, pos_suffices):
+  for var_suf, pos_suf in zip(var_suffices, pos_suffices):
     # read nx, ny, nz, dx, dy, dz
     w3d = h5py.File(directory + "/const.h5", "r")["X"+pos_suf][:,:,:]
     nx, ny, nz = tuple(x-1 for x in w3d.shape)
@@ -76,19 +79,19 @@ for directory, lab in zip(args.dirs, args.labels):
 
     # initiliaze average for each velocity
     for _var in args.vars:
-      vel = _var + vel_suf
-      Exy_avg[vel] = np.zeros(int((nx-1)/2 + 1))
+      var = _var + var_suf
+      Exy_avg[var] = np.zeros(int((nx-1)/2 + 1))
 
 #      pos = _pos + pos_suf
 #      pos_arr = h5py.File(directory + "/const.h5", "r")[pos]
-#      dx[vel] = pos_arr[1][1][1] - pos_arr[0][0][0]
-#      print dx[vel]
-#      ref[vel_suf] = int(dx[_var + vel_suffices[0]]/dx[vel])
-#      print ref[vel_suf]
+#      dx[var] = pos_arr[1][1][1] - pos_arr[0][0][0]
+#      print dx[var]
+#      ref[var_suf] = int(dx[_var + var_suffices[0]]/dx[var])
+#      print ref[var_suf]
 #      print fconst.keys()
 #      adve_group = fconst["advection"]
 #      print adve_group
-#      dx[vel] = h5py.File(directory + "/const.h5", "r")[cs]
+#      dx[var] = h5py.File(directory + "/const.h5", "r")[cs]
 #      print dx
 
     from_lvl = level_start_idx * ref
@@ -99,11 +102,11 @@ for directory, lab in zip(args.dirs, args.labels):
       print(filename)
   
       for _var in args.vars:
-        vel = _var + vel_suf
-        print(vel)
+        var = _var + var_suf
+        print(var)
     
         print(nx,ny)
-        w3d = h5py.File(filename, "r")[vel][0:nx-1,0:ny-1,:] # * 4. / 3. * 3.1416 * 1e3 
+        w3d = h5py.File(filename, "r")[var][0:nx-1,0:ny-1,:] # * 4. / 3. * 3.1416 * 1e3 
         
         for lvl in range(from_lvl, to_lvl+1):
           w2d = w3d[:, :, lvl]
@@ -112,20 +115,20 @@ for directory, lab in zip(args.dirs, args.labels):
           wkx = 1.0 / np.sqrt(nx - 1) * np.fft.rfft(w2d, axis = 0)
           wky = 1.0 / np.sqrt(ny - 1) * np.fft.rfft(w2d, axis = 1)
           
-          Ex = 0.5 * (np.abs(wkx) ** 2)
-#          Ex = (np.abs(wkx) ** 2)
+#          Ex = 0.5 * (np.abs(wkx) ** 2)
+          Ex = (np.abs(wkx) ** 2)
           Ex = np.mean(Ex, axis = 1)
-          Ey = 0.5 * (np.abs(wky) ** 2)
-          #Ey = (np.abs(wky) ** 2)
+#          Ey = 0.5 * (np.abs(wky) ** 2)
+          Ey = (np.abs(wky) ** 2)
           Ey = np.mean(Ey, axis = 0)
           
-#          Exy = 0.5 * (Ex + Ey)
-          Exy = Ex
-          Exy_avg[vel] += Exy
+          Exy = 0.5 * (Ex + Ey)
+#          Exy = Ex
+          Exy_avg[var] += Exy
     
         K = np.fft.rfftfreq(nx - 1) / dx
     #    plt.loglog(K, Exy)
-        #lmbd = dx[vel] / K
+        #lmbd = dx[var] / K
         lmbd = 1 / K
         print(K, lmbd)
       
@@ -133,12 +136,13 @@ for directory, lab in zip(args.dirs, args.labels):
         plt.loglog(lmbd, 2e-6* K**(-5./3.) )
     
     for _var in args.vars:
-      vel = _var + vel_suf
-      Exy_avg[vel] /= (time_end_idx - time_start_idx) / outfreq + 1
-      Exy_avg[vel] /= to_lvl+1 - from_lvl
-    #crudely scale
-    #  Exy_avg[vel] /= Exy_avg[vel][len(Exy_avg[vel])-1]
-      plt.loglog(lmbd, Exy_avg[vel] , linewidth=2, label=lab+"_"+vel)
+      var = _var + var_suf
+      Exy_avg[var] /= (time_end_idx - time_start_idx) / outfreq + 1
+      Exy_avg[var] /= to_lvl+1 - from_lvl
+      #crudely scale
+      #Exy_avg[var] /= Exy_avg[var][len(Exy_avg[var])-1]
+      Exy_avg[var] /= np.sum(Exy_avg[var])
+      plt.loglog(lmbd, Exy_avg[var] , linewidth=2, label=lab+"_"+var)
  
 #plt.xlim(10**4,10**2)
 plt.gca().invert_xaxis()
