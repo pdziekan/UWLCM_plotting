@@ -12,13 +12,14 @@ mpl.rcParams['figure.figsize'] = 10, 10
 parser = argparse.ArgumentParser(description='Plot energy spectra from UWLCM output.')
 
 parser.add_argument("-v", "--vars", action="extend", nargs="+", type=str, help="list of variables to be plotted", required=True)
-parser.add_argument("-ts", "--time_start", type=int, required=True, help="start of the averaging period [s]")
-parser.add_argument("-te", "--time_end", type=int, required=True, help="end of the averaging period [s]")
-parser.add_argument("-ls", "--level_start", type=int, required=True, help="lowest level of the averaging area [m]")
-parser.add_argument("-le", "--level_end", type=int, required=True, help="highest level of the averaging area [m]")
+parser.add_argument("-ts", "--time_start", type=float, required=True, help="start of the averaging period [s]")
+parser.add_argument("-te", "--time_end", type=float, required=True, help="end of the averaging period [s]")
+parser.add_argument("-ls", "--level_start", type=float, required=True, help="lowest level of the averaging area [m]")
+parser.add_argument("-le", "--level_end", type=float, required=True, help="highest level of the averaging area [m]")
 parser.add_argument("-d", "--dirs", action="extend", nargs="+", type=str, help="list of directories with the data", required=True)
 parser.add_argument("-l", "--labels", action="extend", nargs="+", type=str, help="list of labels of the data (same order as --dirs)", required=True)
 parser.add_argument("-of", "--outfig", help="output file name", required=True)
+parser.add_argument("--outfreq", type=int, required=False, help="output frequency of the simulation [number of time steps], if not specified it will be read from const.h5 (if possible)")
 args = parser.parse_args()
 
 
@@ -36,16 +37,6 @@ args = parser.parse_args()
 var_suffices = [""]
 pos_suffices = [""]
 
-#time_start = int(argv[1])
-#time_end = int(argv[2])
-#outfreq = int(argv[3])
-#_from_lvl = int(argv[4])
-#_to_lvl = int(argv[5])
-
-#directories = argv[6:len(argv):2]
-#labels = argv[7:len(argv):2]
-#print((directories, labels))
-
 # directories loop
 for directory, lab in zip(args.dirs, args.labels):
   Exy_avg = {}
@@ -53,7 +44,10 @@ for directory, lab in zip(args.dirs, args.labels):
   # read some constant parameters
   with h5py.File(directory + "/const.h5", 'r') as consth5:
     user_params = consth5.get("user_params")
-    outfreq = int(user_params.attrs["outfreq"][0])
+    if args.outfreq is None:
+      outfreq = int(user_params.attrs["outfreq"][0])
+    else:
+      outfreq = args.outfreq
     advection = consth5.get("advection")
     dx_adve = advection.attrs["di"] # its the resolved dx
     dz_adve = advection.attrs["dk"] # its the resolved dx
