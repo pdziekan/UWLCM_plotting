@@ -30,6 +30,7 @@ for directory, lab in zip(args.dirs, args.labels):
   nz = {}
   dx = {}
   ref = {}
+  lmbd = {}
 
   # read some constant parameters
   with h5py.File(directory + "/const.h5", 'r') as consth5:
@@ -68,7 +69,7 @@ for directory, lab in zip(args.dirs, args.labels):
     for var in args.vars:
       print(var)
   
-      #print(nx,ny)
+      print(nx[var],dx[var][0])
       w3d = h5py.File(filename, "r")[var][0:nx[var]-1,0:ny[var]-1,:] # * 4. / 3. * 3.1416 * 1e3 
       
       for lvl in range(level_start_idx * ref[var], level_end_idx * ref[var] + 1):
@@ -89,25 +90,25 @@ for directory, lab in zip(args.dirs, args.labels):
 #        Exy = Ex
         Exy_avg[var] += Exy
   
-      K = np.fft.rfftfreq(nx - 1) / dx[var] # assume dy==dx
+      K = np.fft.rfftfreq(nx[var] - 1) / dx[var] # assume dy==dx
   #    plt.loglog(K, Exy)
       #lmbd = dx[var] / K
-      lmbd = 1 / K
-      print(K, lmbd)
+      lmbd[var] = 1 / K
+#      print(K, lmbd)
     
     if (t == time_start_idx and lab==args.labels[0]):
-      plt.loglog(lmbd, 2e-6* K**(-5./3.) )
+      plt.loglog(lmbd[var], 2e-6* K**(-5./3.) )
   
   for var in args.vars:
     Exy_avg[var] /= (time_end_idx - time_start_idx) / outfreq + 1
-    Exy_avg[var] /= lvl_end_idx * ref[var] + 1 - level_start_idx * ref[var]
+    Exy_avg[var] /= level_end_idx * ref[var] + 1 - level_start_idx * ref[var]
 
     #crudely scale
     #Exy_avg[var] /= Exy_avg[var][len(Exy_avg[var])-1]
     Exy_avg[var] /= np.sum(Exy_avg[var])
 
     #plot
-    plt.loglog(lmbd, Exy_avg[var] , linewidth=2, label=lab+"_"+var)
+    plt.loglog(lmbd[var], Exy_avg[var] , linewidth=2, label=lab+"_"+var)
  
 #plt.xlim(10**4,10**2)
 plt.gca().invert_xaxis()
