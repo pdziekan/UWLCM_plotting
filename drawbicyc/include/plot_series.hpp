@@ -556,7 +556,6 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
-<<<<<<< HEAD
       else if (plt == "cl_nr_rico")
       {
         // rain drop (25um < r) concentration in cloudy grid cells
