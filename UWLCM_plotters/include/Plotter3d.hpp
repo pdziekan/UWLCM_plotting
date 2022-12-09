@@ -18,7 +18,7 @@ class Plotter_t<3> : public PlotterCommon
   using parent_t = PlotterCommon;
   hsize_t n[3];
   enum {x, y, z};
-  arr_t tmp, tmp_srfc;
+  arr_t tmp, tmp_srfc, tmp_ref;
   blitz::Range yrange;
 
   public:
@@ -36,15 +36,17 @@ class Plotter_t<3> : public PlotterCommon
       cnt[3] = { n[x],  n[y],  srfc ? 1 : n[z] }, 
       off[3] = { 0,     0,     0    };
     this->h5s.selectHyperslab( H5S_SELECT_SET, cnt, off);
+
+    arr_t &arr(tmp.extent(0) == n[x] ? tmp : tmp_ref); // crude check if it is refined or normal data; assume surface data is never refined
   
     hsize_t ext[3] = {
-      hsize_t(tmp.extent(0)), 
-      hsize_t(tmp.extent(1)), 
-      hsize_t(srfc ? tmp_srfc.extent(2) : tmp.extent(2)) 
+      hsize_t(arr.extent(0)), 
+      hsize_t(arr.extent(1)), 
+      hsize_t(srfc ? tmp_srfc.extent(2) : arr.extent(2)) 
     };
-    this->h5d.read(srfc ? tmp_srfc.data() : tmp.data(), H5::PredType::NATIVE_FLOAT, H5::DataSpace(3, ext), h5s);
+    this->h5d.read(srfc ? tmp_srfc.data() : arr.data(), H5::PredType::NATIVE_FLOAT, H5::DataSpace(3, ext), h5s);
 
-    return blitz::safeToReturn((srfc ? tmp_srfc : tmp) + 0);
+    return blitz::safeToReturn((srfc ? tmp_srfc : arr) + 0);
   }
 
   auto h5load_timestep(
@@ -235,6 +237,17 @@ class Plotter_t<3> : public PlotterCommon
     // other dataset are of the size x*z, resize tmp
     tmp.resize(n[0]-1, n[1]-1, n[2]-1);
     tmp_srfc.resize(n[0]-1, n[1]-1, 1);
+
+    // init refined data
+    h5load(file + "/const.h5", "X refined");
+    this->map["dx refined"] = tmp(1,0,0) - tmp(0,0,0);
+    h5load(file + "/const.h5", "Y refined");
+    this->map["dy refined"] = tmp(0,1,0) - tmp(0,0,0);
+    h5load(file + "/const.h5", "Z refined");
+    this->map["dz refined"] = tmp(0,0,1) - tmp(0,0,0);
+    this->CellVol_ref = this->map["dx refined"] * this->map["dy refined"] * this->map["dz refined"];
+    this->h5f.openDataSet("X refined").getSpace().getSimpleExtentDims(n, NULL); 
+    tmp_ref.resize(n[0]-1, n[1]-1, n[2]-1);
   }
 };
 

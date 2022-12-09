@@ -20,6 +20,26 @@ class PlotterMicro_t : public Plotter_t<NDims>
   const double L_evap = 2264.76e3; // latent heat of evaporation [J/kg]
 
   public:
+  void multiply_by_rhod(arr_t &arr)
+  {
+    if(arr.extent(NDims-1) == this->map_prof["rhod"].extent(0))
+      arr *= this->map_prof["rhod"](this->LastIndex);
+    else if(arr.extent(NDims-1) == this->map_prof["rhod refined"].extent(0))
+      arr *= this->map_prof["rhod refined"](this->LastIndex);
+    else
+      throw std::runtime_error("multiply_by_rhod: input array is neither normal grid size nor refined grid size");
+  }
+
+  void multiply_by_CellVol(arr_t &arr)
+  {
+    if(arr.extent(NDims-1) == this->map_prof["rhod"].extent(0))
+      arr *= this->CellVol;
+    else if(arr.extent(NDims-1) == this->map_prof["rhod refined"].extent(0))
+      arr *= this->CellVol_ref;
+    else
+      throw std::runtime_error("multiply_by_CellVol: input array is neither normal grid size nor refined grid size");
+  }
+
   // functions for diagnosing fields
   //
   // aerosol droplets mixing ratio

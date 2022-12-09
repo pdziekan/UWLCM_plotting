@@ -93,6 +93,7 @@ class PlotterCommon
       map["dt"] = h5load_attr(file + "/const.h5", "dt", "advection");
       map["outfreq"] = h5load_attr(file + "/const.h5", "outfreq", "user_params");
       map["MPI_compiler"] = h5load_attr(file + "/const.h5", "MPI compiler (true/false)", "MPI details");
+      map["n_fra_iter"] = h5load_attr(file + "/const.h5", "n_fra_iter", "fractal");
 
       // read number of timesteps
       hsize_t n;
@@ -120,6 +121,12 @@ class PlotterCommon
       h5s.getSimpleExtentDims(&n, NULL);
       map_prof.emplace("rhod", arr_prof_t(n));
       h5d.read(map_prof["rhod"].data(), H5::PredType::NATIVE_FLOAT);
+
+      // read dry air density profile on refined grid
+      h5load(file + "/const.h5", "refined rhod");
+      h5s.getSimpleExtentDims(&n, NULL);
+      map_prof.emplace("refined rhod", arr_prof_t(n));
+      h5d.read(map_prof["refined rhod"].data(), H5::PredType::NATIVE_FLOAT);
     }
   }
 };
