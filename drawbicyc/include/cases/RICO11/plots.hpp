@@ -18,8 +18,8 @@ const std::vector<std::string> series_rico({
 "rwp",
 "surf_precip",
 "acc_precip"
-,"nc"
-,"nr"
+//,"nc"
+//,"nr"
 ,"cl_nc_rico"
 ,"cl_nr_rico"
 ,"cloud_avg_supersat"
