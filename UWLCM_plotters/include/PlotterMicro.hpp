@@ -24,8 +24,8 @@ class PlotterMicro_t : public Plotter_t<NDims>
   {
     if(arr.extent(NDims-1) == this->map_prof["rhod"].extent(0))
       arr *= this->map_prof["rhod"](this->LastIndex);
-    else if(arr.extent(NDims-1) == this->map_prof["rhod refined"].extent(0))
-      arr *= this->map_prof["rhod refined"](this->LastIndex);
+    else if(arr.extent(NDims-1) == this->map_prof["refined rhod"].extent(0))
+      arr *= this->map_prof["refined rhod"](this->LastIndex);
     else
       throw std::runtime_error("multiply_by_rhod: input array is neither normal grid size nor refined grid size");
   }
@@ -34,7 +34,7 @@ class PlotterMicro_t : public Plotter_t<NDims>
   {
     if(arr.extent(NDims-1) == this->map_prof["rhod"].extent(0))
       arr *= this->CellVol;
-    else if(arr.extent(NDims-1) == this->map_prof["rhod refined"].extent(0))
+    else if(arr.extent(NDims-1) == this->map_prof["refined rhod"].extent(0))
       arr *= this->CellVol_ref;
     else
       throw std::runtime_error("multiply_by_CellVol: input array is neither normal grid size nor refined grid size");
@@ -45,41 +45,43 @@ class PlotterMicro_t : public Plotter_t<NDims>
   // aerosol droplets mixing ratio
   auto h5load_ra_timestep(
     int at
-  ) -> decltype(blitz::safeToReturn(arr_t() + 0))
+  ) //-> decltype(blitz::safeToReturn(arr_t() + 0))
   {
     if(this->micro == "lgrngn")
-      res = this->h5load_timestep("aerosol_rw_mom3", at) * 4./3. * 3.1416 * 1e3;
+      return arr_t(this->h5load_timestep("aerosol_rw_mom3", at) * 4./3. * 3.1416 * 1e3);
+    
     else if(this->micro == "blk_1m")
+    {
       res = 0;
-    return blitz::safeToReturn(res + 0);
+      return res;
+     // return blitz::safeToReturn(res + 0);
+    }
   }
 
   // cloud droplets mixing ratio
   auto h5load_rc_timestep(
     int at
-  ) -> decltype(blitz::safeToReturn(arr_t() + 0))
+  ) //-> decltype(blitz::safeToReturn(arr_t() + 0))
   {
     if(this->micro == "lgrngn")
-      res = this->h5load_timestep("cloud_rw_mom3", at) * 4./3. * 3.1416 * 1e3;
+      return arr_t(this->h5load_timestep("cloud_rw_mom3", at) * 4./3. * 3.1416 * 1e3);
     else if(this->micro == "blk_1m")
-      res = this->h5load_timestep("rc", at);
+      return arr_t(this->h5load_timestep("rc", at));
     else if(this->micro == "blk_2m")
-      res = this->h5load_timestep("rc", at);
-    return blitz::safeToReturn(res + 0);
+      return arr_t(this->h5load_timestep("rc", at));
   }
 
   // rain droplets mixing ratio
   auto h5load_rr_timestep(
     int at
-  ) -> decltype(blitz::safeToReturn(arr_t() + 0))
+  ) //-> decltype(blitz::safeToReturn(arr_t() + 0))
   {
     if(this->micro == "lgrngn")
-      res = this->h5load_timestep("rain_rw_mom3", at) * 4./3. * 3.1416 * 1e3;
+      return arr_t(this->h5load_timestep("rain_rw_mom3", at) * 4./3. * 3.1416 * 1e3);
     else if(this->micro == "blk_1m")
-      res = this->h5load_timestep("rr", at);
+      return arr_t(this->h5load_timestep("rr", at));
     else if(this->micro == "blk_2m")
-      res = this->h5load_timestep("rr", at);
-    return blitz::safeToReturn(res + 0);
+      return arr_t(this->h5load_timestep("rr", at));
   }
 
   // activated drops mixing ratio
@@ -108,15 +110,18 @@ class PlotterMicro_t : public Plotter_t<NDims>
   // cloud droplets concentration [1/kg]
   auto h5load_nc_timestep(
     int at
-  ) -> decltype(blitz::safeToReturn(arr_t() + 0))
+  ) //-> decltype(blitz::safeToReturn(arr_t() + 0))
   {
     if(this->micro == "lgrngn")
-      res = this->h5load_timestep("cloud_rw_mom0", at);
+      return arr_t(this->h5load_timestep("cloud_rw_mom0", at));
     else if(this->micro == "blk_1m")
+    {
       res = 0;
+      return res;
+     // return blitz::safeToReturn(res + 0);
+    }
     else if(this->micro == "blk_2m")
-      res = this->h5load_timestep("nc", at);
-    return blitz::safeToReturn(res + 0);
+      return arr_t(this->h5load_timestep("nc", at);
   }
 
   // precipitation flux [W/m2]

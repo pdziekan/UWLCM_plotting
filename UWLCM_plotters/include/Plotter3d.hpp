@@ -239,15 +239,14 @@ class Plotter_t<3> : public PlotterCommon
     tmp_srfc.resize(n[0]-1, n[1]-1, 1);
 
     // init refined data
-    h5load(file + "/const.h5", "X refined");
-    this->map["dx refined"] = tmp(1,0,0) - tmp(0,0,0);
-    h5load(file + "/const.h5", "Y refined");
-    this->map["dy refined"] = tmp(0,1,0) - tmp(0,0,0);
-    h5load(file + "/const.h5", "Z refined");
-    this->map["dz refined"] = tmp(0,0,1) - tmp(0,0,0);
-    this->CellVol_ref = this->map["dx refined"] * this->map["dy refined"] * this->map["dz refined"];
     this->h5f.openDataSet("X refined").getSpace().getSimpleExtentDims(n, NULL); 
     tmp_ref.resize(n[0]-1, n[1]-1, n[2]-1);
+    this->map["refined dx"] = tmp(1,0,0) - tmp(0,0,0);
+    this->h5f.openDataSet("Y refined").getSpace().getSimpleExtentDims(n, NULL); 
+    this->map["refined dy"] = tmp(0,1,0) - tmp(0,0,0);
+    this->h5f.openDataSet("Z refined").getSpace().getSimpleExtentDims(n, NULL); 
+    this->map["refined dz"] = tmp(0,0,1) - tmp(0,0,0);
+    this->CellVol_ref = this->map["refined dx"] * this->map["refined dy"] * this->map["refined dz"];
   }
 };
 

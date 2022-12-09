@@ -1,6 +1,23 @@
 #pragma once
 
 const std::vector<std::string> series_rico({
+"RH_max",
+"cloud_cover_rico",
+"min_cloud_base_rico"
+"inversion_height_rico",
+"tot_water",
+"lwp",
+"rwp",
+"surf_precip",
+"acc_precip"
+,"cl_nc_rico"
+,"cl_nr_rico"
+,"cloud_avg_supersat"
+,"wvarmax"
+,"cl_meanr" //TODO: zmienic maske na rico
+,"sd_conc"
+
+
 // "clb_bigrain_mean_rd",
 // "clb_bigrain_mean_kappa",
 // "clb_bigrain_mean_conc",
@@ -9,22 +26,8 @@ const std::vector<std::string> series_rico({
 
 //"cl_acnv25_rico",
 //"cl_accr25_rico",
-"RH_max",
-"cloud_cover_rico",
-"min_cloud_base_rico",
-"inversion_height_rico",
-"tot_water",
-"lwp",
-"rwp",
-"surf_precip",
-"acc_precip"
 //,"nc"
 //,"nr"
-,"cl_nc_rico"
-,"cl_nr_rico"
-,"cloud_avg_supersat"
-,"wvarmax"
-,"cl_meanr" //TODO: zmienic maske na rico
 //TODO (po usprawnieniu cloud mask i ujednoliceniu tego:
 /*
 ,"cl_avg_cloud_rad"
@@ -34,7 +37,6 @@ const std::vector<std::string> series_rico({
 //,"rd_geq_0.8um_conc"
 //,"cl_rd_lt_0.8um_conc"
 //,"cl_rd_geq_0.8um_conc"
-,"sd_conc"
 
 /*
  "cloud_base",
