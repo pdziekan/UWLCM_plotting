@@ -87,12 +87,14 @@ class PlotterMicro_t : public Plotter_t<NDims>
   // activated drops mixing ratio
   auto h5load_ract_timestep(
     int at
-  ) -> decltype(blitz::safeToReturn(arr_t() + 0))
+  ) 
   {
     if(this->micro == "lgrngn")
     {
-      res = this->h5load_timestep("cloud_rw_mom3", at) * 4./3. * 3.1416 * 1e3;
-      res += arr_t(this->h5load_timestep("rain_rw_mom3", at) * 4./3. * 3.1416 * 1e3);
+      return arr_t(
+	       arr_t(this->h5load_timestep("cloud_rw_mom3", at) * 4./3. * 3.1416 * 1e3) + 
+               arr_t(this->h5load_timestep("rain_rw_mom3", at) * 4./3. * 3.1416 * 1e3)
+	     );
     }
     else if(this->micro == "blk_1m")
     {
@@ -104,7 +106,8 @@ class PlotterMicro_t : public Plotter_t<NDims>
       res = this->h5load_timestep("rc", at);
       res += arr_t(this->h5load_timestep("rr", at));
     }
-    return blitz::safeToReturn(res + 0);
+   // return blitz::safeToReturn(res + 0);
+    return res;
   }
 
   // cloud droplets concentration [1/kg]
@@ -127,14 +130,14 @@ class PlotterMicro_t : public Plotter_t<NDims>
   // precipitation flux [W/m2]
   auto h5load_prflux_timestep(
     int at
-  ) -> decltype(blitz::safeToReturn(arr_t() + 0))
+  )// -> decltype(blitz::safeToReturn(arr_t() + 0))
   {
     if(this->micro == "lgrngn")
     {
-      res = this->h5load_timestep("precip_rate", at)
+      return arr_t(this->h5load_timestep("precip_rate", at)
               *  4./3 * 3.14 * 1e3 // to get mass
               / this->CellVol    // averaged over cell volume, TODO: make precip rate return specific moment? wouldnt need the dx and dy
-              * L_evap;
+              * L_evap);
     }
     else if(this->micro == "blk_1m")
       try
@@ -150,19 +153,21 @@ class PlotterMicro_t : public Plotter_t<NDims>
       {
         res = 0;
       }
-    return blitz::safeToReturn(res + 0);
+   // return blitz::safeToReturn(res + 0);
+     return res;
   }
 
   // RH
   auto h5load_RH_timestep(
     int at
-  ) -> decltype(blitz::safeToReturn(arr_t() + 0))
+  ) //-> decltype(blitz::safeToReturn(arr_t() + 0))
   {
     if(this->micro == "lgrngn")
-      res = this->h5load_timestep("RH", at);
+      return arr_t(this->h5load_timestep("RH", at));
     else if(this->micro == "blk_1m")
       res = 0;
-    return blitz::safeToReturn(res + 0);
+   // return blitz::safeToReturn(res + 0);
+     return res;
   }
 
 
