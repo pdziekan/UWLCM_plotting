@@ -130,7 +130,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(tmp); 
           snap += plotter.h5load_rr_timestep(at * n["outfreq"]) * 1e3; //g/kg
           plotter.multiply_by_rhod(snap); 
-          plotter.k_i = blitz::sum(snap, plotter.LastIndex) * n["dz"]; // LWP [g/m2] in the column 
+          plotter.k_i = blitz::sum(snap, plotter.LastIndex) * n["refined dz"]; // LWP [g/m2] in the column 
           plotter.k_i = where(plotter.k_i > 20 , 1 , 0); // cloudiness as in Ackermann et al. 
           res_series[plt](at) = blitz::mean(plotter.k_i);
         }
@@ -577,7 +577,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           cloudy_column = where(cloudy_column > 0, 1, 0);
           plotter.k_i = where(cloudy_column == 0, 0, plotter.k_i);
           if(blitz::sum(cloudy_column) > 0)
-            res_series[plt](at) = double(blitz::sum(plotter.k_i)) / blitz::sum(cloudy_column) * n["dz"];
+            res_series[plt](at) = double(blitz::sum(plotter.k_i)) / blitz::sum(cloudy_column) * n["refined dz"];
           else
             res_series[plt](at) = 0;
         }
@@ -633,7 +633,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           cloudy_column = where(cloudy_column > 0, 1, 0);
           plotter.k_i = where(cloudy_column == 0, 1e6, plotter.k_i); // 1e6 denotes no clouds in the column
           if(blitz::sum(cloudy_column) > 0)
-            res_series[plt](at) = blitz::min(plotter.k_i) * n["dz"];
+            res_series[plt](at) = blitz::min(plotter.k_i) * n["refined dz"];
           else
             res_series[plt](at) = 0;
         }
@@ -1828,11 +1828,11 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     }
     else if (plt == "lwp")
     {
-      res_series[plt] *= (n["z"] - 1) * n["dz"]; // top and bottom cells are smaller
+      res_series[plt] *= (n["refined z"] - 1) * n["refined dz"]; // top and bottom cells are smaller
     }
     else if (plt == "rwp")
     {
-      res_series[plt] *= (n["z"] - 1) * n["dz"]; // top and bottom cells are smaller
+      res_series[plt] *= (n["refined z"] - 1) * n["refined dz"]; // top and bottom cells are smaller
     }
     else if (plt == "er")
     {

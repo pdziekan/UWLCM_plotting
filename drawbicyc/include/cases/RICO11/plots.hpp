@@ -3,19 +3,19 @@
 const std::vector<std::string> series_rico({
 "RH_max",
 "cloud_cover_rico",
-"min_cloud_base_rico"
+"min_cloud_base_rico",
 "inversion_height_rico",
 "tot_water",
 "lwp",
 "rwp",
 "surf_precip",
-"acc_precip"
-,"cl_nc_rico"
-,"cl_nr_rico"
-,"cloud_avg_supersat"
-,"wvarmax"
-,"cl_meanr" //TODO: zmienic maske na rico
-,"sd_conc"
+"acc_precip",
+"cl_nc_rico",
+"cl_nr_rico",
+"cloud_avg_supersat",
+"wvarmax",
+"cl_meanr", //TODO: zmienic maske na rico
+"sd_conc"
 
 
 // "clb_bigrain_mean_rd",

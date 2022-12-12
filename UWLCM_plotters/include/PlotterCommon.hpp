@@ -61,6 +61,7 @@ class PlotterCommon
     auto attr = h5g.openAttribute(attr_name);
     notice_macro(std::string("about to read attribute value"))
     attr.read(attr.getDataType(), &ret);
+    notice_macro(std::string("attribute value read: ") + std::to_string(ret))
     return ret;
   }
 
@@ -93,7 +94,6 @@ class PlotterCommon
       map["dt"] = h5load_attr(file + "/const.h5", "dt", "advection");
       map["outfreq"] = h5load_attr(file + "/const.h5", "outfreq", "user_params");
       map["MPI_compiler"] = h5load_attr(file + "/const.h5", "MPI compiler (true/false)", "MPI details");
-      map["n_fra_iter"] = h5load_attr(file + "/const.h5", "n_fra_iter", "fractal");
 
       // read number of timesteps
       hsize_t n;
