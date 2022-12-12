@@ -121,7 +121,7 @@ class PlotterMicro_t : public Plotter_t<NDims>
      // return blitz::safeToReturn(res + 0);
     }
     else if(this->micro == "blk_2m")
-      return arr_t(this->h5load_timestep("nc", at);
+      return arr_t(this->h5load_timestep("nc", at));
   }
 
   // precipitation flux [W/m2]
