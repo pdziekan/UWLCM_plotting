@@ -821,11 +821,11 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         try
         {
           {
-            auto tmp = plotter.h5load_rc_timestep(at * n["outfreq"]) * 1e3; //g/kg
-            typename Plotter_t::arr_t snap(tmp); 
-            snap += plotter.h5load_rr_timestep(at * n["outfreq"]) * 1e3; //g/kg
-            plotter.multiply_by_rhod(snap); 
-            res_series[plt](at) = blitz::mean(snap); 
+            typename Plotter_t::arr_t rl(plotter.h5load_rc_timestep(at * n["outfreq"]));
+            typename Plotter_t::arr_t rr(plotter.h5load_rr_timestep(at * n["outfreq"]));
+	    rl = (rl + rr) * 1e3; // g/kg
+            plotter.multiply_by_rhod(rl); 
+            res_series[plt](at) = blitz::mean(rl); 
           }
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
