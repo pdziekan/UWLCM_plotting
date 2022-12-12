@@ -1,22 +1,20 @@
 import numpy as np
 
 def read_my_array(file_obj):
-  arr_name = file_obj.readline()
   file_obj.readline() # discarded line with size of the array
   line = file_obj.readline()
   line = line.split(" ")
   del line[0]
   del line[len(line)-1]
-  arr = map(float,line)
-  return np.array(arr), arr_name
+  arr = list(map(float,line))
+  return np.array(arr)
 
 def read_my_var(file_obj, var_name):
   file_obj.seek(0)
   while True:
-    arr, name = read_my_array(file_obj)
-    if(str(name).strip() == str(var_name).strip()):
-      break
-  return arr
+    arr_name = file_obj.readline() 
+    if(str(arr_name).strip() == str(var_name).strip()):
+      return read_my_array(file_obj)
 
 #def plot_my_array(axarr, plot_iter, time, val, nploty, xlabel=None, ylabel=None, varlabel=None , linestyle='--', dashes=(5,2), xlim=None, ylim=None, xscale="linear", yscale="linear"):
 #  x = int(plot_iter / nploty)

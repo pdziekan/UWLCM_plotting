@@ -18,6 +18,7 @@ var_labels = {
   "T" : "T [K]",
   "rv" : "$q_v$ [g/kg]",
   "RH" : "RH",
+  "RH_max" : "RH max",
   "S_drop" : "$S_{drop}$",
   "Sigma2_S" : "$S$ variance",
   "Sigma2_S_drop" : "$S_{drop}$ variance",
@@ -30,8 +31,10 @@ var_labels = {
   "surf_precip" : 'Surf. precip. [mm/day]',
   "acc_precip" : 'Acc. precip. [mm]',
   "cl_nc" : '$N_c$ [cm$^{-3}$]',
+  "cl_nc_rico" : '$N_c$ [cm$^{-3}$]',
 #  "cl_nr" : '$N_{r>25\mu m}$ [cm$^{-3}$]',
   "cl_nr" : '$N_{r}$ [cm$^{-3}$]',
+  "cl_nr_rico" : '$N_{r}$ [cm$^{-3}$]',
   "cl_gccn_conc" : '$N_{GCCN}$ [cm$^{-3}$]',
   "thl" : r'$\theta_l$ [K]',
   "00rtot" : '$q_{t}$ [g/kg]',
@@ -63,6 +66,9 @@ var_labels = {
   "cl_accr25_rico" : 'accr. rate [g m$^{-3}$ d$^{-1}$]',
   "cl_acnv25_dycoms" : 'acnv. rate [g m$^{-3}$ d$^{-1}$]',
   "cl_accr25_dycoms" : 'accr. rate [g m$^{-3}$ d$^{-1}$]',
+  "cloud_avg_supersat" : '$<S>$ in cloud [\%]',
+  "cl_meanr" : '$<r>$ in cloud [um]',
+  "sd_conc" : '$<SD>$'
 }
 
 
@@ -79,4 +85,12 @@ labeldict = {
  9 : "(j)",
  10 : "(k)",
  11 : "(l)",
+ 12 : "(m)",
+ 13 : "(n)",
+ 14 : "(o)",
+ 15 : "(p)",
+ 16 : "(q)",
+ 17 : "(r)",
+ 18 : "(s)",
+ 19 : "(t)",
 }

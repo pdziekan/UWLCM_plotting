@@ -16,7 +16,7 @@ def plot_series(var_list, plot_iter, nplotx, nploty, axarr, xscaledict, yscaledi
   for var in var_list:
     label_counter=0
     for file_name in file_names:
-      print file_name, var
+      print(file_name, var)
       series_file = open(file_name, "r")
       my_times = read_my_var(series_file, "position")
       my_res = read_my_var(series_file, var)
