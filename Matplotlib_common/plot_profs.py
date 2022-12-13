@@ -8,7 +8,7 @@ def plot_profiles(var_list, plot_iter, nplotx, nploty, axarr, xscaledict, yscale
   # if file names are not defined, read them and labels from command line
   if len(file_names)==0:
     file_no = np.arange(1, len(argv)-1 , 2)
-    print file_no
+    print(file_no)
     for no in file_no:
       file_names.append(argv[no]+suffix)
       file_labels.append(argv[no+1])
@@ -16,7 +16,7 @@ def plot_profiles(var_list, plot_iter, nplotx, nploty, axarr, xscaledict, yscale
   for var in var_list:
     label_counter = 0
     for file_name in file_names:
-      print file_name
+      print(file_name)
     #  try:
       profiles_file = open(file_name, "r")
       my_pos = read_my_var(profiles_file, "position")
