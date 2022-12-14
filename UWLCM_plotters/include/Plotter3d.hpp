@@ -4,7 +4,7 @@
 
 // 3d version
 template<>
-class Plotter_t<3> : public PlotterCommon 
+class Plotter_t<3> : public PlotterH5 
 {
   public:
   static const int n_dims = 3;
@@ -15,7 +15,7 @@ class Plotter_t<3> : public PlotterCommon
   arr_t dv;
 
   protected:
-  using parent_t = PlotterCommon;
+  using parent_t = PlotterH5;
   hsize_t n[3];
   enum {x, y, z};
   arr_t tmp, tmp_srfc, tmp_ref;

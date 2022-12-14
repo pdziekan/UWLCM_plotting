@@ -1,161 +1,24 @@
 #pragma once
-#include "PlotterCommon.hpp"
+#include "PlotterMicro.hpp"
 
 // TODO: make two: plotterlgrngn and plotter blk1m
 template<int NDims>
-class PlotterMicro_t : public PlotterCommon<NDims> 
+class Plotter : public PlotterMicro<NDims> 
 {
   protected:
-  using parent_t = PlotterCommon<NDims>;
+  using parent_t = PlotterMicro<NDims>;
 
   public:
   using arr_t = typename parent_t::arr_t;
 
-  protected:
-  std::string micro;
-  arr_t res;
-  arr_t rhod;
-  const double L_evap = 2264.76e3; // latent heat of evaporation [J/kg]
-
   public:
-
-  // functions for diagnosing fields
-  //
-  // aerosol droplets mixing ratio
-  auto load_ra_timestep(
-    int at
-  ) //-> decltype(blitz::safeToReturn(arr_t() + 0))
-  {
-    if(this->micro == "lgrngn")
-      return arr_t(this->h5load_timestep("aerosol_rw_mom3", at) * 4./3. * 3.1416 * 1e3);
-    
-    else if(this->micro == "blk_1m")
-    {
-      res = 0;
-      return res;
-     // return blitz::safeToReturn(res + 0);
-    }
-  }
-
-  // cloud droplets mixing ratio
-  auto load_rc_timestep(
-    int at
-  ) //-> decltype(blitz::safeToReturn(arr_t() + 0))
-  {
-    if(this->micro == "lgrngn")
-      return arr_t(this->h5load_timestep("cloud_rw_mom3", at) * 4./3. * 3.1416 * 1e3);
-    else if(this->micro == "blk_1m")
-      return arr_t(this->h5load_timestep("rc", at));
-    else if(this->micro == "blk_2m")
-      return arr_t(this->h5load_timestep("rc", at));
-  }
-
-  // rain droplets mixing ratio
-  auto load_rr_timestep(
-    int at
-  ) //-> decltype(blitz::safeToReturn(arr_t() + 0))
-  {
-    if(this->micro == "lgrngn")
-      return arr_t(this->h5load_timestep("rain_rw_mom3", at) * 4./3. * 3.1416 * 1e3);
-    else if(this->micro == "blk_1m")
-      return arr_t(this->h5load_timestep("rr", at));
-    else if(this->micro == "blk_2m")
-      return arr_t(this->h5load_timestep("rr", at));
-  }
-
-  // activated drops mixing ratio
-  auto load_ract_timestep(
-    int at
-  ) 
-  {
-    if(this->micro == "lgrngn")
-    {
-      return arr_t(
-	       arr_t(this->h5load_timestep("cloud_rw_mom3", at) * 4./3. * 3.1416 * 1e3) + 
-               arr_t(this->h5load_timestep("rain_rw_mom3", at) * 4./3. * 3.1416 * 1e3)
-	     );
-    }
-    else if(this->micro == "blk_1m")
-    {
-      res = this->h5load_timestep("rc", at);
-      res += arr_t(this->h5load_timestep("rr", at));
-    }
-    else if(this->micro == "blk_2m")
-    {
-      res = this->h5load_timestep("rc", at);
-      res += arr_t(this->h5load_timestep("rr", at));
-    }
-   // return blitz::safeToReturn(res + 0);
-    return res;
-  }
-
-  // cloud droplets concentration [1/kg]
-  auto load_nc_timestep(
-    int at
-  ) //-> decltype(blitz::safeToReturn(arr_t() + 0))
-  {
-    if(this->micro == "lgrngn")
-      return arr_t(this->h5load_timestep("cloud_rw_mom0", at));
-    else if(this->micro == "blk_1m")
-    {
-      res = 0;
-      return res;
-     // return blitz::safeToReturn(res + 0);
-    }
-    else if(this->micro == "blk_2m")
-      return arr_t(this->h5load_timestep("nc", at));
-  }
-
-  // precipitation flux [W/m2]
-  auto load_prflux_timestep(
-    int at
-  )// -> decltype(blitz::safeToReturn(arr_t() + 0))
-  {
-    if(this->micro == "lgrngn")
-    {
-      return arr_t(this->h5load_timestep("precip_rate", at)
-              *  4./3 * 3.14 * 1e3 // to get mass
-              / this->CellVol    // averaged over cell volume, TODO: make precip rate return specific moment? wouldnt need the dx and dy
-              * L_evap);
-    }
-    else if(this->micro == "blk_1m")
-      try
-      {
-        res = this->h5load_timestep("precip_rate", at); // precip_rate is the difference between influx and outflux
-        for(int z = this->map["z"] - 2; z>=0; --z)
-        {
-          res(this->hrzntl_slice(z)) = res(this->hrzntl_slice(z+1)) - res(this->hrzntl_slice(z)); 
-        }
-        res *= rhod * this->map["dz"] * L_evap;
-      }
-      catch(...)
-      {
-        res = 0;
-      }
-   // return blitz::safeToReturn(res + 0);
-     return res;
-  }
-
-  // RH
-  auto load_RH_timestep(
-    int at
-  ) //-> decltype(blitz::safeToReturn(arr_t() + 0))
-  {
-    if(this->micro == "lgrngn")
-      return arr_t(this->h5load_timestep("RH", at));
-    else if(this->micro == "blk_1m")
-      res = 0;
-   // return blitz::safeToReturn(res + 0);
-     return res;
-  }
-
 
   // functions for diagnosing statistics
   // mean and std dev [g/kg] of the mixing ratio of activated dropelts in cloudy cells (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> cloud_ract_stats_timestep(int at)
   {
     // read activated droplets mixing ratio 
-    arr_t ract(load_ract_timestep(at));
+    arr_t ract(h5load_ract_timestep(at));
     ract *= 1e3; // turn it into g/kg
     return cloud_hlpr(ract, at);
   }
@@ -441,7 +304,7 @@ class PlotterMicro_t : public PlotterCommon<NDims>
   }
 
   //ctor
-  PlotterMicro_t(const string &file, const string &micro):
+  Plotter(const string &file, const string &micro):
     parent_t(file),
     micro(micro),
     res(this->tmp.shape()),
