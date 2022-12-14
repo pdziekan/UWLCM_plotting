@@ -239,19 +239,33 @@ class Plotter_t<3> : public PlotterCommon
     tmp_srfc.resize(n[0]-1, n[1]-1, 1);
 
     // init refined data
-    this->h5f.openDataSet("X refined").getSpace().getSimpleExtentDims(n, NULL); 
-    this->map["refined x"] = n[0]-1;
-    this->map["refined y"] = n[1]-1;
-    this->map["refined z"] = n[2]-1;
-    tmp_ref.resize(n[0], n[1], n[2]);
-    h5load(file + "/const.h5", "X refined");
-    this->map["refined dx"] = tmp_ref(1,0,0) - tmp_ref(0,0,0);
-    h5load(file + "/const.h5", "Y refined");
-    this->map["refined dy"] = tmp_ref(0,1,0) - tmp_ref(0,0,0);
-    h5load(file + "/const.h5", "Z refined");
-    this->map["refined dz"] = tmp_ref(0,0,1) - tmp_ref(0,0,0);
-    this->CellVol_ref = this->map["refined dx"] * this->map["refined dy"] * this->map["refined dz"];
-    tmp_ref.resize(n[0]-1, n[1]-1, n[2]-1);
+    try
+    {
+      this->h5f.openDataSet("X refined").getSpace().getSimpleExtentDims(n, NULL); 
+      this->map["refined x"] = n[0]-1;
+      this->map["refined y"] = n[1]-1;
+      this->map["refined z"] = n[2]-1;
+      tmp_ref.resize(n[0], n[1], n[2]);
+      h5load(file + "/const.h5", "X refined");
+      this->map["refined dx"] = tmp_ref(1,0,0) - tmp_ref(0,0,0);
+      h5load(file + "/const.h5", "Y refined");
+      this->map["refined dy"] = tmp_ref(0,1,0) - tmp_ref(0,0,0);
+      h5load(file + "/const.h5", "Z refined");
+      this->map["refined dz"] = tmp_ref(0,0,1) - tmp_ref(0,0,0);
+      this->CellVol_ref = this->map["refined dx"] * this->map["refined dy"] * this->map["refined dz"];
+      tmp_ref.resize(n[0]-1, n[1]-1, n[2]-1);
+    }
+    catch(...) // for pre-refinement simulations that didnt store refined stuff
+    {
+      this->map["refined x"] = this->map["x"]; 
+      this->map["refined y"] = this->map["y"]; 
+      this->map["refined z"] = this->map["z"]; 
+      this->map["refined dx"] = this->map["dx"]; 
+      this->map["refined dy"] = this->map["dy"]; 
+      this->map["refined dz"] = this->map["dz"]; 
+      this->CellVol_ref = this->CellVol;
+      tmp_ref.resize(tmp.shape());
+    }
 
     for (auto const& x : this->map)
 {
