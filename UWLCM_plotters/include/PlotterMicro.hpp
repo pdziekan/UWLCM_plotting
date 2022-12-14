@@ -149,39 +149,6 @@ class PlotterMicro_t : public PlotterCommon<NDims>
      return res;
   }
 
-
-  // functions for diagnosing statistics
-  // mean and std dev [g/kg] of the mixing ratio of activated dropelts in cloudy cells (characteristics of the spatial distribution at this timestep)
-  std::pair<double, double> cloud_ract_stats_timestep(int at)
-  {
-    // read activated droplets mixing ratio 
-    arr_t ract(load_ract_timestep(at));
-    ract *= 1e3; // turn it into g/kg
-    return cloud_hlpr(ract, at);
-  }
-
-  // mean and std_dev of concentration of activated droplets in cloudy cells [1/cm^3] (characteristics of the spatial distribution at this timestep)
-  std::pair<double, double> cloud_actconc_stats_timestep(int at)
-  {   
-    arr_t actconc;
-    // read concentration of activated droplets
-    if(this->micro == "blk_1m") return {0,0};
-    // TODO: fix stupid copying of arrays
-    else if(this->micro == "lgrngn") {
-      arr_t tmp(this->h5load_timestep("actrw_rw_mom0", at));
-      actconc.resize(tmp.shape());
-      actconc = tmp;
-    }
-    else if(this->micro == "blk_2m") {
-      arr_t tmp(arr_t(this->h5load_timestep("nc", at)) + arr_t(this->h5load_timestep("nr", at)));
-      actconc.resize(tmp.shape());
-      actconc = tmp;
-    }
-    actconc *= rhod; // b4 it was specific moment
-    actconc /= 1e6; // per cm^3
-    return cloud_hlpr(actconc, at);
-  } 
-
   // mean and std_dev of supersaturation in cells with positive supersaturation [%] (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> positive_supersat_stats_timestep(int at)
   {   
@@ -246,55 +213,7 @@ class PlotterMicro_t : public PlotterCommon<NDims>
   {   
     if(this->micro == "blk_1m") return {0,0};
     arr_t sdconc(this->h5load_timestep("sd_conc", at));
-    return hlpr(sdconc, at);
-  }
-
-  // mean and std_dev of number of SDs in cloudy cells (characteristics of the spatial distribution at this timestep)
-  std::pair<double, double> cloud_sdconc_stats_timestep(int at)
-  {   
-    if(this->micro == "blk_1m") return {0,0};
-    arr_t sdconc(this->h5load_timestep("sd_conc", at));
-    return cloud_hlpr(sdconc, at);
-  }
-
-  // mean and std_dev of number of activated SDs in cloudy cells (characteristics of the spatial distribution at this timestep)
-  std::pair<double, double> cloud_sdconc_act_stats_timestep(int at)
-  {   
-    if(this->micro == "blk_1m") return {0,0};
-    arr_t sdconc_act(this->h5load_timestep("sd_conc_act", at));
-    return cloud_hlpr(sdconc_act, at);
-  }
-
-  // mean and std_dev of mean radius of activated droplets in cloudy cells [um] (characteristics of the spatial distribution at this timestep)
-  std::pair<double, double> cloud_meanr_stats_timestep(int at)
-  {   
-    if(this->micro == "blk_1m") return {0,0};
-    // read act drop 0th raw moment / mass [1/kg]
-    arr_t act0th(this->h5load_timestep("actrw_rw_mom0", at)); 
-    // read act drop 1st raw moment / mass [um/kg]
-    arr_t act1st(this->h5load_timestep("actrw_rw_mom1", at) * 1e6);
-    // calculate mean radius, store in act1st
-    act1st = where(act0th > 0, act1st / act0th, 0.);
-    return cloud_hlpr(act1st, at);
-  }
-
-  // mean and std_dev of std_dev of radius of activated droplets in cloudy cells [um] (characteristics of the spatial distribution at this timestep)
-  std::pair<double, double> cloud_stddevr_stats_timestep(int at)
-  {   
-    if(this->micro == "blk_1m") return {0,0};
-    // read act drop 0th raw moment / mass [1/kg]
-    arr_t act0th(this->h5load_timestep("actrw_rw_mom0", at)); 
-    // read act drop 1st raw moment / mass [um/kg]
-    arr_t act1st(this->h5load_timestep("actrw_rw_mom1", at) * 1e6);
-    // read act drop 2nd raw moment / mass [um^2/kg]
-    arr_t act2nd(this->h5load_timestep("actrw_rw_mom2", at) * 1e12);
-    // calculate stddev of radius, store in act1st
-    act1st = where(act0th > 0, 
-      act2nd / act0th - act1st / act0th * act1st / act0th, 0.);
-    // might be slightly negative due to numerical errors
-    act1st = where(act1st < 0, 0, act1st);
-    act1st = sqrt(act1st);
-    return cloud_hlpr(act1st, at);
+    return this->hlpr(sdconc, at);
   }
 
   // mean and std_dev of temperature [K] (characteristics of the spatial distribution at this timestep, without near-wall cells)
@@ -304,14 +223,14 @@ class PlotterMicro_t : public PlotterCommon<NDims>
     //arr_t tht(this->nowall(arr_t(this->h5load_timestep("th", at)), distance_from_walls));
     arr_t tht(arr_t(this->h5load_timestep("th", at)));
     tht *= pow(this->map_prof["p_e"](this->LastIndex) / p_1000, R_d / c_pd); // tht -> T
-    return hlpr(tht, at);
+    return this->hlpr(tht, at);
   }
 
   // mean and std_dev of r_v [1] (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> rv_stats_timestep(int at)
   {   
     arr_t rv(arr_t(this->h5load_timestep("rv", at)));
-    return hlpr(rv, at);
+    return this->hlpr(rv, at);
   }
 
   // mean and std_dev of RH [1] (characteristics of the spatial distribution at this timestep)
@@ -321,7 +240,7 @@ class PlotterMicro_t : public PlotterCommon<NDims>
     std::pair<double, double> res;
 
     arr_t RH(this->h5load_timestep("RH", at));
-    return hlpr(RH, at);
+    return this->hlpr(RH, at);
   }
 
   // surface precipitation since last output [mm/day]

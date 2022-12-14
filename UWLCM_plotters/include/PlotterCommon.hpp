@@ -47,30 +47,6 @@ class PlotterCommon : public Plotter_t<NDims>
     res.second = sqrt(blitz::mean(arr)); 
     return res;
   }
-   
-  // helper function that calculates staistics (mean and std_dev) of a field only in cloudy cells
-  std::pair<double, double> cloud_hlpr(arr_t arr, int at)
-  {
-    std::pair<double, double> res;
-    // read activated droplets mixing ratio 
-    arr_t mask(h5load_ract_timestep(at));
-    mask = iscloudy_rc(mask);
-    arr *= mask; // apply filter
-    
-    if(blitz::sum(mask) > 0.) 
-      res.first = blitz::sum(arr) / blitz::sum(mask); 
-    else
-      res.first = 0.; 
-
-    arr = pow(arr - res.first, 2); 
-    arr *= mask; // apply filter
-    if(res.first>0)
-      res.second = sqrt(blitz::sum(arr) / blitz::sum(mask)); 
-    else
-      res.second = 0.;
-
-    return res;
-  }
   
   // height [m] of the center of mass of activated droplets
   double act_com_z_timestep(int at)
