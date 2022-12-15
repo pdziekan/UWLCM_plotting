@@ -123,10 +123,18 @@ class PlotterH5
       h5d.read(map_prof["rhod"].data(), H5::PredType::NATIVE_FLOAT);
 
       // read dry air density profile on refined grid
-      h5load(file + "/const.h5", "refined rhod");
-      h5s.getSimpleExtentDims(&n, NULL);
-      map_prof.emplace("refined rhod", arr_prof_t(n));
-      h5d.read(map_prof["refined rhod"].data(), H5::PredType::NATIVE_FLOAT);
+      try
+      {
+        h5load(file + "/const.h5", "refined rhod");
+        h5s.getSimpleExtentDims(&n, NULL);
+        map_prof.emplace("refined rhod", arr_prof_t(n));
+        h5d.read(map_prof["refined rhod"].data(), H5::PredType::NATIVE_FLOAT);
+      }
+      catch(...) // for pre-refinement simulations, use rhod as refined rhod
+      {
+        map_prof.emplace("refined rhod", map_prof["rhod"].copy());
+        std::cerr << "refined rhod as copy of rhod: " << map_prof["refined rhod"];
+      }
     }
   }
 };
