@@ -73,8 +73,8 @@ int main(int argc, char** argv)
   if(NDims == 2)
   {
 
-    if(flag_series)   plot_series(PlotterMask<2>(h5, micro, mask_type_t::Rico11), plots, type);
-    if(flag_profiles) plot_profiles(PlotterMask<2>(h5, micro, mask_type_t::Rico11), plots, type, normalize_prof);
+//    if(flag_series)   plot_series(PlotterMask<2>(h5, micro, mask_type_t::Rico11), plots, type);
+//    if(flag_profiles) plot_profiles(PlotterMask<2>(h5, micro, mask_type_t::Rico11), plots, type, normalize_prof);
 //    if(flag_fields)   plot_fields(PlotterMask<2>(h5, micro), plots, type);
 //    if(flag_qv_qc_2_6_10_min)   plot_qv_qc_2_6_10_min(PlotterMask<2>(h5, micro));
   }

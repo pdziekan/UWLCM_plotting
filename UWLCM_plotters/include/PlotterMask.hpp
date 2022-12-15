@@ -6,9 +6,9 @@ enum class mask_type_t{Rico11};
 template<int NDims>
 class PlotterMask : public PlotterMicro<NDims> 
 {
-  protected:
+  public:
   using parent_t = PlotterMicro<NDims>;
-  using arr_t = parent_t::arr_t;
+  using arr_t = typename parent_t::arr_t;
 
   private:
 
@@ -20,18 +20,13 @@ class PlotterMask : public PlotterMicro<NDims>
     // RICO mask; TODO: add other masks
     if(mask_type == mask_type_t::Rico11)
     {
-      mask = load_ract_timestep(at);
+      mask = this->load_ract_timestep(at);
       mask = iscloudy_rc(mask);
     }
     else throw std::runtime_error("Invalid mask type");
   }
 
-  lgrngn_droplet_prefix
-  cloud_mask
-
-
-  public:
-  using arr_t = typename parent_t::arr_t;
+  //lgrngn_droplet_prefix
 
   private:
   // helper function that calculates staistics (mean and std_dev) of a field only in cloudy cells
@@ -67,7 +62,7 @@ class PlotterMask : public PlotterMicro<NDims>
   std::pair<double, double> cloud_ract_stats_timestep(int at)
   {
     // read activated droplets mixing ratio 
-    arr_t ract(load_ract_timestep(at));
+    arr_t ract(this->load_ract_timestep(at));
     ract *= 1e3; // turn it into g/kg
     return cloud_hlpr(ract, at);
   }
@@ -89,7 +84,7 @@ class PlotterMask : public PlotterMicro<NDims>
       actconc.resize(tmp.shape());
       actconc = tmp;
     }
-    actconc *= rhod; // b4 it was specific moment
+    this->multiply_by_rhod(actconc); // b4 it was specific moment
     actconc /= 1e6; // per cm^3
     return cloud_hlpr(actconc, at);
   } 
@@ -147,7 +142,7 @@ class PlotterMask : public PlotterMicro<NDims>
   // height [m] of the center of mass of activated droplets
   double act_com_z_timestep(int at)
   {
-    arr_t ract(h5load_ract_timestep(at));
+    arr_t ract(this->load_ract_timestep(at));
     arr_t weighted(ract.copy());
     weighted = weighted * this->LastIndex * this->map["dz"];
     if(blitz::sum(ract) > 1e-3)
