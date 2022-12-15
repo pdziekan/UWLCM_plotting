@@ -17,7 +17,6 @@ class PlotterMask : public PlotterMicro<NDims>
 
   void calc_mask(int at)
   {
-    // RICO mask; TODO: add other masks
     if(mask_type == mask_type_t::Rico11)
     {
       mask = this->load_ract_timestep(at);
@@ -29,6 +28,7 @@ class PlotterMask : public PlotterMicro<NDims>
       mask = iscloudy_nc_dycoms(mask);
     }
     else throw std::runtime_error("Invalid mask type");
+    mask(this->hrzntl_slice(0)) = 0; // cheat to avoid occasional "cloudy" cell at ground level due to activation from surf flux
   }
 
   //lgrngn_droplet_prefix
@@ -61,6 +61,11 @@ class PlotterMask : public PlotterMicro<NDims>
   public:
 
 
+  arr_t get_mask(int at)
+  {
+    calc_mask(at);
+    return mask;
+  }
 
   // functions for diagnosing statistics
   // mean and std dev [g/kg] of the mixing ratio of activated dropelts in cloudy cells (characteristics of the spatial distribution at this timestep)
@@ -73,25 +78,43 @@ class PlotterMask : public PlotterMicro<NDims>
   }
 
   // mean and std_dev of concentration of activated droplets in cloudy cells [1/cm^3] (characteristics of the spatial distribution at this timestep)
-  std::pair<double, double> cloud_actconc_stats_timestep(int at)
+  std::pair<double, double> cloud_conc_stats_timestep_hlpr(int at, std::string lgrngn_prefix, std::string blk_2m_1, std::string blk_2m_2 = "")
   {   
-    arr_t actconc;
+    arr_t conc;
     // read concentration of activated droplets
     if(this->micro == "blk_1m") return {0,0};
     // TODO: fix stupid copying of arrays
     else if(this->micro == "lgrngn") {
-      arr_t tmp(this->h5load_timestep("actrw_rw_mom0", at));
-      actconc.resize(tmp.shape());
-      actconc = tmp;
+      arr_t tmp(this->h5load_timestep(lgrngn_prefix+"_mom0", at));
+      conc.resize(tmp.shape());
+      conc = tmp;
     }
     else if(this->micro == "blk_2m") {
-      arr_t tmp(arr_t(this->h5load_timestep("nc", at)) + arr_t(this->h5load_timestep("nr", at)));
-      actconc.resize(tmp.shape());
-      actconc = tmp;
+      arr_t tmp(arr_t(this->h5load_timestep(blk_2m_1, at)));
+      if(blk_2m_2 != "")
+        tmp += arr_t(this->h5load_timestep(blk_2m_2, at));
+      conc.resize(tmp.shape());
+      conc = tmp;
     }
-    this->multiply_by_rhod(actconc); // b4 it was specific moment
-    actconc /= 1e6; // per cm^3
-    return cloud_hlpr(actconc, at);
+    this->multiply_by_rhod(conc); // b4 it was specific moment
+    conc /= 1e6; // per cm^3
+    return cloud_hlpr(conc, at);
+  } 
+
+  // mean and std_dev of concentration of activated droplets in cloudy cells [1/cm^3] (characteristics of the spatial distribution at this timestep)
+  std::pair<double, double> cloud_actconc_stats_timestep(int at)
+  {   
+    return cloud_conc_stats_timestep_hlpr(at, "act_rw", "nc", "nr");
+  } 
+
+  std::pair<double, double> cloud_cloudconc_stats_timestep(int at)
+  {   
+    return cloud_conc_stats_timestep_hlpr(at, "cloud_rw", "nc");
+  } 
+
+  std::pair<double, double> cloud_rainconc_stats_timestep(int at)
+  {   
+    return cloud_conc_stats_timestep_hlpr(at, "rain_rw", "nr");
   } 
 
 

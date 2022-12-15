@@ -2,16 +2,16 @@
 
 const std::vector<std::string> series_rico({
 "RH_max",
-"cloud_cover_rico",
-"min_cloud_base_rico",
+"cloud_cover",
+"min_cloud_base",
 "inversion_height_rico",
 "tot_water",
 "lwp",
 "rwp",
 "surf_precip",
 "acc_precip",
-"cl_nc_rico",
-"cl_nr_rico",
+"cl_nc",
+"cl_nr",
 "cloud_avg_supersat",
 "wvarmax",
 "cl_meanr", //TODO: zmienic maske na rico
