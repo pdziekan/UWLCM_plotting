@@ -11,11 +11,15 @@ class PlotterCommon : public Plotter_t<NDims>
 
   public:
   using arr_t = typename parent_t::arr_t;
+  using parent_t::parent_t;
 
   protected:
   const double L_evap = 2264.76e3; // latent heat of evaporation [J/kg]
 
   public:
+
+  // ---- functions for diagnosing statistics ----
+  //
   void multiply_by_rhod(arr_t &arr)
   {
     if(arr.extent(NDims-1) == this->map_prof["rhod"].extent(0))
@@ -35,8 +39,6 @@ class PlotterCommon : public Plotter_t<NDims>
     else
       throw std::runtime_error("multiply_by_CellVol: input array is neither normal grid size nor refined grid size");
   }
-
-  // ---- functions for diagnosing statistics ----
   
   // helper function that calculates staistics (mean and std_dev) of a field
   std::pair<double, double> hlpr(arr_t arr, int at)

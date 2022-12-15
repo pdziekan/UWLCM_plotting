@@ -363,8 +363,8 @@ class PlotterMicro : public PlotterCommon<NDims>
   PlotterMicro(const string &file, const string &micro):
     parent_t(file),
     micro(micro),
-    res(this->tmp.shape()),
-    rhod(this->h5load(file + "/const.h5", "G"))
+    res(this->tmp.shape())
+    //,rhod(this->h5load(file + "/const.h5", "G"))
   {
   }
 };
