@@ -3,7 +3,7 @@
 
 // TODO: make two: plotterlgrngn and plotter blk1m
 template<int NDims>
-class PlotterMicro_t : public PlotterCommon<NDims> 
+class PlotterMicro : public PlotterCommon<NDims> 
 {
   protected:
   using parent_t = PlotterCommon<NDims>;
@@ -360,7 +360,7 @@ class PlotterMicro_t : public PlotterCommon<NDims>
   }
 
   //ctor
-  PlotterMicro_t(const string &file, const string &micro):
+  PlotterMicro(const string &file, const string &micro):
     parent_t(file),
     micro(micro),
     res(this->tmp.shape()),

@@ -1,5 +1,5 @@
 #include <map>
-#include <UWLCM_plotters/PlotterMicro.hpp>
+#include <UWLCM_plotters/PlotterMask.hpp>
 #include "plots.hpp"
 #include "focus.hpp"
 #include "gnuplot.hpp"

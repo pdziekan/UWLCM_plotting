@@ -1,16 +1,30 @@
 #pragma once
 #include "PlotterMicro.hpp"
 
-// TODO: make two: plotterlgrngn and plotter blk1m
+enum class mask_type_t{Rico11};
+
 template<int NDims>
 class PlotterMask : public PlotterMicro<NDims> 
 {
   protected:
   using parent_t = PlotterMicro<NDims>;
+  using arr_t = parent_t::arr_t;
 
   private:
 
+  mask_type_t mask_type;
   arr_t mask;
+
+  void calc_mask(int at)
+  {
+    // RICO mask; TODO: add other masks
+    if(mask_type == mask_type_t::Rico11)
+    {
+      mask = load_ract_timestep(at);
+      mask = iscloudy_rc(mask);
+    }
+    else throw std::runtime_error("Invalid mask type");
+  }
 
   lgrngn_droplet_prefix
   cloud_mask
@@ -24,10 +38,10 @@ class PlotterMask : public PlotterMicro<NDims>
   std::pair<double, double> cloud_hlpr(arr_t arr, int at)
   {
     std::pair<double, double> res;
-    // read activated droplets mixing ratio 
-    arr_t mask(h5load_ract_timestep(at));
-    mask = iscloudy_rc(mask);
-    arr *= mask; // apply filter
+
+    // apply mask
+    calc_mask(at);
+    arr *= mask; 
     
     if(blitz::sum(mask) > 0.) 
       res.first = blitz::sum(arr) / blitz::sum(mask); 
@@ -81,8 +95,6 @@ class PlotterMask : public PlotterMicro<NDims>
   } 
 
 
-
-
   // mean and std_dev of number of SDs in cloudy cells (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> cloud_sdconc_stats_timestep(int at)
   {   
@@ -131,13 +143,25 @@ class PlotterMask : public PlotterMicro<NDims>
     return cloud_hlpr(act1st, at);
   }
 
+  
+  // height [m] of the center of mass of activated droplets
+  double act_com_z_timestep(int at)
+  {
+    arr_t ract(h5load_ract_timestep(at));
+    arr_t weighted(ract.copy());
+    weighted = weighted * this->LastIndex * this->map["dz"];
+    if(blitz::sum(ract) > 1e-3)
+      return blitz::sum(weighted) / blitz::sum(ract);
+    else
+      return 0.; 
+  }
+
 
   //ctor
-  PlotterMask(const string &file, const string &micro):
-    parent_t(file),
-    micro(micro),
-    res(this->tmp.shape()),
-    rhod(this->h5load(file + "/const.h5", "G"))
+  PlotterMask(const string &file, const string &micro, const mask_type_t _mt):
+    parent_t(file, micro),
+    mask(this->tmp_ref.shape()),
+    mask_type(_mt)
   {
   }
 };

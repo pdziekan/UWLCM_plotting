@@ -1,7 +1,7 @@
 #include <unordered_set>
 #include <iomanip> 
 
-#include <UWLCM_plotters/PlotterMicro.hpp>
+#include <UWLCM_plotters/PlotterMask.hpp>
 #include <boost/tuple/tuple.hpp>
 #include "plots.hpp"
 #include "gnuplot.hpp"
