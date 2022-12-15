@@ -446,7 +446,6 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
           auto tmp = plotter.load_nc_timestep(at * n["outfreq"]);
           typename Plotter_t::arr_t snap(tmp);
           res_tmp = snap;
-          res_tmp *= rhod / 1e6; // per cm^3
         }
         // updraft only
         res_tmp *= res_tmp2;
@@ -464,10 +463,8 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
         {
           auto tmp = plotter.load_nc_timestep(at * n["outfreq"]);
           typename Plotter_t::arr_t snap(tmp);
-          snap *= rhod; // b4 it was specific moment
-          snap /= 1e6; // per cm^3
           res_tmp = snap;
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           res_tmp2 *= snap; // cloudy updrafts only
         }
 
@@ -493,7 +490,6 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
           auto tmp = plotter.load_nc_timestep(at * n["outfreq"]);
           typename Plotter_t::arr_t snap(tmp);
           res_tmp = snap;
-          res_tmp *= rhod / 1e6; // per cm^3
         }
         // updraft only
         res_tmp *= res_tmp2;
@@ -659,7 +655,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
       else if (plt == "N_c")
       {
 	// cloud drops concentration [1/cm^3]
-        res = plotter.load_nc_timestep(at * n["outfreq"]) * rhod / 1e6; // from sepcific to normal moment + per cm^3
+        res = plotter.load_nc_timestep(at * n["outfreq"]); // from sepcific to normal moment + per cm^3
         res_prof_hlpr = plotter.horizontal_mean(res); // average in x
       }
       else if (plt == "rd_geq_0.8um_conc")
@@ -682,12 +678,10 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
           // cloud fraction (cloudy if N_c > 20/cm^3)
           auto tmp = plotter.load_nc_timestep(at * n["outfreq"]);
           typename Plotter_t::arr_t snap(tmp);
-          snap *= rhod; // b4 it was specific moment
-          snap /= 1e6; // per cm^3
           typename Plotter_t::arr_t snap2;
           snap2.resize(snap.shape());
           snap2=snap;
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           snap2 *= snap;
 
           // mean only over cloudy cells
@@ -739,9 +733,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
         {
           auto tmp = plotter.load_nc_timestep(at * n["outfreq"]);
           typename Plotter_t::arr_t snap(tmp);
-          snap *= rhod; // b4 it was specific moment
-          snap /= 1e6; // per cm^3
-          snap = iscloudy(snap);
+          snap = iscloudy_nc_dycoms(snap);
           res += snap; 
         }
         res_prof_hlpr = plotter.horizontal_mean(res); // average in x

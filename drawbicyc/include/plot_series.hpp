@@ -501,7 +501,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap2;
           snap2.resize(snap.shape());
           snap2=snap;
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           snap2 *= snap;
           if(blitz::sum(snap) > 0)
             res_series[plt](at) = blitz::sum(snap2) / blitz::sum(snap); 
@@ -543,7 +543,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(tmp);
           plotter.multiply_by_rhod(snap); 
           snap /= 1e6; // per cm^3
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           auto tmp2 = plotter.h5load_timestep("rain_rw_mom0", at * n["outfreq"]);
           typename Plotter_t::arr_t snap2(tmp2);
           plotter.multiply_by_rhod(snap2); 
@@ -601,7 +601,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(tmp);
           plotter.multiply_by_rhod(snap); 
           snap /= 1e6; // per cm^3
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           snap(plotter.hrzntl_slice(0)) = 0; // cheat to avoid occasional "cloudy" cell at ground level due to activation from surf flux
           plotter.k_i = blitz::first((snap == 1), plotter.LastIndex); 
           auto cloudy_column = plotter.k_i.copy();
@@ -626,7 +626,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(tmp);
           plotter.multiply_by_rhod(snap); 
           snap /= 1e6; // per cm^3
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           snap(plotter.hrzntl_slice(0)) = 0; // cheat to avoid occasional "cloudy" cell at ground level due to activation from surf flux
           plotter.k_i = blitz::first((snap == 1), plotter.LastIndex); 
           auto cloudy_column = plotter.k_i.copy();
@@ -768,7 +768,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap); 
           snap /= 1e6; // per cm^3
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
 
           typename Plotter_t::arr_t acc_acnv(plotter.h5load_timestep("acc_acnv25", at * n["outfreq"]));
           auto tot_acc_acnv = blitz::sum(acc_acnv);
@@ -794,7 +794,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap); 
           snap /= 1e6; // per cm^3
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
 
           typename Plotter_t::arr_t acc_accr(plotter.h5load_timestep("acc_accr25", at * n["outfreq"]));
           double tot_acc_accr = blitz::sum(acc_accr); 
@@ -1176,7 +1176,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap); 
           snap /= 1e6; // per cm^3
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           typename Plotter_t::arr_t snap2(plotter.h5load_timestep("gccn_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap2); 
           snap2 /= 1e6; // per cm^3
@@ -1197,7 +1197,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap); 
           snap /= 1e6; // per cm^3
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           typename Plotter_t::arr_t snap2(plotter.h5load_timestep("non_gccn_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap2); 
           snap2 /= 1e6; // per cm^3
@@ -1217,7 +1217,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap); 
           snap /= 1e6; // per cm^3
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           typename Plotter_t::arr_t snap2(plotter.h5load_timestep("gccn_rw_mom0", at * n["outfreq"]));
           typename Plotter_t::arr_t snap3(plotter.h5load_timestep("non_gccn_rw_mom0", at * n["outfreq"]));
 
@@ -1240,7 +1240,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap); 
           snap /= 1e6; // per cm^3
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           typename Plotter_t::arr_t snap_m0(plotter.h5load_timestep("gccn_rw_mom0", at * n["outfreq"]));
           typename Plotter_t::arr_t snap_m1(plotter.h5load_timestep("gccn_rw_mom1", at * n["outfreq"]) * 1e6); // in microns
           snap_m0 *= snap;
@@ -1288,7 +1288,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap); 
           snap /= 1e6; // per cm^3
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           typename Plotter_t::arr_t snap2(plotter.h5load_timestep("rd_geq_0.8um_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap2); 
           snap2 /= 1e6; // per cm^3
@@ -1322,7 +1322,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap); 
           snap /= 1e6; // per cm^3
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           typename Plotter_t::arr_t snap2(plotter.h5load_timestep("rd_lt_0.8um_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap2); 
           snap2 /= 1e6; // per cm^3
@@ -1355,7 +1355,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t snap(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           plotter.multiply_by_rhod(snap); 
           snap /= 1e6; // per cm^3
-          snap = iscloudy(snap); // cloudiness mask
+          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
           typename Plotter_t::arr_t snap_m0(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           typename Plotter_t::arr_t snap_m1(plotter.h5load_timestep("cloud_rw_mom1", at * n["outfreq"])*1e6); // in microns
           snap_m0 *= snap;

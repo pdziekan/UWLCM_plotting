@@ -89,13 +89,13 @@ class PlotterMicro : public PlotterCommon<NDims>
     return res;
   }
 
-  // cloud droplets concentration [1/kg]
+  // cloud droplets concentration [1/cm^3]
   auto load_nc_timestep(
     int at
   ) //-> decltype(blitz::safeToReturn(arr_t() + 0))
   {
     if(this->micro == "lgrngn")
-      return arr_t(this->h5load_timestep("cloud_rw_mom0", at));
+      return arr_t(this->multiply_by_rhod(arr_t(this->h5load_timestep("cloud_rw_mom0", at) / 1e6)));
     else if(this->micro == "blk_1m")
     {
       res = 0;
@@ -103,7 +103,7 @@ class PlotterMicro : public PlotterCommon<NDims>
      // return blitz::safeToReturn(res + 0);
     }
     else if(this->micro == "blk_2m")
-      return arr_t(this->h5load_timestep("nc", at));
+      return arr_t(this->multiply_by_rhod(arr_t(this->h5load_timestep("nc", at) / 1e6)));
   }
 
   // precipitation flux [W/m2]

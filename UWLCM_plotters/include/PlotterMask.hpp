@@ -1,7 +1,7 @@
 #pragma once
 #include "PlotterMicro.hpp"
 
-enum class mask_type_t{Rico11};
+enum class mask_type_t{Rico11, Dycoms_rf02};
 
 template<int NDims>
 class PlotterMask : public PlotterMicro<NDims> 
@@ -21,7 +21,12 @@ class PlotterMask : public PlotterMicro<NDims>
     if(mask_type == mask_type_t::Rico11)
     {
       mask = this->load_ract_timestep(at);
-      mask = iscloudy_rc(mask);
+      mask = iscloudy_rc_rico(mask);
+    }
+    else if(mask_type == mask_type_t::Dycoms_rf02)
+    {
+      mask = this->load_nc_timestep(at);
+      mask = iscloudy_nc_dycoms(mask);
     }
     else throw std::runtime_error("Invalid mask type");
   }

@@ -20,7 +20,7 @@ class PlotterCommon : public Plotter_t<NDims>
 
   // ---- functions for diagnosing statistics ----
   //
-  void multiply_by_rhod(arr_t &arr)
+  arr_t& multiply_by_rhod(arr_t arr)
   {
     if(arr.extent(NDims-1) == this->map_prof["rhod"].extent(0))
       arr *= this->map_prof["rhod"](this->LastIndex);
@@ -28,9 +28,10 @@ class PlotterCommon : public Plotter_t<NDims>
       arr *= this->map_prof["refined rhod"](this->LastIndex);
     else
       throw std::runtime_error("multiply_by_rhod: input array is neither normal grid size nor refined grid size");
+    return arr;
   }
 
-  void multiply_by_CellVol(arr_t &arr)
+  arr_t& multiply_by_CellVol(arr_t arr)
   {
     if(arr.extent(NDims-1) == this->map_prof["rhod"].extent(0))
       arr *= this->CellVol;
@@ -38,6 +39,7 @@ class PlotterCommon : public Plotter_t<NDims>
       arr *= this->CellVol_ref;
     else
       throw std::runtime_error("multiply_by_CellVol: input array is neither normal grid size nor refined grid size");
+    return arr;
   }
   
   // helper function that calculates staistics (mean and std_dev) of a field
