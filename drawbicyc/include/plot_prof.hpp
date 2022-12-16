@@ -458,6 +458,8 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
           res_tmp2 *= snap; // cloudy updrafts only
         }
 
+        res_tmp = typename Plotter_t::arr_t(plotter.load_nc_timestep(at * n["outfreq"]));
+
         // mean only over cloudy updraught cells
         prof_tmp = plotter.horizontal_sum(res_tmp2); // number of downdraft cells on a given level
 

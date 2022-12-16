@@ -19,7 +19,7 @@ class PlotterMask : public PlotterMicro<NDims>
   {
     if(mask_type == mask_type_t::Rico11)
     {
-      mask = this->load_ract_timestep(at);
+      mask = this->load_rc_timestep(at);
       mask = iscloudy_rc_rico(mask);
     }
     else if(mask_type == mask_type_t::Dycoms_rf02)
