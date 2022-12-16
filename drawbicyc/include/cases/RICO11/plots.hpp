@@ -16,7 +16,6 @@ const std::vector<std::string> series_rico({
 "cl_avg_cloud_meanr",
 "cl_avg_cloud_stddevr",
 "wvarmax",
-"cl_meanr", //TODO: zmienic maske na rico
 "sd_conc"
 
 

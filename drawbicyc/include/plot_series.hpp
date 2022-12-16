@@ -1177,25 +1177,6 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
-
-      else if (plt == "cl_meanr")
-      {
-        // cloud droplets mean radius in cloudy grid cells
-        try
-        {
-          arr_t snap(plotter.get_mask(at * n["outfreq"]));
-          arr_t snap_m0(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
-          arr_t snap_m1(plotter.h5load_timestep("cloud_rw_mom1", at * n["outfreq"])*1e6); // in microns
-          snap_m0 *= snap;
-          snap_m1 *= snap;
-          auto tot_m0 = blitz::sum(snap_m0);
-          if(tot_m0 > 0)
-            res_series[plt](at) = blitz::sum(snap_m1) / tot_m0; 
-          else
-            res_series[plt](at) = 0;
-        }
-        catch(...) {if(at==first_timestep) data_found[plt]=0;}
-      }
       // cloud base mean incloud time of bigrain (r>40um)
       else if (plt == "clb_bigrain_mean_inclt")
       {

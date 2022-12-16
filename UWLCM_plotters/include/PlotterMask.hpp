@@ -100,9 +100,9 @@ class PlotterMask : public PlotterMicro<NDims>
     // read  drop 0th raw moment / mass [1/kg]
     arr_t m0th(this->h5load_timestep(lgrngn_prefix+"_mom0", at)); 
     // read  drop 1st raw moment / mass [um/kg]
-    arr_t m1st(this->h5load_timestep(lgrngn_prefix+"_mom1", at)); 
+    arr_t m1st(this->h5load_timestep(lgrngn_prefix+"_mom1", at) * 1e6); 
     // read  drop 2nd raw moment / mass [um^2/kg]
-    arr_t m2nd(this->h5load_timestep(lgrngn_prefix+"_mom2", at)); 
+    arr_t m2nd(this->h5load_timestep(lgrngn_prefix+"_mom2", at) * 1e12); 
     // calculate stddev of radius, store in 1st
     m1st = where(m0th > 0, 
       m2nd / m0th - m1st / m0th * m1st / m0th, 0.);
