@@ -63,13 +63,13 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel 'time [min]'\n";
     gp << "set title 'relative std dev N_c'\n";
   }
-  else if (plt == "cloud_avg_supersat")
+  else if (plt == "cl_avg_supersat")
   {
     gp << "set ylabel '<S> [%]'\n";
     gp << "set xlabel 'time [min]'\n";
     gp << "set title 'avg supersaturation'\n";
   }
-  else if (plt == "cloud_std_dev_supersat")
+  else if (plt == "cl_std_dev_supersat")
   {
     gp << "set ylabel 'sigma(S) / <S>'\n";
     gp << "set xlabel 'time [min]'\n";
@@ -86,6 +86,18 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set ylabel '<sigma(r)> [um]'\n";
     gp << "set xlabel 'time [min]'\n";
     gp << "set title 'average std dev of radius of activated droplets'\n";
+  }
+  else if (plt == "cl_avg_cloud_meanr")
+  {
+    gp << "set ylabel '<r_{mean}> [um]'\n";
+    gp << "set xlabel 'time [min]'\n";
+    gp << "set title 'mean radius of cloud droplets in cloud'\n";
+  }
+  else if (plt == "cl_avg_cloud_stddevr")
+  {
+    gp << "set ylabel '<sigma(r)> [um]'\n";
+    gp << "set xlabel 'time [min]'\n";
+    gp << "set title 'std. dev. of radius of cloud droplets in cloud'\n";
   }
   else if (plt == "sd_conc")
   {
