@@ -1,7 +1,7 @@
 #pragma once
 #include "PlotterMicro.hpp"
 
-enum class mask_type_t{Rico11, Dycoms_rf02};
+enum class mask_type_t{Rico11, Dycoms_rf02, unset};
 
 template<int NDims>
 class PlotterMask : public PlotterMicro<NDims> 
