@@ -58,26 +58,7 @@ class PlotterMask : public PlotterMicro<NDims>
     return res;
   }
 
-  public:
 
-
-  arr_t get_mask(int at)
-  {
-    calc_mask(at);
-    return mask;
-  }
-
-  // functions for diagnosing statistics
-  // mean and std dev [g/kg] of the mixing ratio of activated dropelts in cloudy cells (characteristics of the spatial distribution at this timestep)
-  std::pair<double, double> cloud_ract_stats_timestep(int at)
-  {
-    // read activated droplets mixing ratio 
-    arr_t ract(this->load_ract_timestep(at));
-    ract *= 1e3; // turn it into g/kg
-    return cloud_hlpr(ract, at);
-  }
-
-  // mean and std_dev of concentration of activated droplets in cloudy cells [1/cm^3] (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> cloud_conc_stats_timestep_hlpr(int at, std::string lgrngn_prefix, std::string blk_2m_1, std::string blk_2m_2 = "")
   {   
     arr_t conc;
@@ -101,7 +82,55 @@ class PlotterMask : public PlotterMicro<NDims>
     return cloud_hlpr(conc, at);
   } 
 
-  // mean and std_dev of concentration of activated droplets in cloudy cells [1/cm^3] (characteristics of the spatial distribution at this timestep)
+  std::pair<double, double> cloud_meanr_stats_timestep_hlpr(int at, std::string lgrngn_prefix)
+  {   
+    if(this->micro == "blk_1m" || this->micro == "blk_2m") return {0,0};
+    // read  drop 0th raw moment / mass [1/kg]
+    arr_t 0th(this->h5load_timestep(lgrngn_prefix+"_mom0", at)); 
+    // read  drop 1st raw moment / mass [um/kg]
+    arr_t 1st(this->h5load_timestep(lgrngn_prefix"_mom1", at) * 1e6);
+    // calculate mean radius, store in 1st
+    1st = where(0th > 0, 1st / 0th, 0.);
+    return cloud_hlpr(1st, at);
+  }
+
+  std::pair<double, double> cloud_stddevr_stats_timestep_hlpr(int at, std::string lgrngn_prefix)
+  {   
+    if(this->micro == "blk_1m" || this->micro == "blk_2m") return {0,0};
+    // read  drop 0th raw moment / mass [1/kg]
+    arr_t 0th(this->h5load_timestep(lgrngn_prefix+"_mom0", at)); 
+    // read  drop 1st raw moment / mass [um/kg]
+    arr_t 1st(this->h5load_timestep(lgrngn_prefix+"_mom1", at)); 
+    // read  drop 2nd raw moment / mass [um^2/kg]
+    arr_t 2nd(this->h5load_timestep(lgrngn_prefix+"_mom2", at)); 
+    // calculate stddev of radius, store in 1st
+    1st = where(0th > 0, 
+      2nd / 0th - 1st / 0th * 1st / 0th, 0.);
+    // might be slightly negative due to numerical errors
+    1st = where(1st < 0, 0, 1st);
+    1st = sqrt(1st);
+    return cloud_hlpr(1st, at);
+  }
+
+  public:
+
+  arr_t get_mask(int at)
+  {
+    calc_mask(at);
+    return mask;
+  }
+
+  // functions for diagnosing statistics
+  // mean and std dev [g/kg] of the mixing ratio of activated dropelts in cloudy cells (characteristics of the spatial distribution at this timestep)
+  std::pair<double, double> cloud_ract_stats_timestep(int at)
+  {
+    // read activated droplets mixing ratio 
+    arr_t ract(this->load_ract_timestep(at));
+    ract *= 1e3; // turn it into g/kg
+    return cloud_hlpr(ract, at);
+  }
+
+  // mean and std_dev of concentration of activated/cloud/rain droplets in cloudy cells [1/cm^3] (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> cloud_actconc_stats_timestep(int at)
   {   
     return cloud_conc_stats_timestep_hlpr(at, "act_rw", "nc", "nr");
@@ -121,7 +150,7 @@ class PlotterMask : public PlotterMicro<NDims>
   // mean and std_dev of number of SDs in cloudy cells (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> cloud_sdconc_stats_timestep(int at)
   {   
-    if(this->micro == "blk_1m") return {0,0};
+    if(this->micro == "blk_1m" || this->micro == "blk_2m") return {0,0};
     arr_t sdconc(this->h5load_timestep("sd_conc", at));
     return cloud_hlpr(sdconc, at);
   }
@@ -129,43 +158,38 @@ class PlotterMask : public PlotterMicro<NDims>
   // mean and std_dev of number of activated SDs in cloudy cells (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> cloud_sdconc_act_stats_timestep(int at)
   {   
-    if(this->micro == "blk_1m") return {0,0};
+    if(this->micro == "blk_1m" || this->micro == "blk_2m") return {0,0};
     arr_t sdconc_act(this->h5load_timestep("sd_conc_act", at));
     return cloud_hlpr(sdconc_act, at);
   }
 
-  // mean and std_dev of mean radius of activated droplets in cloudy cells [um] (characteristics of the spatial distribution at this timestep)
-  std::pair<double, double> cloud_meanr_stats_timestep(int at)
+  // mean and std_dev of mean radius of activated/cloud/rain droplets in cloudy cells [um] (characteristics of the spatial distribution at this timestep)
+  std::pair<double, double> cloud_actmeanr_stats_timestep(int at)
   {   
-    if(this->micro == "blk_1m") return {0,0};
-    // read act drop 0th raw moment / mass [1/kg]
-    arr_t act0th(this->h5load_timestep("actrw_rw_mom0", at)); 
-    // read act drop 1st raw moment / mass [um/kg]
-    arr_t act1st(this->h5load_timestep("actrw_rw_mom1", at) * 1e6);
-    // calculate mean radius, store in act1st
-    act1st = where(act0th > 0, act1st / act0th, 0.);
-    return cloud_hlpr(act1st, at);
+    return cloud_meanr_stats_timestep_hlpr(at, "act_rw");
+  }
+  std::pair<double, double> cloud_cloudmeanr_stats_timestep(int at)
+  {   
+    return cloud_meanr_stats_timestep_hlpr(at, "cloud_rw");
+  }
+  std::pair<double, double> cloud_rainmeanr_stats_timestep(int at)
+  {   
+    return cloud_meanr_stats_timestep_hlpr(at, "rain_rw");
   }
 
-  // mean and std_dev of std_dev of radius of activated droplets in cloudy cells [um] (characteristics of the spatial distribution at this timestep)
-  std::pair<double, double> cloud_stddevr_stats_timestep(int at)
+  // mean and std_dev of std_dev of radius of activated/cloud/rain droplets in cloudy cells [um] (characteristics of the spatial distribution at this timestep)
+  std::pair<double, double> cloud_actstddevr_stats_timestep(int at)
   {   
-    if(this->micro == "blk_1m") return {0,0};
-    // read act drop 0th raw moment / mass [1/kg]
-    arr_t act0th(this->h5load_timestep("actrw_rw_mom0", at)); 
-    // read act drop 1st raw moment / mass [um/kg]
-    arr_t act1st(this->h5load_timestep("actrw_rw_mom1", at) * 1e6);
-    // read act drop 2nd raw moment / mass [um^2/kg]
-    arr_t act2nd(this->h5load_timestep("actrw_rw_mom2", at) * 1e12);
-    // calculate stddev of radius, store in act1st
-    act1st = where(act0th > 0, 
-      act2nd / act0th - act1st / act0th * act1st / act0th, 0.);
-    // might be slightly negative due to numerical errors
-    act1st = where(act1st < 0, 0, act1st);
-    act1st = sqrt(act1st);
-    return cloud_hlpr(act1st, at);
+    return cloud_stddevr_stats_timestep_hlpr(at, "act_rw");
   }
-
+  std::pair<double, double> cloud_cloudstddevr_stats_timestep(int at)
+  {   
+    return cloud_stddevr_stats_timestep_hlpr(at, "cloud_rw");
+  }
+  std::pair<double, double> cloud_rainstddevr_stats_timestep(int at)
+  {   
+    return cloud_stddevr_stats_timestep_hlpr(at, "rain_rw");
+  }
   
   // height [m] of the center of mass of activated droplets
   double act_com_z_timestep(int at)

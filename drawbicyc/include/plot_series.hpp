@@ -125,7 +125,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     for (auto &plt : plots.series)
     {
       std::cerr << plt << std::endl;
-      if (plt == "cloud_cover_dycoms")
+      if (plt == "cl_cover_dycoms")
       {
         try
         {
@@ -139,7 +139,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
-      else if (plt == "cloud_cover")
+      else if (plt == "cl_cover")
       {
         try
         {
@@ -170,14 +170,14 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       {
         try
         {
-          auto stats = plotter.cloud_ract_stats_timestep(at * n["outfreq"]);
+          auto stats = plotter.cl_ract_stats_timestep(at * n["outfreq"]);
           res_series[plt](at) = stats.first;
           res_series_std_dev[plt](at) = stats.second;
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
       // cloud top height
-      else if (plt =="cloud_top_height")
+      else if (plt =="cl_top_height")
       {
         try
         {
@@ -210,7 +210,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       {
         try
         {
-          auto stats = plotter.cloud_sdconc_stats_timestep(at * n["outfreq"]);
+          auto stats = plotter.cl_sdconc_stats_timestep(at * n["outfreq"]);
           res_series[plt](at) = stats.first;
           res_series_std_dev[plt](at) = stats.second;
         }
@@ -221,7 +221,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       {
         try
         {
-          auto stats = plotter.cloud_sdconc_act_stats_timestep(at * n["outfreq"]);
+          auto stats = plotter.cl_sdconc_act_stats_timestep(at * n["outfreq"]);
           res_series[plt](at) = stats.first;
           res_series_std_dev[plt](at) = stats.second;
         }
@@ -240,7 +240,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           }
 */  
           {
-            auto tmp = plotter.h5load_timestep("cloud_rw_mom3", at * n["outfreq"]) * 4./3. * 3.1416 * 1e3;
+            auto tmp = plotter.h5load_timestep("cl_rw_mom3", at * n["outfreq"]) * 4./3. * 3.1416 * 1e3;
             arr_t snap(tmp);
             plotter.multiply_by_rhod(snap); 
             res_series[plt](at) += blitz::mean(snap);
@@ -451,7 +451,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // cloud droplet (0.5um < r < 25 um) concentration
         try
         {
-          auto tmp = plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]);
+          auto tmp = plotter.h5load_timestep("cl_rw_mom0", at * n["outfreq"]);
           arr_t snap(tmp);
           snap /= 1e6; // per cm^3
           plotter.multiply_by_rhod(snap); 
@@ -490,7 +490,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // cloud droplet (0.5um < r < 25 um) concentration in cloudy grid cells
         try
         {
-          auto stats = plotter.cloud_cloudconc_stats_timestep(at * n["outfreq"]);
+          auto stats = plotter.cl_cloudconc_stats_timestep(at * n["outfreq"]);
           res_series[plt](at) = stats.first;
           res_series_std_dev[plt](at) = stats.second;
         }
@@ -501,7 +501,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // rain drop (25um < r) concentration in cloudy grid cells
         try
         {
-          auto stats = plotter.cloud_rainconc_stats_timestep(at * n["outfreq"]);
+          auto stats = plotter.cl_rainconc_stats_timestep(at * n["outfreq"]);
           res_series[plt](at) = stats.first;
           res_series_std_dev[plt](at) = stats.second;
         }
@@ -518,7 +518,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;} 
       }
-      else if (plt == "cloud_base")
+      else if (plt == "cl_base")
       {
         // average cloud base in the domain
         try
@@ -536,36 +536,36 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
-      else if (plt == "cloud_base_precip")
+      else if (plt == "cl_base_precip")
       {
         // domain-averaged (all columns) precipitation at the average cloud base height [mm/day]
         try
         {
-          // -- average cloud base, almost exactly as in "cloud_base"... --
+          // -- average cloud base, almost exactly as in "cl_base"... --
           arr_t snap(plotter.get_mask(at * n["outfreq"]));
           plotter.k_i = blitz::first((snap == 1), plotter.LastIndex); 
           auto cloudy_column = plotter.k_i.copy();
           cloudy_column = blitz::sum(snap, plotter.LastIndex);
           cloudy_column = where(cloudy_column > 0, 1, 0);
           plotter.k_i = where(cloudy_column == 0, 0, plotter.k_i);
-          int cloud_base_idx;
+          int cl_base_idx;
           if(blitz::sum(cloudy_column) > 0)
-            cloud_base_idx = double(blitz::sum(plotter.k_i)) / blitz::sum(cloudy_column) + 0.5;
+            cl_base_idx = double(blitz::sum(plotter.k_i)) / blitz::sum(cloudy_column) + 0.5;
           else
-            cloud_base_idx = 0;
+            cl_base_idx = 0;
 
-          if(cloud_base_idx == 0)
+          if(cl_base_idx == 0)
             res_series[plt](at) = 0;
           else
           {
             // -- precipitation at this height averaged over all cells, cloudy or not -- 
             auto prflux = plotter.load_prflux_timestep(at * n["outfreq"]); // prflux in [W/m^2]
-            res_series[plt](at) = blitz::mean(prflux(plotter.hrzntl_slice(cloud_base_idx))) / 2264.705 * 3.6 * 24; // convert to [mm/day]
+            res_series[plt](at) = blitz::mean(prflux(plotter.hrzntl_slice(cl_base_idx))) / 2264.705 * 3.6 * 24; // convert to [mm/day]
           }
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
-      else if (plt == "min_cloud_base")
+      else if (plt == "min_cl_base")
       {
         // lowest cloud base in the domain
         try
@@ -584,18 +584,18 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
       // average concentration of activated droplets in cloudy cells
-      else if (plt == "cloud_avg_act_conc")
+      else if (plt == "cl_avg_act_conc")
       {
         try
         {
-          auto stats = plotter.cloud_actconc_stats_timestep(at * n["outfreq"]);
+          auto stats = plotter.cl_actconc_stats_timestep(at * n["outfreq"]);
           res_series[plt](at) = stats.first;
           res_series_std_dev[plt](at) = stats.second;
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
       // average supersaturation in cells with S>0
-      else if (plt == "cloud_avg_supersat")
+      else if (plt == "cl_avg_supersat")
       {
         try
         {
@@ -605,23 +605,23 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
-      // spatial average of mean radius of activated droplets in cloudy cells
-      else if (plt == "cl_avg_cloud_rad")
+      // spatial average of mean radius of cloud droplets in cloudy cells
+      else if (plt == "cl_avg_cl_meanr")
       {
         try
         {
-          auto stats = plotter.cloud_meanr_stats_timestep(at * n["outfreq"]);
+          auto stats = plotter.cl_cloudmeanr_stats_timestep(at * n["outfreq"]);
           res_series[plt](at) = stats.first;
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
 
-      // spatial average of standard deviation of the acttivated droplets radius distribution in cloudy cells
-      else if (plt == "cloud_avg_std_dev_act_rad")
+      // spatial average of standard deviation of cloud droplet radius distribution in cloudy cells
+      else if (plt == "cl_avg_cl_stddevr")
       {
         try
         {
-          auto stats = plotter.cloud_stddevr_stats_timestep(at * n["outfreq"]);
+          auto stats = plotter.cl_cloudstddevr_stats_timestep(at * n["outfreq"]);
           res_series[plt](at) = stats.first;
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
@@ -1008,7 +1008,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         try
         {
           arr_t tot_m0(plotter.h5load_timestep("aerosol_rw_mom0", at * n["outfreq"]));
-          tot_m0 += arr_t(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
+          tot_m0 += arr_t(plotter.h5load_timestep("cl_rw_mom0", at * n["outfreq"]));
           tot_m0 += arr_t(plotter.h5load_timestep("rain_rw_mom0", at * n["outfreq"]));
 
           arr_t tke(plotter.h5load_timestep("all_up_mom2", at * n["outfreq"]));
@@ -1184,8 +1184,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         try
         {
           arr_t snap(plotter.get_mask(at * n["outfreq"]));
-          arr_t snap_m0(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
-          arr_t snap_m1(plotter.h5load_timestep("cloud_rw_mom1", at * n["outfreq"])*1e6); // in microns
+          arr_t snap_m0(plotter.h5load_timestep("cl_rw_mom0", at * n["outfreq"]));
+          arr_t snap_m1(plotter.h5load_timestep("cl_rw_mom1", at * n["outfreq"])*1e6); // in microns
           snap_m0 *= snap;
           snap_m1 *= snap;
           auto tot_m0 = blitz::sum(snap_m0);
@@ -1211,7 +1211,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           plotter.tmp_float_hrzntl_slice = plotter.get_value_at_hgt(bigrain_conc, plotter.k_i) * plotter.get_value_at_hgt(rhod, plotter.k_i); // we need to multiply by rhod here, because different cloud bases can mean different rhod
 
           // 1st specific mom of incloud time of bigrain drops
-          arr_t bigrain_inclt_mom1(plotter.h5load_timestep("bigrain_incloud_time_mom1", at * n["outfreq"]));
+          arr_t bigrain_inclt_mom1(plotter.h5load_timestep("bigrain_incl_time_mom1", at * n["outfreq"]));
           // 1st mom of incloud time at cloud base
           plotter.tmp_float_hrzntl_slice2 = plotter.get_value_at_hgt(bigrain_inclt_mom1, plotter.k_i) * plotter.get_value_at_hgt(rhod, plotter.k_i);  // same as above
 
@@ -1400,7 +1400,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       {
         try
         {
-          arr_t nc(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
+          arr_t nc(plotter.h5load_timestep("cl_rw_mom0", at * n["outfreq"]));
           nc *= rhod; // 1/kg -> 1/m^3
           res_series[plt](at) = blitz::mean(nc);
         }
@@ -1481,8 +1481,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // droplets mean radius away from walls
         try
         {
-          arr_t m0(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
-          arr_t m1(plotter.h5load_timestep("cloud_rw_mom1", at * n["outfreq"]));
+          arr_t m0(plotter.h5load_timestep("cl_rw_mom0", at * n["outfreq"]));
+          arr_t m1(plotter.h5load_timestep("cl_rw_mom1", at * n["outfreq"]));
           //auto tot_m0 = blitz::sum(arr_t(plotter.nowall(m0, distance_from_walls)));
           auto tot_m0 = blitz::sum(m0);
           if(tot_m0 > 0)
@@ -1497,8 +1497,8 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // droplets effective radius away from walls
         try
         {
-          arr_t m2(plotter.h5load_timestep("cloud_rw_mom2", at * n["outfreq"]));
-          arr_t m3(plotter.h5load_timestep("cloud_rw_mom3", at * n["outfreq"]));
+          arr_t m2(plotter.h5load_timestep("cl_rw_mom2", at * n["outfreq"]));
+          arr_t m3(plotter.h5load_timestep("cl_rw_mom3", at * n["outfreq"]));
           auto tot_m2 = blitz::sum(m2);
           if(tot_m2 > 0)
             res_series[plt](at) = blitz::sum(m3) / tot_m2; 
@@ -1552,10 +1552,10 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         // relative dispersion (std dev / mean) of droplet radius distribution averaged over cells away from walls 
         try
         {
-          //arr_t m0(plotter.nowall(arr_t(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"])), distance_from_walls));
-          arr_t m0(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
-          arr_t m1(plotter.h5load_timestep("cloud_rw_mom1", at * n["outfreq"]));
-          arr_t m2(plotter.h5load_timestep("cloud_rw_mom2", at * n["outfreq"]));
+          //arr_t m0(plotter.nowall(arr_t(plotter.h5load_timestep("cl_rw_mom0", at * n["outfreq"])), distance_from_walls));
+          arr_t m0(plotter.h5load_timestep("cl_rw_mom0", at * n["outfreq"]));
+          arr_t m1(plotter.h5load_timestep("cl_rw_mom1", at * n["outfreq"]));
+          arr_t m2(plotter.h5load_timestep("cl_rw_mom2", at * n["outfreq"]));
           // calculate stddev of radius, store in m2
           m2 = where(m0 > 0,
             m2 / m0 - m1 / m0 * m1 / m0, 0.);
@@ -1668,29 +1668,29 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     {
       res_pos *= 60.;
     }
-    else if (plt == "cloud_avg_act_conc")
+    else if (plt == "cl_avg_act_conc")
     {
       plot_std_dev = true;
       res_pos *= 60.;
     }
-    else if (plt == "cloud_std_dev_act_conc")
+    else if (plt == "cl_std_dev_act_conc")
     {
       res_pos *= 60.;
     }
-    else if (plt == "cloud_avg_supersat")
+    else if (plt == "cl_avg_supersat")
     {
       plot_std_dev = true;
       res_pos *= 60.;
     }
-    else if (plt == "cloud_std_dev_supersat")
+    else if (plt == "cl_std_dev_supersat")
     {
       res_pos *= 60.;
     }
-    else if (plt == "cloud_avg_act_rad")
+    else if (plt == "cl_avg_cl_meanr")
     {
       res_pos *= 60.;
     }
-    else if (plt == "cloud_avg_std_dev_act_rad")
+    else if (plt == "cl_avg_cl_stddevr")
     {
       res_pos *= 60.;
     }
@@ -1746,7 +1746,7 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     {
       res_pos *= 60.;
     }
-    else if (plt == "cloud_top_height")
+    else if (plt == "cl_top_height")
     {
       res_pos *= 60.;
     }

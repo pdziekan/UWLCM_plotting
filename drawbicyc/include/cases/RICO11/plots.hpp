@@ -12,13 +12,12 @@ const std::vector<std::string> series_rico({
 "acc_precip",
 "cl_nc",
 "cl_nr",
-"cloud_avg_supersat",
+"cl_avg_supersat",
+"cl_avg_cloud_meanr",
+"cl_avg_cloud_stddevr",
 "wvarmax",
 "cl_meanr", //TODO: zmienic maske na rico
 "sd_conc"
-
-cl_avg_cloud_rad
-cloud_avg_std_dev_act_rad
 
 
 // "clb_bigrain_mean_rd",
