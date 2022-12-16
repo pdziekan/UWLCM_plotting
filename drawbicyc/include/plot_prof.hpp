@@ -132,8 +132,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
           res_tmp = where(res_tmp > 0 , res_tmp / snap, res_tmp);
         }
         {
-          typename Plotter_t::arr_t snap(plotter.load_rc_timestep(at * n["outfreq"]));
-          res_tmp2 = iscloudy_rc_rico(snap);
+          res_tmp2 = arr_t(plotter.get_mask(at * n["outfreq"]));
           res_tmp *= res_tmp2;
         }
         // mean only over downdraught cells
@@ -149,8 +148,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
           res_tmp = where(res_tmp > 0 , res_tmp / snap, res_tmp); // mean radius
         }
         {
-          typename Plotter_t::arr_t snap(plotter.load_rc_timestep(at * n["outfreq"]));
-          res_tmp2 = iscloudy_rc_rico(snap);
+          res_tmp2 = arr_t(plotter.get_mask(at * n["outfreq"]));
           res_tmp *= res_tmp2;
         }
         // mean only over downdraught cells
@@ -206,8 +204,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
           res_tmp2 = isdowndraught(snap);
         }
         { // cloudy
-          typename Plotter_t::arr_t snap(plotter.load_rc_timestep(at * n["outfreq"]));
-          res_tmp = iscloudy_rc_rico(snap);
+          res_tmp = arr_t(plotter.get_mask(at * n["outfreq"]));
           res_tmp2 *= res_tmp;
         }
         // mean rw
@@ -235,8 +232,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
           res_tmp2 = isdowndraught(snap);
         }
         { // cloudy
-          typename Plotter_t::arr_t snap(plotter.load_rc_timestep(at * n["outfreq"]));
-          res_tmp = iscloudy_rc_rico(snap);
+          res_tmp = arr_t(plotter.get_mask(at * n["outfreq"]));
           res_tmp2 *= res_tmp;
         }
         // mean rw
@@ -264,8 +260,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
           res_tmp2 = isupdraught(snap);
         }
         { // cloudy
-          typename Plotter_t::arr_t snap(plotter.load_rc_timestep(at * n["outfreq"]));
-          res_tmp = iscloudy_rc_rico(snap);
+          res_tmp = arr_t(plotter.get_mask(at * n["outfreq"]));
           res_tmp2 *= res_tmp;
         }
         // mean rw
@@ -401,8 +396,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
           res_tmp = where(res_tmp > 0 , res_tmp / snap, res_tmp);
         }
         {
-          typename Plotter_t::arr_t snap(plotter.load_rc_timestep(at * n["outfreq"]));
-          res_tmp2 = iscloudy_rc_rico(snap);
+          res_tmp2 = arr_t(plotter.get_mask(at * n["outfreq"]));
           res_tmp *= res_tmp2;
         }
         // mean only over downdraught cells
@@ -423,8 +417,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
           res_tmp = where(res_tmp > 0 , res_tmp / snap, res_tmp);
         }
         {
-          typename Plotter_t::arr_t snap(plotter.load_rc_timestep(at * n["outfreq"]));
-          res_tmp2 = iscloudy_rc_rico(snap);
+          res_tmp2 = arr_t(plotter.get_mask(at * n["outfreq"]));
           res_tmp *= res_tmp2;
         }
         // mean only over downdraught cells
@@ -461,10 +454,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
         }
 
         {
-          auto tmp = plotter.load_nc_timestep(at * n["outfreq"]);
-          typename Plotter_t::arr_t snap(tmp);
-          res_tmp = snap;
-          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
+          arr_t snap(plotter.get_mask(at * n["outfreq"]));
           res_tmp2 *= snap; // cloudy updrafts only
         }
 
@@ -675,13 +665,8 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
 	// cloud droplet (0.5um < r < 25 um) concentration in cloudy grid cells
         try
         {
-          // cloud fraction (cloudy if N_c > 20/cm^3)
-          auto tmp = plotter.load_nc_timestep(at * n["outfreq"]);
-          typename Plotter_t::arr_t snap(tmp);
-          typename Plotter_t::arr_t snap2;
-          snap2.resize(snap.shape());
-          snap2=snap;
-          snap = iscloudy_nc_dycoms(snap); // cloudiness mask
+          typename Plotter_t::arr_t snap2(plotter.load_nc_timestep(at * n["outfreq"]));
+          arr_t snap(plotter.get_mask(at * n["outfreq"]));
           snap2 *= snap;
 
           // mean only over cloudy cells
@@ -731,9 +716,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
       {
 	// cloud fraction (cloudy if N_c > 20/cm^3)
         {
-          auto tmp = plotter.load_nc_timestep(at * n["outfreq"]);
-          typename Plotter_t::arr_t snap(tmp);
-          snap = iscloudy_nc_dycoms(snap);
+          arr_t snap(plotter.get_mask(at * n["outfreq"]));
           res += snap; 
         }
         res_prof_hlpr = plotter.horizontal_mean(res); // average in x
@@ -742,9 +725,7 @@ void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool 
       // TODO: 'normalize' messes with this plot
       {
         res_prof_hlpr = 0;
-        // cloudy cells (cloudy if q_c > 0.01 g/kg as in RICO paper. NOTE: also add q_r ?)
-        typename Plotter_t::arr_t snap(plotter.load_rc_timestep(at * n["outfreq"]));
-        snap = iscloudy_rc_rico(snap); // cloudiness mask
+        arr_t snap(plotter.get_mask(at * n["outfreq"]));
         plotter.k_i = blitz::sum(snap, plotter.LastIndex); // sum in the vertical, assumes that all cloudy cells in a column belong to the same cloud
 
         plotter.tmp_int_hrzntl_slice = blitz::first(snap > 0, plotter.LastIndex); // cloud base hgt over dz

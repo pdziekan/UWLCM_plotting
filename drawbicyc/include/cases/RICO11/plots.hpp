@@ -17,6 +17,9 @@ const std::vector<std::string> series_rico({
 "cl_meanr", //TODO: zmienic maske na rico
 "sd_conc"
 
+cl_avg_cloud_rad
+cloud_avg_std_dev_act_rad
+
 
 // "clb_bigrain_mean_rd",
 // "clb_bigrain_mean_kappa",
@@ -24,8 +27,8 @@ const std::vector<std::string> series_rico({
 // "clb_bigrain_mean_inclt",
 //, "clb_bigrain_mean_gccn_fraction"
 
-//"cl_acnv25_rico",
-//"cl_accr25_rico",
+//"cl_acnv25",
+//"cl_accr25",
 //,"nc"
 //,"nr"
 //TODO (po usprawnieniu cloud mask i ujednoliceniu tego:
