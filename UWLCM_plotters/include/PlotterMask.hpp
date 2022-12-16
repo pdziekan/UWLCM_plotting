@@ -86,30 +86,30 @@ class PlotterMask : public PlotterMicro<NDims>
   {   
     if(this->micro == "blk_1m" || this->micro == "blk_2m") return {0,0};
     // read  drop 0th raw moment / mass [1/kg]
-    arr_t 0th(this->h5load_timestep(lgrngn_prefix+"_mom0", at)); 
+    arr_t m0th(this->h5load_timestep(lgrngn_prefix+"_mom0", at)); 
     // read  drop 1st raw moment / mass [um/kg]
-    arr_t 1st(this->h5load_timestep(lgrngn_prefix"_mom1", at) * 1e6);
+    arr_t m1st(this->h5load_timestep(lgrngn_prefix+"_mom1", at) * 1e6);
     // calculate mean radius, store in 1st
-    1st = where(0th > 0, 1st / 0th, 0.);
-    return cloud_hlpr(1st, at);
+    m1st = where(m0th > 0, m1st / m0th, 0.);
+    return cloud_hlpr(m1st, at);
   }
 
   std::pair<double, double> cloud_stddevr_stats_timestep_hlpr(int at, std::string lgrngn_prefix)
   {   
     if(this->micro == "blk_1m" || this->micro == "blk_2m") return {0,0};
     // read  drop 0th raw moment / mass [1/kg]
-    arr_t 0th(this->h5load_timestep(lgrngn_prefix+"_mom0", at)); 
+    arr_t m0th(this->h5load_timestep(lgrngn_prefix+"_mom0", at)); 
     // read  drop 1st raw moment / mass [um/kg]
-    arr_t 1st(this->h5load_timestep(lgrngn_prefix+"_mom1", at)); 
+    arr_t m1st(this->h5load_timestep(lgrngn_prefix+"_mom1", at)); 
     // read  drop 2nd raw moment / mass [um^2/kg]
-    arr_t 2nd(this->h5load_timestep(lgrngn_prefix+"_mom2", at)); 
+    arr_t m2nd(this->h5load_timestep(lgrngn_prefix+"_mom2", at)); 
     // calculate stddev of radius, store in 1st
-    1st = where(0th > 0, 
-      2nd / 0th - 1st / 0th * 1st / 0th, 0.);
+    m1st = where(m0th > 0, 
+      m2nd / m0th - m1st / m0th * m1st / m0th, 0.);
     // might be slightly negative due to numerical errors
-    1st = where(1st < 0, 0, 1st);
-    1st = sqrt(1st);
-    return cloud_hlpr(1st, at);
+    m1st = where(m1st < 0, 0, m1st);
+    m1st = sqrt(m1st);
+    return cloud_hlpr(m1st, at);
   }
 
   public:

@@ -8,6 +8,7 @@
 template<class Plotter_t>
 void plot_profiles(Plotter_t plotter, Plots plots, std::string type, const bool normalize)
 {
+  using arr_t = typename Plotter_t::arr_t;
 
   // read opts
   po::options_description opts("profile plotting options");

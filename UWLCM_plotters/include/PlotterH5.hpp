@@ -133,7 +133,6 @@ class PlotterH5
       catch(...) // for pre-refinement simulations, use rhod as refined rhod
       {
         map_prof.emplace("refined rhod", map_prof["rhod"].copy());
-        std::cerr << "refined rhod as copy of rhod: " << map_prof["refined rhod"];
       }
     }
   }
