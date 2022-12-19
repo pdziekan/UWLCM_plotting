@@ -16,11 +16,11 @@ from autoscale_y import *
 # activate latex text rendering
 rc('text', usetex=True)
 
-rico_vars = ["lwp", "rwp", "cloud_cover_rico", "min_cloud_base_rico", "inversion_height_rico", "cl_nc_rico", "cl_nr_rico", "surf_precip", "acc_precip", "RH_max", "cloud_avg_supersat", "wvarmax", "cl_meanr", "sd_conc"]#, "cl_acnv25_rico", "cl_accr25_rico"]#, "surf_flux_latent", "surf_flux_sensible" ]
+rico_vars = ["lwp", "rwp", "cloud_cover", "min_cloud_base", "inversion_height_rico", "cl_nc", "cl_nr", "surf_precip", "acc_precip", "RH_max", "cl_avg_supersat", "wvarmax", "sd_conc", "cl_avg_cloud_meanr", "cl_avg_cloud_stddevr"]#, "cl_acnv25", "cl_accr25"]#, "surf_flux_latent", "surf_flux_sensible" ]
 #rico_vars = ["clb_bigrain_mean_rd","clb_bigrain_mean_kappa","clb_bigrain_mean_conc","clb_bigrain_mean_inclt", "cl_nr"]
 
 # variables that need rescaling of the yrange to the limited x range of 1-6h
-rescale_vars = ["lwp", "cloud_cover_rico", "min_cloud_base_rico", "inversion_height_rico", "cl_nc"]# rico_vars
+rescale_vars = ["lwp", "cloud_cover", "min_cloud_base", "inversion_height_rico", "cl_nc"]# rico_vars
 
 # init the plot
 nplotx = 4
@@ -64,7 +64,7 @@ for x in x_arr:
       var = rico_vars[x*nploty + y]
       if var in rescale_vars:
         autoscale_y(axarr[x,y], margin=0.1)
-      if(var == "cloud_cover_rico" or var == "cl_nr"):
+      if(var == "cloud_cover" or var == "cl_nr"):
         axarr[x,y].yaxis.set_major_formatter(ticker.FormatStrFormatter('%0.2f'))
 
       # hide hrzntl tic labels
