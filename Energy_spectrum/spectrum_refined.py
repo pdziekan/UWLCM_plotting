@@ -75,7 +75,7 @@ for directory, lab in zip(args.dirs, args.labels):
       for lvl in range(level_start_idx * ref[var], level_end_idx * ref[var] + 1):
         w2d = w3d[:, :, lvl]
         #print w2d
-        
+
         wkx = 1.0 / np.sqrt(nx[var] - 1) * np.fft.rfft(w2d, axis = 0)
         wky = 1.0 / np.sqrt(ny[var] - 1) * np.fft.rfft(w2d, axis = 1)
         
@@ -105,7 +105,7 @@ for directory, lab in zip(args.dirs, args.labels):
 
     #crudely scale
     #Exy_avg[var] /= Exy_avg[var][len(Exy_avg[var])-1]
-    Exy_avg[var] /= np.sum(Exy_avg[var])
+#    Exy_avg[var] /= np.sum(Exy_avg[var])
 
     #plot
     plt.loglog(lmbd[var], Exy_avg[var] , linewidth=2, label=lab+"_"+var)
