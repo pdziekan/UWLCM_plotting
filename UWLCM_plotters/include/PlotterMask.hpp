@@ -135,6 +135,8 @@ class PlotterMask : public PlotterMicro<NDims>
   {
     // read activated droplets mixing ratio 
     arr_t RH(this->load_RH_timestep(at));
+    RH -= 1.;
+    RH *= 100;
     return cloud_hlpr(RH, at);
   }
   // th

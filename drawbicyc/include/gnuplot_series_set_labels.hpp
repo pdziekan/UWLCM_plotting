@@ -67,7 +67,19 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   {
     gp << "set ylabel '<S> [%]'\n";
     gp << "set xlabel 'time [min]'\n";
-    gp << "set title 'avg supersaturation'\n";
+    gp << "set title 'avg supersaturation in cloudy cells'\n";
+  }
+  else if (plt == "cl_avg_th")
+  {
+    gp << "set ylabel 'theta [K]'\n";
+    gp << "set xlabel 'time [min]'\n";
+    gp << "set title 'avg theta in cloudy cells'\n";
+  }
+  else if (plt == "cl_avg_rv")
+  {
+    gp << "set ylabel 'r_v [1]'\n";
+    gp << "set xlabel 'time [min]'\n";
+    gp << "set title 'avg rv in cloudy cells'\n";
   }
   else if (plt == "cl_std_dev_supersat")
   {
