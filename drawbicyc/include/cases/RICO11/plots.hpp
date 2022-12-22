@@ -13,6 +13,8 @@ const std::vector<std::string> series_rico({
 "cl_nc",
 "cl_nr",
 "cl_avg_supersat",
+"cl_avg_th",
+"cl_avg_rv",
 "cl_avg_cloud_meanr",
 "cl_avg_cloud_stddevr",
 "wvarmax",

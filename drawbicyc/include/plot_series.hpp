@@ -594,12 +594,34 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
-      // average supersaturation in cells with S>0
+      // average supersaturation in cloudy cells
       else if (plt == "cl_avg_supersat")
       {
         try
         {
-          auto stats = plotter.positive_supersat_stats_timestep(at * n["outfreq"]);
+          auto stats = plotter.cloud_supersat_stats_timestep(at * n["outfreq"]);
+          res_series[plt](at) = stats.first;
+          res_series_std_dev[plt](at) = stats.second;
+        }
+        catch(...) {if(at==first_timestep) data_found[plt]=0;}
+      }
+      // average theta in cloudy cells
+      else if (plt == "cl_avg_th")
+      {
+        try
+        {
+          auto stats = plotter.cloud_theta_stats_timestep(at * n["outfreq"]);
+          res_series[plt](at) = stats.first;
+          res_series_std_dev[plt](at) = stats.second;
+        }
+        catch(...) {if(at==first_timestep) data_found[plt]=0;}
+      }
+      // average rv in cloudy cells
+      else if (plt == "cl_avg_rv")
+      {
+        try
+        {
+          auto stats = plotter.cloud_rv_stats_timestep(at * n["outfreq"]);
           res_series[plt](at) = stats.first;
           res_series_std_dev[plt](at) = stats.second;
         }
@@ -1649,6 +1671,16 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     {
       res_pos *= 60.;
     }
+    else if (plt == "cl_nr")
+    {
+      plot_std_dev = true;
+      res_pos *= 60.;
+    }
+    else if (plt == "cl_nc")
+    {
+      plot_std_dev = true;
+      res_pos *= 60.;
+    }
     else if (plt == "cl_avg_act_conc")
     {
       plot_std_dev = true;
@@ -1663,16 +1695,28 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       plot_std_dev = true;
       res_pos *= 60.;
     }
+    else if (plt == "cl_avg_th")
+    {
+      plot_std_dev = true;
+      res_pos *= 60.;
+    }
+    else if (plt == "cl_avg_rv")
+    {
+      plot_std_dev = true;
+      res_pos *= 60.;
+    }
     else if (plt == "cl_std_dev_supersat")
     {
       res_pos *= 60.;
     }
     else if (plt == "cl_avg_cloud_meanr")
     {
+      plot_std_dev = true;
       res_pos *= 60.;
     }
     else if (plt == "cl_avg_cloud_stddevr")
     {
+      plot_std_dev = true;
       res_pos *= 60.;
     }
     else if (plt == "sd_conc")

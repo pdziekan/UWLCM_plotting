@@ -130,6 +130,44 @@ class PlotterMask : public PlotterMicro<NDims>
     return cloud_hlpr(ract, at);
   }
 
+  // same for supersat
+  std::pair<double, double> cloud_supersat_stats_timestep(int at)
+  {
+    // read activated droplets mixing ratio 
+    arr_t RH(this->load_RH_timestep(at));
+    return cloud_hlpr(RH, at);
+  }
+  // th
+  std::pair<double, double> cloud_theta_stats_timestep(int at)
+  {
+    // read activated droplets mixing ratio 
+    try
+    {
+      arr_t th(this->h5load_timestep("refined th", at));
+      return cloud_hlpr(th, at);
+    }
+    catch (...) // should work for simulations without refinement
+    {
+      arr_t th(this->h5load_timestep("th", at));
+      return cloud_hlpr(th, at);
+    }
+  }
+  // rv
+  std::pair<double, double> cloud_rv_stats_timestep(int at)
+  {
+    // read activated droplets mixing ratio 
+    try
+    {
+      arr_t rv(this->h5load_timestep("refined rv", at));
+      return cloud_hlpr(rv, at);
+    }
+    catch (...) // should work for simulations without refinement
+    {
+      arr_t rv(this->h5load_timestep("rv", at));
+      return cloud_hlpr(rv, at);
+    }
+  }
+
   // mean and std_dev of concentration of activated/cloud/rain droplets in cloudy cells [1/cm^3] (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> cloud_actconc_stats_timestep(int at)
   {   
