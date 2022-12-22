@@ -1,17 +1,32 @@
 import numpy as np
-from sys import argv
 from math import floor
+#from sys import argv
+import argparse
 
 from latex_labels import var_labels
 from read_UWLCM_arrays import *
 
+
 def plot_series(var_list, plot_iter, nplotx, nploty, axarr, xscaledict, yscaledict, xlimdict, ylimdict, show_bin=False, suffix='', xlabel='', ylabeldict=var_labels, file_names=[], file_labels=[], linewidth=1):
+
+  parser = argparse.ArgumentParser(description='Plot UWLCM series comparison')
+  parser.add_argument("-ts", "--time_start", type=float, required=False, help="start of the plotted period [s] (override default)")
+  parser.add_argument("-te", "--time_end", type=float, required=False, help="end of the plotted period [s] (override default)")
+  parser.add_argument("-d", "--dirs", action="extend", nargs="+", type=str, help="list of directories with the data", required=True)
+  parser.add_argument("-l", "--labels", action="extend", nargs="+", type=str, help="list of labels of the data (same order as --dirs)", required=True)
+  args, extra = parser.parse_known_args()
+  print(args)
+  print(args.dirs)
+
+  if args.time_start is not None and args.time_end is not None:
+    xlimdict = {x: (args.time_start, args.time_end) for x in xlimdict}
+
+
   # if file names are not defined, read them and labels from command line
   if len(file_names)==0:
-    file_no = np.arange(1, len(argv)-1 , 2)
-    for no in file_no:
-      file_names.append(argv[no] + suffix)
-      file_labels.append(argv[no+1])
+    for directory, lab in zip(args.dirs, args.labels):
+      file_names.append(directory + suffix)
+      file_labels.append(lab)
 
   for var in var_list:
     label_counter=0
