@@ -20,6 +20,8 @@ def plot_series(var_list, plot_iter, nplotx, nploty, axarr, xscaledict, yscaledi
       series_file = open(file_name, "r")
       my_times = read_my_var(series_file, "position")
       my_res = read_my_var(series_file, var)
+      if len(my_res) == 0: # file does not contain this type of plot
+        continue
       
       # rescale time to hours
       my_times = my_times / 3600.
