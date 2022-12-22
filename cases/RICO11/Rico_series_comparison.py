@@ -16,14 +16,14 @@ from autoscale_y import *
 # activate latex text rendering
 rc('text', usetex=True)
 
-rico_vars = ["lwp", "rwp", "cloud_cover", "min_cloud_base", "inversion_height_rico", "cl_nc", "cl_nr", "surf_precip", "acc_precip", "RH_max", "cl_avg_supersat", "wvarmax", "sd_conc", "cl_avg_cloud_meanr", "cl_avg_cloud_stddevr"]#, "cl_acnv25", "cl_accr25"]#, "surf_flux_latent", "surf_flux_sensible" ]
+rico_vars = ["lwp", "rwp", "cloud_cover", "min_cloud_base", "inversion_height_rico", "cl_nc", "cl_nr", "surf_precip", "acc_precip", "RH_max", "cl_avg_supersat", "wvarmax", "sd_conc", "cl_avg_cloud_meanr", "cl_avg_cloud_stddevr", "cl_avg_th", "cl_avg_rv"]#, "cl_acnv25", "cl_accr25"]#, "surf_flux_latent", "surf_flux_sensible" ]
 #rico_vars = ["clb_bigrain_mean_rd","clb_bigrain_mean_kappa","clb_bigrain_mean_conc","clb_bigrain_mean_inclt", "cl_nr"]
 
 # variables that need rescaling of the yrange to the limited x range of 1-6h
 rescale_vars = ["lwp", "cloud_cover", "min_cloud_base", "inversion_height_rico", "cl_nc"]# rico_vars
 
 # init the plot
-nplotx = 4
+nplotx = 5
 nploty= 4
 fig, axarr = plt.subplots(nplotx,nploty)
 x_arr = np.arange(nplotx)
@@ -78,7 +78,7 @@ handles, labels = axarr[0,0].get_legend_handles_labels()
 lgd = fig.legend(handles, labels, handlelength=4, loc='lower center', bbox_to_anchor=(0.45,0))
 
 #figure size
-fig.set_size_inches(7.874, 5. + (len(labels) - 2) * 0.2)# 5.214)#20.75,13.74)
+fig.set_size_inches(7.874, 1.5 * nplotx + (len(labels) - 2) * 0.2)# 5.214)#20.75,13.74)
 #distances between subplots and from bottom of the plot
 fig.subplots_adjust(bottom=0.18 + (len(labels) - 2) * 0.03, hspace=0.1, wspace=0.4)
 

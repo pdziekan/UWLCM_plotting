@@ -63,6 +63,8 @@ var_labels = {
   "cl_acnv25" : 'acnv. rate [g m$^{-3}$ d$^{-1}$]',
   "cl_accr25" : 'accr. rate [g m$^{-3}$ d$^{-1}$]',
   "cl_avg_supersat" : '$<S>$ in cloud [\%]',
+  "cl_avg_th" : '$<\\theta>$ in cloud [K]',
+  "cl_avg_rv" : '$<r_v>$ in cloud [1]',
   "cl_avg_cloud_meanr" : '$<r>$ of cloud droplets in cloud [um]',
   "cl_avg_cloud_stddevr" : '$\sigma(r)$ of cloud droplets in cloud [um]',
   "sd_conc" : '$<SD>$'
