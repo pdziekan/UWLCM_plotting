@@ -18,6 +18,8 @@ const std::vector<std::string> series_rico({
 "cl_avg_cloud_meanr",
 "cl_avg_cloud_stddevr",
 "wvarmax",
+ "surf_flux_latent",
+ "surf_flux_sensible"
 "sd_conc"
 
 
@@ -43,8 +45,6 @@ const std::vector<std::string> series_rico({
 
 /*
  "cloud_base",
- "surf_flux_latent",
- "surf_flux_sensible"
  ,"cl_sd_conc"
 //"mass_dry",
  ,"cl_gccn_conc", "gccn_conc"
