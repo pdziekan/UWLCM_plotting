@@ -19,7 +19,7 @@ const std::vector<std::string> series_rico({
 "cl_avg_cloud_stddevr",
 "wvarmax",
  "surf_flux_latent",
- "surf_flux_sensible"
+ "surf_flux_sensible",
 "sd_conc"
 
 
