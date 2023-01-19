@@ -97,7 +97,10 @@ for directory, lab in zip(args.dirs, args.labels):
 #      print(K, lmbd)
     
     if (t == time_start_idx and lab==args.labels[0]):
-      plt.loglog(lmbd[var], 2e-6* K**(-5./3.) )
+      L = np.array([2e2, 2e3])
+      plt.loglog(L, 2e-5 * L**(5./3.), label = "-5/3" , color="black", ls='dotted')
+      L = np.array([5e1, 3e2])
+      plt.loglog(L, 2e-8 * L**(3.), label = "-3" , color="black", ls='dashed')
   
   for var in args.vars:
     Exy_avg[var] /= (time_end_idx - time_start_idx) / outfreq + 1
