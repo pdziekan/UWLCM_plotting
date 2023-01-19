@@ -67,7 +67,9 @@ var_labels = {
   "cl_avg_rv" : '$<r_v>$ in cloud [1]',
   "cl_avg_cloud_meanr" : '$<r>$ of cloud droplets in cloud [um]',
   "cl_avg_cloud_stddevr" : '$\sigma(r)$ of cloud droplets in cloud [um]',
-  "sd_conc" : '$<SD>$'
+  "sd_conc" : '$<SD>$',
+  "surf_flux_latent"   : 'latent surface flux [W/m$^2$]',
+  "surf_flux_sensible" : 'sensible surface flux [W/m$^2$]',
 }
 
 
