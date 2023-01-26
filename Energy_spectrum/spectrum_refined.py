@@ -29,8 +29,11 @@ for directory, lab in zip(args.dirs, args.labels):
   ny = {}
   nz = {}
   dx = {}
+  dz = {}
   ref = {}
   lmbd = {}
+  level_start_idx = {}
+  level_end_idx = {}
 
   # read some constant parameters
   with h5py.File(directory + "/const.h5", 'r') as consth5:
@@ -43,12 +46,13 @@ for directory, lab in zip(args.dirs, args.labels):
     dx_adve = advection.attrs["di"] # its the resolved dx
     dz_adve = advection.attrs["dk"] # its the resolved dx
     dt = advection.attrs["dt"]
-    nx_adve = consth5["X"][:,:,:].shape[0]
+    nx_adve = consth5["X"][:,:,:].shape[0] - 1
+    nz_adve = consth5["Z"][:,:,:].shape[2] - 1
+    X = dx_adve * (nx_adve-1)
+    Z = dz_adve * (nz_adve-1)
 
   time_start_idx = int(args.time_start / dt)
   time_end_idx = int(args.time_end / dt)
-  level_start_idx = int(args.level_start / dz_adve)
-  level_end_idx = int(args.level_end / dz_adve)
 
 
   # initiliaze nx,ny,nz,dx and average energy for each variable
@@ -56,9 +60,15 @@ for directory, lab in zip(args.dirs, args.labels):
     filename = directory + "/timestep" + str(time_start_idx).zfill(10) + ".h5"
     w3d = h5py.File(filename, "r")[var][:,:,:]
     nx[var], ny[var], nz[var] = tuple(x for x in w3d.shape)
-    dx[var] = dx_adve * (nx_adve / (nx[var]+1))
+    dx[var] = X / (nx[var] - 1)
+    dz[var] = Z / (nz[var] - 1) 
     Exy_avg[var] = np.zeros(int((nx[var]-1)/2 + 1))
     ref[var] = int(dx_adve / dx[var])
+    assert(float(args.level_start / dz[var]).is_integer())
+    assert(float(args.level_end / dz[var]).is_integer())
+    level_start_idx[var] = int(args.level_start / dz[var])
+    level_end_idx[var] = int(args.level_end / dz[var]) + 1
+
   
   # time loop
   for t in range(time_start_idx, time_end_idx+1, outfreq):
@@ -72,7 +82,7 @@ for directory, lab in zip(args.dirs, args.labels):
       print(nx[var],dx[var][0])
       w3d = h5py.File(filename, "r")[var][0:nx[var]-1,0:ny[var]-1,:] # * 4. / 3. * 3.1416 * 1e3 
       
-      for lvl in range(level_start_idx * ref[var], level_end_idx * ref[var] + 1):
+      for lvl in range(level_start_idx[var], level_end_idx[var]):
         w2d = w3d[:, :, lvl]
         #print w2d
         
@@ -101,7 +111,7 @@ for directory, lab in zip(args.dirs, args.labels):
   
   for var in args.vars:
     Exy_avg[var] /= (time_end_idx - time_start_idx) / outfreq + 1
-    Exy_avg[var] /= level_end_idx * ref[var] + 1 - level_start_idx * ref[var]
+    Exy_avg[var] /= level_end_idx[var] - level_start_idx[var]
 
     #crudely scale
     #Exy_avg[var] /= Exy_avg[var][len(Exy_avg[var])-1]
