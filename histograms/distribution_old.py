@@ -1,3 +1,9 @@
+import h5py
+import numpy as np
+from sys import argv
+import matplotlib.pyplot as plt
+from collections import OrderedDict
+
 #rain_data = ["u", "v", "w"]
 #rain_data = ["u", "v", "w", "cloud_rw_mom3", "rv", "th", "RH", "aerosol_rw_mom3"]
 #rain_data = ["cloud_rw_mom3"]
