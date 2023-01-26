@@ -30,6 +30,7 @@ nx = {}
 ny = {}
 nz = {}
 dx = {}
+dz = {}
 ref = {}
 
 # read some constant parameters
@@ -43,12 +44,13 @@ with h5py.File(args.dirs[0] + "/const.h5", 'r') as consth5:
   dx_adve = advection.attrs["di"] # its the resolved dx
   dz_adve = advection.attrs["dk"] # its the resolved dx
   dt = advection.attrs["dt"]
-  nx_adve = consth5["X"][:,:,:].shape[0]
+  nx_adve = consth5["X"][:,:,:].shape[0] - 1
+  nz_adve = consth5["Z"][:,:,:].shape[2] - 1
+  X = dx_adve * (nx_adve-1)
+  Z = dz_adve * (nz_adve-1)
 
 time_start_idx = int(args.time_start / dt)
 time_end_idx = int(args.time_end / dt)
-level_start_idx = int(args.level_start / dz_adve)
-level_end_idx = int(args.level_end / dz_adve)
 
 # vars loop
 for var in args.vars:
@@ -61,8 +63,27 @@ for var in args.vars:
   filename = args.dirs[0] + "/timestep" + str(time_start_idx).zfill(10) + ".h5"
   w3d = h5py.File(filename, "r")[var][:,:,:]
   nx[var], ny[var], nz[var] = tuple(x for x in w3d.shape)
-  dx[var] = dx_adve * (nx_adve / (nx[var]+1))
+  dx[var] = X / (nx[var] - 1)
   ref[var] = int(dx_adve / dx[var])
+  dz[var] = Z / (nz[var] - 1) 
+
+  print("nx_adve: ", nx_adve)
+  print("nx[var]: ", nx[var])
+  print("dx_adve: ", dx_adve)
+  print("dx[var]: ", dx[var])
+
+  print("nz_adve: ", nz_adve)
+  print("nz[var]: ", nz[var])
+  print("dz_adve: ", dz_adve)
+  print("dz[var]: ", dz[var])
+
+  print("ref[var]: ", ref[var])
+  assert(float(args.level_start / dz[var]).is_integer())
+  assert(float(args.level_end / dz[var]).is_integer())
+  level_start_idx = int(args.level_start / dz[var])
+  level_end_idx = int(args.level_end / dz[var]) + 1
+  print("level start index for this var: ", level_start_idx)
+  print("level end index for this var: ", level_end_idx)
 
   # directories loop
   for directory, lab in zip(args.dirs, args.labels):
@@ -74,7 +95,7 @@ for var in args.vars:
     for t in range(time_start_idx, time_end_idx+1, outfreq):
       filename = directory + "/timestep" + str(t).zfill(10) + ".h5"
       print(filename)
-      w3d = h5py.File(filename, "r")[var][0:nx[var]-1,0:ny[var]-1,level_start_idx * ref[var]:level_end_idx * ref[var] + 1] # * 4. / 3. * 3.1416 * 1e3 
+      w3d = h5py.File(filename, "r")[var][0:nx[var]-1, 0:ny[var]-1, level_start_idx:level_end_idx] # * 4. / 3. * 3.1416 * 1e3 
       print(total_arr[lab])
       total_arr[lab] = np.append(total_arr[lab], w3d)
       print(total_arr[lab])
@@ -99,6 +120,7 @@ for var in args.vars:
   # for lin plots:
   n, bins, patches = plt.hist(data, bins=100, label=plot_labels.values(), density=args.normalize, histtype='step', linewidth=2)
   plt.axvline(x = np.average(data), ls='--', color=patches[0].get_facecolor()[0:3])
+  print("total number of cells = " + str(np.sum(n)))
 
   # for log plots:
   #_ = plt.hist(data, bins=np.logspace(np.log10(1e-6), np.log10(np.amax(data)), 100), label=plot_labels.values(), density=False, histtype='step', linewidth=6)
