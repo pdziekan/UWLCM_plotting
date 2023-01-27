@@ -54,76 +54,75 @@ dx = {}
 dz = {}
 ref = {}
 
-# read some constant parameters
-with h5py.File(args.dirs[0] + "/const.h5", 'r') as consth5:
-  user_params = consth5.get("user_params")
-  if args.outfreq is None:
-    outfreq = int(user_params.attrs["outfreq"][0])
-  else:
-    outfreq = args.outfreq
-  advection = consth5.get("advection")
-  dx_adve = advection.attrs["di"] # its the resolved dx
-  dz_adve = advection.attrs["dk"] # its the resolved dx
-  dt = advection.attrs["dt"]
-  nx_adve = consth5["X"][:,:,:].shape[0] - 1
-  nz_adve = consth5["Z"][:,:,:].shape[2] - 1
-  X = dx_adve * (nx_adve-1)
-  Z = dz_adve * (nz_adve-1)
-  p_e = consth5["p_e"][:]
-  try:
-    refined_p_e = consth5["refined p_e"][:]
-  except:
-    print("'refined p_e' not found in const.h5")
-
-time_start_idx = int(args.time_start / dt)
-time_end_idx = int(args.time_end / dt)
-
 # vars loop
 for var in args.vars:
   print(var)
 
-  #total_arr[var] = OrderedDict()
   total_arr   = OrderedDict()
   plot_labels = OrderedDict()
-
-  # initiliaze nx,ny,nz,dx for each variable
-  filename = args.dirs[0] + "/timestep" + str(time_start_idx).zfill(10) + ".h5"
-
-  # special case of RH calculated from th and rv
-  if(var == "RH_derived"):
-    w3d = h5py.File(filename, "r")["th"][:,:,:]
-  elif(var == "refined RH_dervied"):
-    w3d = h5py.File(filename, "r")["refined th"][:,:,:]
-  else:
-    w3d = h5py.File(filename, "r")[var][:,:,:]
-
-
-  nx[var], ny[var], nz[var] = tuple(x for x in w3d.shape)
-  dx[var] = X / (nx[var] - 1)
-  ref[var] = int(dx_adve / dx[var])
-  dz[var] = Z / (nz[var] - 1) 
-
-  print("nx_adve: ", nx_adve)
-  print("nx[var]: ", nx[var])
-  print("dx_adve: ", dx_adve)
-  print("dx[var]: ", dx[var])
-
-  print("nz_adve: ", nz_adve)
-  print("nz[var]: ", nz[var])
-  print("dz_adve: ", dz_adve)
-  print("dz[var]: ", dz[var])
-
-  print("ref[var]: ", ref[var])
-  assert(float(args.level_start / dz[var]).is_integer())
-  assert(float(args.level_end / dz[var]).is_integer())
-  level_start_idx = int(args.level_start / dz[var])
-  level_end_idx = int(args.level_end / dz[var]) + 1
-  print("level start index for this var: ", level_start_idx)
-  print("level end index for this var: ", level_end_idx)
 
   # directories loop
   for directory, lab in zip(args.dirs, args.labels):
     print(directory, lab)
+
+    # read some constant parameters
+    with h5py.File(directory + "/const.h5", 'r') as consth5:
+      user_params = consth5.get("user_params")
+      if args.outfreq is None:
+        outfreq = int(user_params.attrs["outfreq"][0])
+      else:
+        outfreq = args.outfreq
+      advection = consth5.get("advection")
+      dx_adve = advection.attrs["di"] # its the resolved dx
+      dz_adve = advection.attrs["dk"] # its the resolved dx
+      dt = advection.attrs["dt"]
+      nx_adve = consth5["X"][:,:,:].shape[0] - 1
+      nz_adve = consth5["Z"][:,:,:].shape[2] - 1
+      X = dx_adve * (nx_adve-1)
+      Z = dz_adve * (nz_adve-1)
+      p_e = consth5["p_e"][:]
+      try:
+        refined_p_e = consth5["refined p_e"][:]
+      except:
+        print("'refined p_e' not found in const.h5")
+
+    time_start_idx = int(args.time_start / dt)
+    time_end_idx = int(args.time_end / dt)
+
+    # initiliaze nx,ny,nz,dx for each variable
+    filename = directory + "/timestep" + str(time_start_idx).zfill(10) + ".h5"
+
+    # special case of RH calculated from th and rv
+    if(var == "RH_derived"):
+      w3d = h5py.File(filename, "r")["th"][:,:,:]
+    elif(var == "refined RH_dervied"):
+      w3d = h5py.File(filename, "r")["refined th"][:,:,:]
+    else:
+      w3d = h5py.File(filename, "r")[var][:,:,:]
+
+
+    nx[var], ny[var], nz[var] = tuple(x for x in w3d.shape)
+    dx[var] = X / (nx[var] - 1)
+    ref[var] = int(dx_adve / dx[var])
+    dz[var] = Z / (nz[var] - 1) 
+
+    print("nx_adve: ", nx_adve)
+    print("nx[var]: ", nx[var])
+    print("dx_adve: ", dx_adve)
+    print("dx[var]: ", dx[var])
+
+    print("nz_adve: ", nz_adve)
+    print("nz[var]: ", nz[var])
+    print("dz_adve: ", dz_adve)
+    print("dz[var]: ", dz[var])
+
+    print("ref[var]: ", ref[var])
+    assert(float(args.level_start / dz[var]).is_integer())
+    assert(float(args.level_end / dz[var]).is_integer())
+    level_start_idx = int(args.level_start / dz[var])
+    level_end_idx = int(args.level_end / dz[var]) + 1
+    print("level start index for this var: ", level_start_idx)
+    print("level end index for this var: ", level_end_idx)
     total_arr[lab] = np.zeros(0) 
     plot_labels[lab] = lab + '_' + str(var)
 
