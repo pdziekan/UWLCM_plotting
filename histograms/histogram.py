@@ -101,26 +101,26 @@ for var in args.vars:
       w3d = h5py.File(filename, "r")[var][:,:,:]
 
 
-    nx[var], ny[var], nz[var] = tuple(x for x in w3d.shape)
-    dx[var] = X / (nx[var] - 1)
-    ref[var] = int(dx_adve / dx[var])
-    dz[var] = Z / (nz[var] - 1) 
+    nx, ny, nz = tuple(x for x in w3d.shape)
+    dx = X / (nx - 1)
+    ref = int(dx_adve / dx)
+    dz = Z / (nz - 1) 
 
     print("nx_adve: ", nx_adve)
-    print("nx[var]: ", nx[var])
+    print("nx: ", nx)
     print("dx_adve: ", dx_adve)
-    print("dx[var]: ", dx[var])
+    print("dx: ", dx)
 
     print("nz_adve: ", nz_adve)
-    print("nz[var]: ", nz[var])
+    print("nz: ", nz)
     print("dz_adve: ", dz_adve)
-    print("dz[var]: ", dz[var])
+    print("dz: ", dz)
 
-    print("ref[var]: ", ref[var])
-    assert(float(args.level_start / dz[var]).is_integer())
-    assert(float(args.level_end / dz[var]).is_integer())
-    level_start_idx = int(args.level_start / dz[var])
-    level_end_idx = int(args.level_end / dz[var]) + 1
+    print("ref: ", ref)
+    assert(float(args.level_start / dz).is_integer())
+    assert(float(args.level_end / dz).is_integer())
+    level_start_idx = int(args.level_start / dz)
+    level_end_idx = int(args.level_end / dz) + 1
     print("level start index for this var: ", level_start_idx)
     print("level end index for this var: ", level_end_idx)
     total_arr[lab] = np.zeros(0) 
@@ -135,18 +135,18 @@ for var in args.vars:
         print("dervied shit!")
         if(var == "RH_derived"):
           print("dervied shit A!")
-          th = h5py.File(filename, "r")["th"][0:nx[var]-1, 0:ny[var]-1, level_start_idx:level_end_idx]
-          rv = h5py.File(filename, "r")["rv"][0:nx[var]-1, 0:ny[var]-1, level_start_idx:level_end_idx]
+          th = h5py.File(filename, "r")["th"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
+          rv = h5py.File(filename, "r")["rv"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
           w3d = v_calc_S(th, rv, 100000) / 100.
           print("th: ", th)#, rv, w3d)
         elif(var == "refined RH_derived"):
           print("dervied shit B!")
-          th = h5py.File(filename, "r")["refined th"][0:nx[var]-1, 0:ny[var]-1, level_start_idx:level_end_idx]
-          rv = h5py.File(filename, "r")["refined rv"][0:nx[var]-1, 0:ny[var]-1, level_start_idx:level_end_idx]
+          th = h5py.File(filename, "r")["refined th"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
+          rv = h5py.File(filename, "r")["refined rv"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
           w3d = v_calc_S(th, rv, 100000) / 100.
         total_arr[lab] = np.append(total_arr[lab], w3d)
       else:
-        w3d = h5py.File(filename, "r")[var][0:nx[var]-1, 0:ny[var]-1, level_start_idx:level_end_idx] # * 4. / 3. * 3.1416 * 1e3 
+        w3d = h5py.File(filename, "r")[var][0:nx-1, 0:ny-1, level_start_idx:level_end_idx] # * 4. / 3. * 3.1416 * 1e3 
         total_arr[lab] = np.append(total_arr[lab], w3d)
 
 
