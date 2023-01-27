@@ -138,6 +138,17 @@ for directory, lab in zip(args.dirs, args.labels):
 
     lab = lab + '_' + str(var)
 
+    if(args.mask_rico):
+      try:
+        mask = h5py.File(filename, "r")["cloud_rw_mom3"][:,:,:] 
+        if(mask.shape != w3d.shape):
+          print("Cloud mask shape is different than "+var+" shape. Skipping the plot.")
+          continue
+      except:
+        print("Can't find cloud_rw_mom3 data, so can't use RICO cloud mask. Skipping the plot.")
+        continue
+
+
     total_arr[lab] = np.zeros(0) 
     plot_labels[lab] = lab
 
@@ -146,11 +157,7 @@ for directory, lab in zip(args.dirs, args.labels):
       filename = directory + "/timestep" + str(t).zfill(10) + ".h5"
       print(filename)
 
-      # read cloud mask
-      if(args.mask_rico):
-        w3d = h5py.File(filename, "r")["th"][:,:,:]
-        
-
+      # read the variable
       if(var == "RH_derived"):
         th = h5py.File(filename, "r")["th"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
         rv = h5py.File(filename, "r")["rv"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
@@ -159,7 +166,6 @@ for directory, lab in zip(args.dirs, args.labels):
           for j in np.arange(p.shape[1]):
             p[i,j] = p_e[level_start_idx:level_end_idx]
         w3d = v_calc_RH(th, rv, p)
-        total_arr[lab] = np.append(total_arr[lab], w3d)
 
       elif(var == "refined RH_derived"):
         th = h5py.File(filename, "r")["refined th"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
@@ -169,11 +175,18 @@ for directory, lab in zip(args.dirs, args.labels):
           for j in np.arange(p.shape[1]):
             p[i,j] = refined_p_e[level_start_idx:level_end_idx]
         w3d = v_calc_RH(th, rv, p)
-        total_arr[lab] = np.append(total_arr[lab], w3d)
 
       else:
         w3d = h5py.File(filename, "r")[var][0:nx-1, 0:ny-1, level_start_idx:level_end_idx] # * 4. / 3. * 3.1416 * 1e3 
-        total_arr[lab] = np.append(total_arr[lab], w3d)
+
+      # read and apply cloud mask
+      if(args.mask_rico):
+        mask = h5py.File(filename, "r")["cloud_rw_mom3"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx] * 4./3. * 3.1416 * 1e3
+        mask = np.where(mask > 1.e-5, 1., 0.)
+        w3d = w3d[(mask == 1)]
+
+
+      total_arr[lab] = np.append(total_arr[lab], w3d)
 
 
 # convert to typical units
@@ -190,11 +203,11 @@ for directory, lab in zip(args.dirs, args.labels):
   #_ = plt.hist(total_arr["rain_rw_mom3"].values(), bins='auto', label=plot_labels.values(), density=True)
   print(total_arr)
   data = list(total_arr.values())
-  print(data)
+  print("data:", data)
   
   # for lin plots:
   n, bins, patches = plt.hist(data, bins=100, label=plot_labels.values(), density=args.normalize, histtype='step', linewidth=2)
-#  plt.axvline(x = np.average(data), ls='--', color=patches[0].get_facecolor()[0:3])
+  plt.axvline(x = np.average(data), ls='--', color=patches[0].get_facecolor()[0:3])
   print("total number of cells = " + str(np.sum(n)))
 
   # for log plots:
