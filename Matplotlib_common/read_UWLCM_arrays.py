@@ -1,3 +1,6 @@
+# in fact it's not reading UWLCM output
+# but arrays containing output of drawbicyc
+
 import numpy as np
 
 def read_my_array(file_obj):

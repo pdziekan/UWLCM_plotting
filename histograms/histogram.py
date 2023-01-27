@@ -91,6 +91,7 @@ for directory, lab in zip(args.dirs, args.labels):
     print(var)
 
     if(not can_plot_refined_RH_derived and var == "refined RH_derived"):
+      print("Skipping the refined_RH_derived plot")
       continue
 
     time_start_idx = int(args.time_start / dt)
@@ -144,6 +145,11 @@ for directory, lab in zip(args.dirs, args.labels):
     for t in range(time_start_idx, time_end_idx+1, outfreq):
       filename = directory + "/timestep" + str(t).zfill(10) + ".h5"
       print(filename)
+
+      # read cloud mask
+      if(args.mask_rico):
+        w3d = h5py.File(filename, "r")["th"][:,:,:]
+        
 
       if(var == "RH_derived"):
         th = h5py.File(filename, "r")["th"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
