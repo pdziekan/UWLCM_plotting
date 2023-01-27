@@ -55,39 +55,40 @@ dx = {}
 dz = {}
 ref = {}
 
-# vars loop
-for var in args.vars:
-  print(var)
+
+# directories loop
+for directory, lab in zip(args.dirs, args.labels):
+  print(directory, lab)
+  can_plot_refined_RH_derived = True
 
   total_arr   = OrderedDict()
   plot_labels = OrderedDict()
 
-  # directories loop
-  for directory, lab in zip(args.dirs, args.labels):
-    print(directory, lab)
-    can_plot_refined_RH_derived = True
+  # init parameters from const.h5
+  with h5py.File(directory + "/const.h5", 'r') as consth5:
+    user_params = consth5.get("user_params")
+    if args.outfreq is None:
+      outfreq = int(user_params.attrs["outfreq"][0])
+    else:
+      outfreq = args.outfreq
+    advection = consth5.get("advection")
+    dx_adve = advection.attrs["di"] # its the resolved dx
+    dz_adve = advection.attrs["dk"] # its the resolved dx
+    dt = advection.attrs["dt"]
+    nx_adve = consth5["X"][:,:,:].shape[0] - 1
+    nz_adve = consth5["Z"][:,:,:].shape[2] - 1
+    X = dx_adve * (nx_adve-1)
+    Z = dz_adve * (nz_adve-1)
+    p_e = consth5["p_e"][:]
+    try:
+      refined_p_e = consth5["refined p_e"][:]
+    except:
+      can_plot_refined_RH_derived = False
+      print("'refined p_e' not found in const.h5. Won't be able to plot refined_RH_derived")
 
-    # init parameters from const.h5
-    with h5py.File(directory + "/const.h5", 'r') as consth5:
-      user_params = consth5.get("user_params")
-      if args.outfreq is None:
-        outfreq = int(user_params.attrs["outfreq"][0])
-      else:
-        outfreq = args.outfreq
-      advection = consth5.get("advection")
-      dx_adve = advection.attrs["di"] # its the resolved dx
-      dz_adve = advection.attrs["dk"] # its the resolved dx
-      dt = advection.attrs["dt"]
-      nx_adve = consth5["X"][:,:,:].shape[0] - 1
-      nz_adve = consth5["Z"][:,:,:].shape[2] - 1
-      X = dx_adve * (nx_adve-1)
-      Z = dz_adve * (nz_adve-1)
-      p_e = consth5["p_e"][:]
-      try:
-        refined_p_e = consth5["refined p_e"][:]
-      except:
-        can_plot_refined_RH_derived = False
-        print("'refined p_e' not found in const.h5. Won't be able to plot refined_RH_derived")
+  # vars loop
+  for var in args.vars:
+    print(var)
 
     if(not can_plot_refined_RH_derived and var == "refined RH_derived"):
       continue
@@ -134,8 +135,10 @@ for var in args.vars:
     print("level start index for this var: ", level_start_idx)
     print("level end index for this var: ", level_end_idx)
 
+    lab = lab + '_' + str(var)
+
     total_arr[lab] = np.zeros(0) 
-    plot_labels[lab] = lab + '_' + str(var)
+    plot_labels[lab] = lab
 
     # time loop
     for t in range(time_start_idx, time_end_idx+1, outfreq):
