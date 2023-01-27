@@ -43,6 +43,7 @@ parser.add_argument("-l", "--labels", action="extend", nargs="+", type=str, help
 parser.add_argument("-of", "--outfig", help="output file name", required=True)
 parser.add_argument("--outfreq", type=int, required=False, help="output frequency of the simulation [number of time steps], if not specified it will be read from const.h5 (if possible)")
 parser.add_argument('--normalize', action='store_true', help="normalize the histogram")
+parser.add_argument('--mask_rico', action='store_true', help="compute histogram only within cloud cells (using the rico cloud mask)")
 parser.set_defaults(normalie=False)
 args = parser.parse_args()
 
@@ -64,8 +65,9 @@ for var in args.vars:
   # directories loop
   for directory, lab in zip(args.dirs, args.labels):
     print(directory, lab)
+    can_plot_refined_RH_derived = True
 
-    # read some constant parameters
+    # init parameters from const.h5
     with h5py.File(directory + "/const.h5", 'r') as consth5:
       user_params = consth5.get("user_params")
       if args.outfreq is None:
@@ -84,12 +86,17 @@ for var in args.vars:
       try:
         refined_p_e = consth5["refined p_e"][:]
       except:
-        print("'refined p_e' not found in const.h5")
+        can_plot_refined_RH_derived = False
+        print("'refined p_e' not found in const.h5. Won't be able to plot refined_RH_derived")
+
+    if(not can_plot_refined_RH_derived and var == "refined RH_derived"):
+      continue
 
     time_start_idx = int(args.time_start / dt)
     time_end_idx = int(args.time_end / dt)
 
-    # initiliaze nx,ny,nz,dx for each variable
+
+    # init variable-specific array parameters based on the first timestep
     filename = directory + "/timestep" + str(time_start_idx).zfill(10) + ".h5"
 
     # special case of RH calculated from th and rv
@@ -98,7 +105,7 @@ for var in args.vars:
     #       RH_derived is shifted to the right with respect to RH from UWLCM - maybe due to this difference?
     if(var == "RH_derived"):
       w3d = h5py.File(filename, "r")["th"][:,:,:]
-    elif(var == "refined RH_derived"):
+    elif(can_plot_refined_RH_derived and var == "refined RH_derived"):
       w3d = h5py.File(filename, "r")["refined th"][:,:,:]
     else:
       w3d = h5py.File(filename, "r")[var][:,:,:]
@@ -126,6 +133,7 @@ for var in args.vars:
     level_end_idx = int(args.level_end / dz) + 1
     print("level start index for this var: ", level_start_idx)
     print("level end index for this var: ", level_end_idx)
+
     total_arr[lab] = np.zeros(0) 
     plot_labels[lab] = lab + '_' + str(var)
 
@@ -145,17 +153,14 @@ for var in args.vars:
         total_arr[lab] = np.append(total_arr[lab], w3d)
 
       elif(var == "refined RH_derived"):
-        try:
-          th = h5py.File(filename, "r")["refined th"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
-          rv = h5py.File(filename, "r")["refined rv"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
-          p  = np.empty(th.shape)
-          for i in np.arange(p.shape[0]):
-            for j in np.arange(p.shape[1]):
-              p[i,j] = refined_p_e[level_start_idx:level_end_idx]
-          w3d = v_calc_RH(th, rv, p)
-          total_arr[lab] = np.append(total_arr[lab], w3d)
-        except:
-          print("'refined RH_derived' can't be calculated because refined arrays not found")
+        th = h5py.File(filename, "r")["refined th"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
+        rv = h5py.File(filename, "r")["refined rv"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
+        p  = np.empty(th.shape)
+        for i in np.arange(p.shape[0]):
+          for j in np.arange(p.shape[1]):
+            p[i,j] = refined_p_e[level_start_idx:level_end_idx]
+        w3d = v_calc_RH(th, rv, p)
+        total_arr[lab] = np.append(total_arr[lab], w3d)
 
       else:
         w3d = h5py.File(filename, "r")[var][0:nx-1, 0:ny-1, level_start_idx:level_end_idx] # * 4. / 3. * 3.1416 * 1e3 
