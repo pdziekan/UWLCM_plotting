@@ -23,9 +23,9 @@ def calc_rv_s(th, rv, p):
   return 3.8 / (p*np.exp(-17.2693882*(T-273.15)/(T-35.86))-6.109)
 v_calc_rv_s = np.vectorize(calc_rv_s)
 
-def calc_S(th, rv, p):
-  return rv / v_calc_rv_s(th, rv, p)
-v_calc_S = np.vectorize(calc_S)
+def calc_RH(th, rv, p):
+  return rv / v_calc_rv_s(th, rv, p) / 100.
+v_calc_RH = np.vectorize(calc_RH)
 
 #mpl.rcParams['figure.figsize'] = 10, 10
 plt.rcParams.update({'font.size': 10})
@@ -93,9 +93,12 @@ for var in args.vars:
     filename = directory + "/timestep" + str(time_start_idx).zfill(10) + ".h5"
 
     # special case of RH calculated from th and rv
+    # NOTE: RH_derived is calculated with r_v / r_vs, where r_vs comes from the Tetens formula
+    #       in UWLCM r_vs comes from clausius-clapeyron.
+    #       RH_derived is shifted to the right with respect to RH from UWLCM - maybe due to this difference?
     if(var == "RH_derived"):
       w3d = h5py.File(filename, "r")["th"][:,:,:]
-    elif(var == "refined RH_dervied"):
+    elif(var == "refined RH_derived"):
       w3d = h5py.File(filename, "r")["refined th"][:,:,:]
     else:
       w3d = h5py.File(filename, "r")[var][:,:,:]
@@ -131,20 +134,29 @@ for var in args.vars:
       filename = directory + "/timestep" + str(t).zfill(10) + ".h5"
       print(filename)
 
-      if(var == "RH_derived" or var == "refined RH_derived"):
-        print("dervied shit!")
-        if(var == "RH_derived"):
-          print("dervied shit A!")
-          th = h5py.File(filename, "r")["th"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
-          rv = h5py.File(filename, "r")["rv"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
-          w3d = v_calc_S(th, rv, 100000) / 100.
-          print("th: ", th)#, rv, w3d)
-        elif(var == "refined RH_derived"):
-          print("dervied shit B!")
+      if(var == "RH_derived"):
+        th = h5py.File(filename, "r")["th"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
+        rv = h5py.File(filename, "r")["rv"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
+        p  = np.empty(th.shape) # 3D pressure array, filled from the 1D profile
+        for i in np.arange(p.shape[0]):
+          for j in np.arange(p.shape[1]):
+            p[i,j] = p_e[level_start_idx:level_end_idx]
+        w3d = v_calc_RH(th, rv, p)
+        total_arr[lab] = np.append(total_arr[lab], w3d)
+
+      elif(var == "refined RH_derived"):
+        try:
           th = h5py.File(filename, "r")["refined th"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
           rv = h5py.File(filename, "r")["refined rv"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx]
-          w3d = v_calc_S(th, rv, 100000) / 100.
-        total_arr[lab] = np.append(total_arr[lab], w3d)
+          p  = np.empty(th.shape)
+          for i in np.arange(p.shape[0]):
+            for j in np.arange(p.shape[1]):
+              p[i,j] = refined_p_e[level_start_idx:level_end_idx]
+          w3d = v_calc_RH(th, rv, p)
+          total_arr[lab] = np.append(total_arr[lab], w3d)
+        except:
+          print("'refined RH_derived' can't be calculated because refined arrays not found")
+
       else:
         w3d = h5py.File(filename, "r")[var][0:nx-1, 0:ny-1, level_start_idx:level_end_idx] # * 4. / 3. * 3.1416 * 1e3 
         total_arr[lab] = np.append(total_arr[lab], w3d)
