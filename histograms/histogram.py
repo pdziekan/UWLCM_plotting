@@ -136,7 +136,7 @@ for directory, lab in zip(args.dirs, args.labels):
     print("level start index for this var: ", level_start_idx)
     print("level end index for this var: ", level_end_idx)
 
-    lab = lab + '_' + str(var)
+    lab_var = lab + '_' + str(var)
 
     if(args.mask_rico):
       try:
@@ -149,8 +149,8 @@ for directory, lab in zip(args.dirs, args.labels):
         continue
 
 
-    total_arr[lab] = np.zeros(0) 
-    plot_labels[lab] = lab
+    total_arr[lab_var] = np.zeros(0) 
+    plot_labels[lab_var] = lab_var
 
     # time loop
     for t in range(time_start_idx, time_end_idx+1, outfreq):
@@ -186,7 +186,7 @@ for directory, lab in zip(args.dirs, args.labels):
         w3d = w3d[(mask == 1)]
 
 
-      total_arr[lab] = np.append(total_arr[lab], w3d)
+      total_arr[lab_var] = np.append(total_arr[lab_var], w3d)
 
 
 # convert to typical units
