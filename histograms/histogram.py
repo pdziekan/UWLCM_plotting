@@ -6,6 +6,27 @@ from sys import argv
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 
+c_pd = 1005.7
+R_d = 287.
+
+def exner(p):
+  return (p / 1e5)**(R_d/c_pd)
+v_exner = np.vectorize(exner)
+
+def calc_T(th, p):
+  return th * v_exner(p)
+v_calc_T = np.vectorize(calc_T)
+
+# Tetens: r_vs=3.8/(p*exp(-17.2693882*(T-273.15)/(T-35.86))-6.109)  p in mb, T in Kelvins
+def calc_rv_s(th, rv, p):
+  T = v_calc_T(th, p)
+  return 3.8 / (p*np.exp(-17.2693882*(T-273.15)/(T-35.86))-6.109)
+v_calc_rv_s = np.vectorize(calc_rv_s)
+
+def calc_S(th, rv, p):
+  return rv / v_calc_rv_s(th, rv, p)
+v_calc_S = np.vectorize(calc_S)
+
 #mpl.rcParams['figure.figsize'] = 10, 10
 plt.rcParams.update({'font.size': 10})
 plt.figure(figsize=(10,10))
@@ -48,6 +69,11 @@ with h5py.File(args.dirs[0] + "/const.h5", 'r') as consth5:
   nz_adve = consth5["Z"][:,:,:].shape[2] - 1
   X = dx_adve * (nx_adve-1)
   Z = dz_adve * (nz_adve-1)
+  p_e = consth5["p_e"][:]
+  try:
+    refined_p_e = consth5["refined p_e"][:]
+  except:
+    print("'refined p_e' not found in const.h5")
 
 time_start_idx = int(args.time_start / dt)
 time_end_idx = int(args.time_end / dt)
@@ -55,13 +81,23 @@ time_end_idx = int(args.time_end / dt)
 # vars loop
 for var in args.vars:
   print(var)
+
   #total_arr[var] = OrderedDict()
   total_arr   = OrderedDict()
   plot_labels = OrderedDict()
 
   # initiliaze nx,ny,nz,dx for each variable
   filename = args.dirs[0] + "/timestep" + str(time_start_idx).zfill(10) + ".h5"
-  w3d = h5py.File(filename, "r")[var][:,:,:]
+
+  # special case of RH calculated from th and rv
+  if(var == "RH_derived"):
+    w3d = h5py.File(filename, "r")["th"][:,:,:]
+  elif(var == "refined RH_dervied"):
+    w3d = h5py.File(filename, "r")["refined th"][:,:,:]
+  else:
+    w3d = h5py.File(filename, "r")[var][:,:,:]
+
+
   nx[var], ny[var], nz[var] = tuple(x for x in w3d.shape)
   dx[var] = X / (nx[var] - 1)
   ref[var] = int(dx_adve / dx[var])
@@ -95,10 +131,24 @@ for var in args.vars:
     for t in range(time_start_idx, time_end_idx+1, outfreq):
       filename = directory + "/timestep" + str(t).zfill(10) + ".h5"
       print(filename)
-      w3d = h5py.File(filename, "r")[var][0:nx[var]-1, 0:ny[var]-1, level_start_idx:level_end_idx] # * 4. / 3. * 3.1416 * 1e3 
-      print(total_arr[lab])
-      total_arr[lab] = np.append(total_arr[lab], w3d)
-      print(total_arr[lab])
+
+      if(var == "RH_derived" or var == "refined RH_derived"):
+        print("dervied shit!")
+        if(var == "RH_derived"):
+          print("dervied shit A!")
+          th = h5py.File(filename, "r")["th"][0:nx[var]-1, 0:ny[var]-1, level_start_idx:level_end_idx]
+          rv = h5py.File(filename, "r")["rv"][0:nx[var]-1, 0:ny[var]-1, level_start_idx:level_end_idx]
+          w3d = v_calc_S(th, rv, 100000) / 100.
+          print("th: ", th)#, rv, w3d)
+        elif(var == "refined RH_derived"):
+          print("dervied shit B!")
+          th = h5py.File(filename, "r")["refined th"][0:nx[var]-1, 0:ny[var]-1, level_start_idx:level_end_idx]
+          rv = h5py.File(filename, "r")["refined rv"][0:nx[var]-1, 0:ny[var]-1, level_start_idx:level_end_idx]
+          w3d = v_calc_S(th, rv, 100000) / 100.
+        total_arr[lab] = np.append(total_arr[lab], w3d)
+      else:
+        w3d = h5py.File(filename, "r")[var][0:nx[var]-1, 0:ny[var]-1, level_start_idx:level_end_idx] # * 4. / 3. * 3.1416 * 1e3 
+        total_arr[lab] = np.append(total_arr[lab], w3d)
 
 
 # convert to typical units
@@ -119,7 +169,7 @@ for var in args.vars:
   
   # for lin plots:
   n, bins, patches = plt.hist(data, bins=100, label=plot_labels.values(), density=args.normalize, histtype='step', linewidth=2)
-  plt.axvline(x = np.average(data), ls='--', color=patches[0].get_facecolor()[0:3])
+#  plt.axvline(x = np.average(data), ls='--', color=patches[0].get_facecolor()[0:3])
   print("total number of cells = " + str(np.sum(n)))
 
   # for log plots:
