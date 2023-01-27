@@ -207,7 +207,11 @@ for directory, lab in zip(args.dirs, args.labels):
   
   # for lin plots:
   n, bins, patches = plt.hist(data, bins=100, label=plot_labels.values(), density=args.normalize, histtype='step', linewidth=2)
-  plt.axvline(x = np.average(data), ls='--', color=patches[0].get_facecolor()[0:3])
+  for i in np.arange(len(data)):
+    if(len(data) > 1):
+      plt.axvline(x = np.average(data[i]), ls='--', color=patches[i][0].get_facecolor()[0:3])
+    else:
+      plt.axvline(x = np.average(data[i]), ls='--', color=patches[0].get_facecolor()[0:3])
   print("total number of cells = " + str(np.sum(n)))
 
   # for log plots:
