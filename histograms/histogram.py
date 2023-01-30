@@ -110,7 +110,10 @@ for directory, lab in zip(args.dirs, args.labels):
     elif(can_plot_refined_RH_derived and var == "refined RH_derived"):
       w3d = h5py.File(filename, "r")["refined th"][:,:,:]
     else:
-      w3d = h5py.File(filename, "r")[var][:,:,:]
+      try:
+        w3d = h5py.File(filename, "r")[var][:,:,:]
+      except:
+        continue
 
 
     nx, ny, nz = tuple(x for x in w3d.shape)
