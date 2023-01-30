@@ -214,7 +214,7 @@ for directory, lab in zip(args.dirs, args.labels):
 
       # plot
       plt.figure(2)
-      plt.scatter(total_arr[lab_var1].flatten(), total_arr[lab_var2].flatten(), marker='.', s=1)
+      plt.scatter(total_arr[lab_var1].flatten(), total_arr[lab_var2].flatten(), marker='.', s=1, label=lab)
   #    plt.clf()
 
 
@@ -265,6 +265,9 @@ if(not args.no_histogram):
   #plt.savefig('rain_histo_' + lvl + '_' + str(time_start) + '_' + str(time_end) +'.png')
   plt.savefig(args.outfig)
 
+# scatter plot
+plt.figure(2)
+plt.legend()#loc = 'lower center')
+
 if(not args.no_correlations):
-  plt.figure(2)
   plt.savefig(args.outfig + 'scatter.svg')
