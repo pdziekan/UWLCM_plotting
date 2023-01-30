@@ -29,7 +29,7 @@ v_calc_RH = np.vectorize(calc_RH)
 
 #mpl.rcParams['figure.figsize'] = 10, 10
 plt.rcParams.update({'font.size': 10})
-plt.figure(figsize=(10,10))
+plt.figure(1, figsize=(10,10))
 
 parser = argparse.ArgumentParser(description='Plot histograms of variables from UWLCM output.')
 
@@ -43,6 +43,7 @@ parser.add_argument("-l", "--labels", action="extend", nargs="+", type=str, help
 parser.add_argument("-of", "--outfig", help="output file name", required=True)
 parser.add_argument("--outfreq", type=int, required=False, help="output frequency of the simulation [number of time steps], if not specified it will be read from const.h5 (if possible)")
 parser.add_argument('--normalize', action='store_true', help="normalize the histogram")
+parser.add_argument('--no_histogram', action='store_true', help="dont save the histogram plot")
 parser.add_argument('--mask_rico', action='store_true', help="compute histogram only within cloud cells (using the rico cloud mask)")
 parser.set_defaults(normalie=False)
 args = parser.parse_args()
@@ -192,6 +193,35 @@ for directory, lab in zip(args.dirs, args.labels):
       total_arr[lab_var] = np.append(total_arr[lab_var], w3d)
 
 
+  # correlations between vars from this directory
+  print(lab, " correlation coefficients:")
+  for var1 in args.vars:
+    lab_var1 = lab + '_' + str(var1)
+    if(not lab_var1 in total_arr):
+      continue
+    for var2 in args.vars:
+      if(var1 == var2):
+        continue
+      lab_var2 = lab + '_' + str(var2)
+      if(not lab_var2 in total_arr):
+        continue
+      
+      plt.figure(2, figsize=(10,10))
+      # correlation coefficient
+      corr = np.corrcoef(total_arr[lab_var1].flatten(), total_arr[lab_var2].flatten(), rowvar=False)
+      print(lab_var1, " " + lab_var2 + " : ", corr)
+
+      # plot
+      plt.scatter(total_arr[lab_var1].flatten(), total_arr[lab_var2].flatten(), marker='.')
+      plt.savefig(args.outfig + lab_var1 + lab_var2 + 'scatter.svg')
+      plt.clf()
+
+  # return to the histogram fig
+  plt.figure(1,)
+
+
+
+
 # convert to typical units
 #if data == "rain_rw_mom3":
 #  total_arr[data][lab] *= 4./3. * 3.1416 * 1e3 * 1e3 # [g/kg]
@@ -229,6 +259,6 @@ plt.ylabel(ylabel)
 plt.grid(True, which='both', linestyle='--')
 plt.title("z=["+str(args.level_start)+"m, "+str(args.level_end)+"m] @["+str(args.time_start)+"s, "+str(args.time_end)+"s]")
 
-#plt.savefig('rain_histo_' + lvl + '_' + str(time_start) + '_' + str(time_end) +'.png')
-plt.savefig(args.outfig)
-plt.show()
+if(not args.no_histogram):
+  #plt.savefig('rain_histo_' + lvl + '_' + str(time_start) + '_' + str(time_end) +'.png')
+  plt.savefig(args.outfig)
