@@ -215,6 +215,8 @@ for directory, lab in zip(args.dirs, args.labels):
       # plot
       plt.figure(2)
       plt.scatter(total_arr[lab_var1].flatten(), total_arr[lab_var2].flatten(), marker='.', s=1, label=lab)
+      plt.xlabel(var1)
+      plt.ylabel(var2)
   #    plt.clf()
 
 
