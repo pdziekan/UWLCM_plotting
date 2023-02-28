@@ -2,29 +2,37 @@
 import argparse
 import h5py
 import numpy as np
-from sys import argv
+from sys import path
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 
-c_pd = 1005.7
-R_d = 287.
+path.append('/home/piotr/singu_built_libraries/usr/lib/python3/dist-packages/')
+from libcloudphxx import common
 
-def exner(p):
-  return (p / 1e5)**(R_d/c_pd)
-v_exner = np.vectorize(exner)
 
+#c_pd = 1005.7
+#R_d = 287.
+#
+#def exner(p):
+#  return (p / 1e5)**(R_d/c_pd)
+#v_exner = np.vectorize(exner)
+#
 def calc_T(th, p):
-  return th * v_exner(p)
-v_calc_T = np.vectorize(calc_T)
+  return th * common.exner(p)
+#v_calc_T = np.vectorize(calc_T)
+#
+## Tetens: r_vs=3.8/(p*exp(-17.2693882*(T-273.15)/(T-35.86))-6.109)  p in mb, T in Kelvins
+#def calc_rv_s(th, rv, p):
+#  T = v_calc_T(th, p)
+#  return 3.8 / (p*np.exp(-17.2693882*(T-273.15)/(T-35.86))-6.109)
 
-# Tetens: r_vs=3.8/(p*exp(-17.2693882*(T-273.15)/(T-35.86))-6.109)  p in mb, T in Kelvins
-def calc_rv_s(th, rv, p):
-  T = v_calc_T(th, p)
-  return 3.8 / (p*np.exp(-17.2693882*(T-273.15)/(T-35.86))-6.109)
-v_calc_rv_s = np.vectorize(calc_rv_s)
+def calc_r_vs(th, rv, p):
+  T = calc_T(th, p)
+  return common.r_vs(T, p)
+v_calc_r_vs = np.vectorize(calc_r_vs)
 
 def calc_RH(th, rv, p):
-  return rv / v_calc_rv_s(th, rv, p) / 100.
+  return rv / v_calc_r_vs(th, rv, p)
 v_calc_RH = np.vectorize(calc_RH)
 
 #mpl.rcParams['figure.figsize'] = 10, 10
