@@ -18,21 +18,26 @@ from libcloudphxx import common
 #v_exner = np.vectorize(exner)
 #
 def calc_T(th, p):
-  return th * common.exner(p)
+  return np.float64(th) * common.exner(np.float64(p))
 #v_calc_T = np.vectorize(calc_T)
+
 #
 ## Tetens: r_vs=3.8/(p*exp(-17.2693882*(T-273.15)/(T-35.86))-6.109)  p in mb, T in Kelvins
 #def calc_rv_s(th, rv, p):
 #  T = v_calc_T(th, p)
 #  return 3.8 / (p*np.exp(-17.2693882*(T-273.15)/(T-35.86))-6.109)
 
-def calc_r_vs(th, rv, p):
+def calc_r_vs_T(T, p):
+  return common.r_vs(np.float64(T), np.float64(p))
+v_calc_r_vs_T = np.vectorize(calc_r_vs_T)
+
+def calc_r_vs(th, p):
   T = calc_T(th, p)
   return common.r_vs(T, p)
 v_calc_r_vs = np.vectorize(calc_r_vs)
 
 def calc_RH(th, rv, p):
-  return rv / v_calc_r_vs(th, rv, p)
+  return rv / v_calc_r_vs(th, p)
 v_calc_RH = np.vectorize(calc_RH)
 
 #mpl.rcParams['figure.figsize'] = 10, 10
@@ -55,7 +60,8 @@ parser.add_argument('--normalize', action='store_true', help="normalize the hist
 parser.add_argument('--no_histogram', action='store_true', help="dont save the histogram plot")
 parser.add_argument('--no_scatter', action='store_true', help="dont calculate correlations and dot save the scatter plot")
 parser.add_argument('--mask_rico', action='store_true', help="compute histogram only within cloud cells (using the rico cloud mask)")
-parser.set_defaults(normalie=False)
+parser.add_argument('--scatter_saturation', action='store_true', help="plot saturation line on th vs rv scatter plots")
+parser.set_defaults(normalize=False, scatter_saturation=False)
 args = parser.parse_args()
 
 
@@ -65,6 +71,8 @@ nz = {}
 dx = {}
 dz = {}
 ref = {}
+
+scatter_saturation_plotted = False
 
 
 # directories loop
@@ -225,9 +233,21 @@ for directory, lab in zip(args.dirs, args.labels):
       plt.scatter(total_arr[lab_var1].flatten(), total_arr[lab_var2].flatten(), marker='.', s=1, label=lab)
       plt.xlabel(var1)
       plt.ylabel(var2)
-  #    plt.clf()
 
-
+      # add saturation line on a rv vs th plot
+      # TODO: add this line also to refined rv vs refined th plots
+      if(args.scatter_saturation and var1 == "th" and var2 == "rv" and args.level_start == args.level_end and not scatter_saturation_plotted):
+        print("plotting a saturation line on the scatter plot")
+        press = p_e[level_start_idx]
+        min_th = total_arr[lab_var1].min()
+        max_th = total_arr[lab_var1].max()
+        min_T = calc_T(min_th, press)
+        max_T = calc_T(max_th, press)
+        v_th = np.linspace(min_th, max_th, 100)
+        v_T = np.linspace(min_T, max_T, 100)
+        v_r_vs = v_calc_r_vs_T(v_T, press)
+        plt.plot(v_th, v_r_vs, c='black', ls='--', label='r_vs')
+        scatter_saturation_plotted = True
 
 
 
