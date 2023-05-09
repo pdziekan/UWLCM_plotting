@@ -121,9 +121,6 @@ for directory, lab in zip(args.dirs, args.labels):
     filename = directory + "/timestep" + str(time_start_idx).zfill(10) + ".h5"
 
     # special case of RH calculated from th and rv
-    # NOTE: RH_derived is calculated with r_v / r_vs, where r_vs comes from the Tetens formula
-    #       in UWLCM r_vs comes from clausius-clapeyron.
-    #       RH_derived is shifted to the right with respect to RH from UWLCM - maybe due to this difference?
     if(var == "RH_derived"):
       w3d = h5py.File(filename, "r")["th"][:,:,:]
     elif(can_plot_refined_RH_derived and var == "refined RH_derived"):
