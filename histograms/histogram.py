@@ -299,5 +299,8 @@ if(not args.no_histogram):
 plt.figure(2)
 plt.legend()#loc = 'lower center')
 
+plt.grid(True, which='both', linestyle='--')
+plt.title("z=["+str(args.level_start)+"m, "+str(args.level_end)+"m] @["+str(args.time_start)+"s, "+str(args.time_end)+"s]")
+
 if(not args.no_scatter):
   plt.savefig(args.outfig + 'scatter.svg')
