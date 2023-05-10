@@ -34,6 +34,7 @@ for directory, lab in zip(args.dirs, args.labels):
   lmbd = {}
   level_start_idx = {}
   level_end_idx = {}
+  exists = {}
 
   # read some constant parameters
   with h5py.File(directory + "/const.h5", 'r') as consth5:
@@ -58,16 +59,21 @@ for directory, lab in zip(args.dirs, args.labels):
   # initiliaze nx,ny,nz,dx and average energy for each variable
   for var in args.vars:
     filename = directory + "/timestep" + str(time_start_idx).zfill(10) + ".h5"
-    w3d = h5py.File(filename, "r")[var][:,:,:]
-    nx[var], ny[var], nz[var] = tuple(x for x in w3d.shape)
-    dx[var] = X / (nx[var] - 1)
-    dz[var] = Z / (nz[var] - 1) 
-    Exy_avg[var] = np.zeros(int((nx[var]-1)/2 + 1))
-    ref[var] = int(dx_adve / dx[var])
-    assert(float(args.level_start / dz[var]).is_integer())
-    assert(float(args.level_end / dz[var]).is_integer())
-    level_start_idx[var] = int(args.level_start / dz[var])
-    level_end_idx[var] = int(args.level_end / dz[var]) + 1
+
+    try:
+      w3d = h5py.File(filename, "r")[var][:,:,:] 
+      nx[var], ny[var], nz[var] = tuple(x for x in w3d.shape)
+      dx[var] = X / (nx[var] - 1)
+      dz[var] = Z / (nz[var] - 1) 
+      Exy_avg[var] = np.zeros(int((nx[var]-1)/2 + 1))
+      ref[var] = int(dx_adve / dx[var])
+      assert(float(args.level_start / dz[var]).is_integer())
+      assert(float(args.level_end / dz[var]).is_integer())
+      level_start_idx[var] = int(args.level_start / dz[var])
+      level_end_idx[var] = int(args.level_end / dz[var]) + 1
+      exists[var] = True
+    except:
+      exists[var] = False
 
   
   # time loop
@@ -78,6 +84,8 @@ for directory, lab in zip(args.dirs, args.labels):
     # variables loop
     for var in args.vars:
       print(var)
+      if not exists[var]:
+        continue
   
       print(nx[var],dx[var][0])
       w3d = h5py.File(filename, "r")[var][0:nx[var]-1,0:ny[var]-1,:] # * 4. / 3. * 3.1416 * 1e3 
@@ -113,6 +121,9 @@ for directory, lab in zip(args.dirs, args.labels):
       plt.loglog(L, 2e-8 * L**(3.), label = "-3" , color="black", ls='dashed')
   
   for var in args.vars:
+    if not exists[var]:
+      continue
+
     Exy_avg[var] /= (time_end_idx - time_start_idx) / outfreq + 1
     Exy_avg[var] /= level_end_idx[var] - level_start_idx[var]
 
