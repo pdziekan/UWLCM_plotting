@@ -40,6 +40,11 @@ def calc_RH(th, rv, p):
   return rv / v_calc_r_vs(th, p)
 v_calc_RH = np.vectorize(calc_RH)
 
+def calc_th_l(th, rl, p):
+  T = calc_T(th, p)
+  return th - 1. / common.exner(np.float64(p)) * common.l_v(np.float64(T)) / common.c_pd * rl 
+v_calc_th_l = np.vectorize(calc_th_l)
+
 #mpl.rcParams['figure.figsize'] = 10, 10
 plt.rcParams.update({'font.size': 10})
 plt.figure(1, figsize=(10,10)) # histogram plot
@@ -60,6 +65,7 @@ parser.add_argument('--normalize', action='store_true', help="normalize the hist
 parser.add_argument('--no_histogram', action='store_true', help="dont save the histogram plot")
 parser.add_argument('--no_scatter', action='store_true', help="dont calculate correlations and dot save the scatter plot")
 parser.add_argument('--mask_rico', action='store_true', help="compute histogram only within cloud cells (using the rico cloud mask)")
+parser.add_argument('--mask_rico_rl', action='store_true', help="compute histogram only within cloud cells (using the rico cloud mask based on the r_l array)")
 parser.add_argument('--scatter_saturation', action='store_true', help="plot saturation line on th vs rv scatter plots")
 parser.set_defaults(normalize=False, scatter_saturation=False)
 args = parser.parse_args()
@@ -120,11 +126,21 @@ for directory, lab in zip(args.dirs, args.labels):
     # init variable-specific array parameters based on the first timestep
     filename = directory + "/timestep" + str(time_start_idx).zfill(10) + ".h5"
 
-    # special case of RH calculated from th and rv
+    # special cases of variables that need processing first
     if(var == "RH_derived"):
       w3d = h5py.File(filename, "r")["th"][:,:,:]
     elif(can_plot_refined_RH_derived and var == "refined RH_derived"):
       w3d = h5py.File(filename, "r")["refined th"][:,:,:]
+    elif(var == "r_tot"): # total resolved water mixing ratio
+      try:
+        w3d = h5py.File(filename, "r")["rv"][:,:,:]
+      except:
+        continue
+    elif(var == "th_l"): # liquid water potential temperature
+      try:
+        w3d = h5py.File(filename, "r")["th"][:,:,:]
+      except:
+        continue
     else:
       try:
         w3d = h5py.File(filename, "r")[var][:,:,:]
@@ -157,14 +173,26 @@ for directory, lab in zip(args.dirs, args.labels):
 
     lab_var = lab + '_' + str(var)
 
+    assert(not (args.mask_rico and args.mask_rico_rl))
+
     if(args.mask_rico):
       try:
         mask = h5py.File(filename, "r")["cloud_rw_mom3"][:,:,:] 
         if(mask.shape != w3d.shape):
-          print("Cloud mask shape is different than "+var+" shape. Skipping the plot.")
+          print("Cloud mask shape: " + str(mask.shape) + " is different than "+var+" shape: " + str(w3d.shape) + ". Skipping the plot.")
           continue
       except:
         print("Can't find cloud_rw_mom3 data, so can't use RICO cloud mask. Skipping the plot.")
+        continue
+
+    if(args.mask_rico_rl):
+      try:
+        mask = h5py.File(filename, "r")["r_l"][:,:,:] 
+        if(mask.shape != w3d.shape):
+          print("Cloud mask shape: " + str(mask.shape) + " is different than "+var+" shape: " + str(w3d.shape) + ". Skipping the plot.")
+          continue
+      except:
+        print("Can't find r_l data, so can't use RICO r_l cloud mask. Skipping the plot.")
         continue
 
 
@@ -195,12 +223,30 @@ for directory, lab in zip(args.dirs, args.labels):
             p[i,j] = refined_p_e[level_start_idx:level_end_idx]
         w3d = v_calc_RH(th, rv, p)
 
+      elif(var == "r_tot"): # total resolved water mixing ratio
+        w3d = h5py.File(filename, "r")["rv"][:,:,level_start_idx:level_end_idx] + h5py.File(filename, "r")["r_l"][:,:,level_start_idx:level_end_idx] 
+
+      elif(var == "th_l"): # liquid water potential temp
+        th = h5py.File(filename, "r")["th"][:,:,level_start_idx:level_end_idx]
+        rl = h5py.File(filename, "r")["r_l"][:,:,level_start_idx:level_end_idx]
+        p  = np.empty(th.shape)
+        for i in np.arange(p.shape[0]):
+          for j in np.arange(p.shape[1]):
+            p[i,j] = p_e[level_start_idx:level_end_idx]
+        w3d = v_calc_th_l(th, rl, p)
+
       else:
         w3d = h5py.File(filename, "r")[var][0:nx-1, 0:ny-1, level_start_idx:level_end_idx] # * 4. / 3. * 3.1416 * 1e3 
 
       # read and apply cloud mask
       if(args.mask_rico):
         mask = h5py.File(filename, "r")["cloud_rw_mom3"][0:nx-1, 0:ny-1, level_start_idx:level_end_idx] * 4./3. * 3.1416 * 1e3
+        mask = np.where(mask > 1.e-5, 1., 0.)
+        w3d = w3d[(mask == 1)]
+
+      # read and apply cloud mask
+      if(args.mask_rico_rl):
+        mask = h5py.File(filename, "r")["r_l"][0:nx, 0:ny, level_start_idx:level_end_idx]
         mask = np.where(mask > 1.e-5, 1., 0.)
         w3d = w3d[(mask == 1)]
 
@@ -300,4 +346,4 @@ plt.grid(True, which='both', linestyle='--')
 plt.title("z=["+str(args.level_start)+"m, "+str(args.level_end)+"m] @["+str(args.time_start)+"s, "+str(args.time_end)+"s]")
 
 if(not args.no_scatter):
-  plt.savefig(args.outfig + 'scatter.svg')
+  plt.savefig(args.outfig + 'scatter.png') # .svg
