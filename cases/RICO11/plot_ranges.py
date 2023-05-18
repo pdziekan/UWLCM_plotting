@@ -40,6 +40,8 @@ xscaledict = {
   "cl_avg_rv" : "linear",
   "cl_avg_cloud_meanr" : "linear",
   "cl_avg_cloud_stddevr" : "linear",
+  "cl_avg_act_meanr" : "linear",
+  "cl_avg_act_stddevr" : "linear",
   "cl_meanr" : "linear",
   "sd_conc" : "linear",
 }
@@ -86,6 +88,8 @@ yscaledict = {
   "cl_avg_rv" : "linear",
   "cl_avg_cloud_meanr" : "linear",
   "cl_avg_cloud_stddevr" : "linear",
+  "cl_avg_act_meanr" : "linear",
+  "cl_avg_act_stddevr" : "linear",
   "cl_meanr" : "linear",
   "sd_conc" : "linear",
 }
@@ -112,6 +116,8 @@ xlimdict_profs = {
   "cl_avg_rv" : None,
   "cl_avg_cloud_meanr" : None,
   "cl_avg_cloud_stddevr" : None,
+  "cl_avg_act_meanr" : None,
+  "cl_avg_act_stddevr" : None,
   "cl_meanr" : None,
   "sd_conc" : None,
 }
@@ -138,6 +144,8 @@ ylimdict_profs = {
   "cl_avg_rv" : (0,3000),
   "cl_avg_cloud_meanr" : (0,3000),
   "cl_avg_cloud_stddevr" : (0,3000),
+  "cl_avg_act_meanr" : (0,3000),
+  "cl_avg_act_stddevr" : (0,3000),
   "cl_meanr" : (0,3000),
   "sd_conc" : (0,3000),
 }
@@ -172,6 +180,8 @@ xlimdict_series = {
   "cl_avg_rv" : (0,24),
   "cl_avg_cloud_meanr" : (0,24),
   "cl_avg_cloud_stddevr" : (0,24),
+  "cl_avg_act_meanr" : (0,24),
+  "cl_avg_act_stddevr" : (0,24),
   "cl_meanr" : (0,24),
   "sd_conc" : (0,24),
 }
@@ -206,6 +216,8 @@ ylimdict_series = {
   "cl_avg_rv" : (1.2e-2,1.6e-2),
   "cl_avg_cloud_meanr" : None,
   "cl_avg_cloud_stddevr" : None,
+  "cl_avg_act_meanr" : None,
+  "cl_avg_act_stddevr" : None,
   "cl_meanr" : None,
   "sd_conc" : None,
 }

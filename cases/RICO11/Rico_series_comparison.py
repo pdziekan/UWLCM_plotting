@@ -18,7 +18,7 @@ from autoscale_y import *
 # activate latex text rendering
 rc('text', usetex=True)
 
-rico_vars = ["lwp", "rwp", "cloud_cover", "min_cloud_base", "inversion_height_rico", "cl_nc", "cl_nr", "surf_precip", "acc_precip", "RH_max", "wvarmax", "sd_conc", "cl_avg_cloud_meanr", "cl_avg_cloud_stddevr", "cl_avg_supersat", "cl_avg_th", "cl_avg_rv", "surf_flux_latent", "surf_flux_sensible"]#, "cl_acnv25", "cl_accr25"]# ]
+rico_vars = ["lwp", "rwp", "cloud_cover", "min_cloud_base", "inversion_height_rico", "cl_nc", "cl_nr", "surf_precip", "acc_precip", "RH_max", "wvarmax", "sd_conc", "cl_avg_act_meanr", "cl_avg_act_stddevr", "cl_avg_cloud_meanr", "cl_avg_cloud_stddevr", "cl_avg_supersat", "cl_avg_th", "cl_avg_rv", "surf_flux_latent", "surf_flux_sensible"]#, "cl_acnv25", "cl_accr25"]# ]
 #rico_vars = ["clb_bigrain_mean_rd","clb_bigrain_mean_kappa","clb_bigrain_mean_conc","clb_bigrain_mean_inclt", "cl_nr"]
 
 # variables that need rescaling of the yrange to the limited x range of 1-6h
@@ -31,7 +31,7 @@ args, extra = parser.parse_known_args()
 
 
 # init the plot
-nplotx = 5
+nplotx = 6
 nploty= 4
 fig, axarr = plt.subplots(nplotx,nploty)
 x_arr = np.arange(nplotx)
