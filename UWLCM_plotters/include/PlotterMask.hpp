@@ -173,7 +173,7 @@ class PlotterMask : public PlotterMicro<NDims>
   // mean and std_dev of concentration of activated/cloud/rain droplets in cloudy cells [1/cm^3] (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> cloud_actconc_stats_timestep(int at)
   {   
-    return cloud_conc_stats_timestep_hlpr(at, "act_rw", "nc", "nr");
+    return cloud_conc_stats_timestep_hlpr(at, "actrw_rw", "nc", "nr");
   } 
 
   std::pair<double, double> cloud_cloudconc_stats_timestep(int at)
@@ -206,7 +206,7 @@ class PlotterMask : public PlotterMicro<NDims>
   // mean and std_dev of mean radius of activated/cloud/rain droplets in cloudy cells [um] (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> cloud_actmeanr_stats_timestep(int at)
   {   
-    return cloud_meanr_stats_timestep_hlpr(at, "act_rw");
+    return cloud_meanr_stats_timestep_hlpr(at, "actrw_rw");
   }
   std::pair<double, double> cloud_cloudmeanr_stats_timestep(int at)
   {   
@@ -220,7 +220,7 @@ class PlotterMask : public PlotterMicro<NDims>
   // mean and std_dev of std_dev of radius of activated/cloud/rain droplets in cloudy cells [um] (characteristics of the spatial distribution at this timestep)
   std::pair<double, double> cloud_actstddevr_stats_timestep(int at)
   {   
-    return cloud_stddevr_stats_timestep_hlpr(at, "act_rw");
+    return cloud_stddevr_stats_timestep_hlpr(at, "actrw_rw");
   }
   std::pair<double, double> cloud_cloudstddevr_stats_timestep(int at)
   {   

@@ -627,6 +627,27 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
+      // spatial average of mean radius of activated droplets in cloudy cells
+      else if (plt == "cl_avg_act_meanr")
+      {
+        try
+        {
+          auto stats = plotter.cloud_actmeanr_stats_timestep(at * n["outfreq"]);
+          res_series[plt](at) = stats.first;
+        }
+        catch(...) {if(at==first_timestep) data_found[plt]=0;}
+      }
+
+      // spatial average of standard deviation of activated droplet radius distribution in cloudy cells
+      else if (plt == "cl_avg_act_stddevr")
+      {
+        try
+        {
+          auto stats = plotter.cloud_actstddevr_stats_timestep(at * n["outfreq"]);
+          res_series[plt](at) = stats.first;
+        }
+        catch(...) {if(at==first_timestep) data_found[plt]=0;}
+      }
       // spatial average of mean radius of cloud droplets in cloudy cells
       else if (plt == "cl_avg_cloud_meanr")
       {
@@ -1707,6 +1728,16 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     }
     else if (plt == "cl_std_dev_supersat")
     {
+      res_pos *= 60.;
+    }
+    else if (plt == "cl_avg_act_meanr")
+    {
+      plot_std_dev = true;
+      res_pos *= 60.;
+    }
+    else if (plt == "cl_avg_act_stddevr")
+    {
+      plot_std_dev = true;
       res_pos *= 60.;
     }
     else if (plt == "cl_avg_cloud_meanr")

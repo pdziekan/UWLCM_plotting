@@ -17,6 +17,8 @@ const std::vector<std::string> series_rico({
 "cl_avg_rv",
 "cl_avg_cloud_meanr",
 "cl_avg_cloud_stddevr",
+"cl_avg_act_meanr",
+"cl_avg_act_stddevr",
 "wvarmax",
  "surf_flux_latent",
  "surf_flux_sensible",

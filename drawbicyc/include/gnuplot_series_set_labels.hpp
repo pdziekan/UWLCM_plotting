@@ -99,6 +99,18 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel 'time [min]'\n";
     gp << "set title 'average std dev of radius of activated droplets'\n";
   }
+  else if (plt == "cl_avg_act_meanr")
+  {
+    gp << "set ylabel '<r_{mean}> [um]'\n";
+    gp << "set xlabel 'time [min]'\n";
+    gp << "set title 'mean radius of activated droplets in cloud'\n";
+  }
+  else if (plt == "cl_avg_act_stddevr")
+  {
+    gp << "set ylabel '<sigma(r)> [um]'\n";
+    gp << "set xlabel 'time [min]'\n";
+    gp << "set title 'std. dev. of radius of activated droplets in cloud'\n";
+  }
   else if (plt == "cl_avg_cloud_meanr")
   {
     gp << "set ylabel '<r_{mean}> [um]'\n";
