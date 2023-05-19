@@ -21,7 +21,7 @@ class Plotter_t<2> : public PlotterH5
   using parent_t = PlotterH5;
   hsize_t n[2];
   enum {x, z};
-  arr_t tmp, tmp_srfc;
+  arr_t tmp, tmp_srfc, tmp_ref;
 
   public:
 
@@ -202,6 +202,7 @@ class Plotter_t<2> : public PlotterH5
     // other dataset are of the size x*z, resize tmp
     tmp.resize(n[0]-1, n[1]-1);
     tmp_srfc.resize(n[0]-1, 1);
+    tmp_ref.resize(tmp.shape());
   }
 };
 

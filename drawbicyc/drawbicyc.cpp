@@ -71,7 +71,9 @@ int main(int argc, char** argv)
   }
   
   // detecting if subgrid model was on
-  bool sgs = true;
+//  std::cerr << "checking of sgs model was used... ";
+  bool sgs = h5f.nameExists("sgs");// true;
+  /*
   try 
   {
     auto h5g = h5f.openGroup("sgs");
@@ -80,14 +82,16 @@ int main(int argc, char** argv)
   {
     sgs = false;
   }
+  */
+ // std::cerr << sgs << std::endl;
 
   Plots plots(type, sgs);
 
   if(NDims == 2)
   {
 
-//    if(flag_series)   plot_series(PlotterMask<2>(h5, micro, mask_type_t::Rico11), plots, type);
-//    if(flag_profiles) plot_profiles(PlotterMask<2>(h5, micro, mask_type_t::Rico11), plots, type, normalize_prof);
+    if(flag_series)   plot_series(PlotterMask<2>(h5, micro, mask_type_t::Rico11), plots, type);
+    if(flag_profiles) plot_profiles(PlotterMask<2>(h5, micro, mask_type_t::Rico11), plots, type, normalize_prof);
 //    if(flag_fields)   plot_fields(PlotterMask<2>(h5, micro), plots, type);
 //    if(flag_qv_qc_2_6_10_min)   plot_qv_qc_2_6_10_min(PlotterMask<2>(h5, micro));
   }
