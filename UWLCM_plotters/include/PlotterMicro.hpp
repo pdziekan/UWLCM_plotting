@@ -122,11 +122,15 @@ class PlotterMicro : public PlotterCommon<NDims>
       try
       {
         res = this->h5load_timestep("precip_rate", at); // precip_rate is the difference between influx and outflux
+        // uppermost cell
+        top = this->hrzntl_slice(this->map["z"] - 1);
+        res(top) *= rhod(top);
+        // cells below
         for(int z = this->map["z"] - 2; z>=0; --z)
         {
-          res(this->hrzntl_slice(z)) = res(this->hrzntl_slice(z+1)) - res(this->hrzntl_slice(z)); 
+          res(this->hrzntl_slice(z)) = res(this->hrzntl_slice(z+1)) + res(this->hrzntl_slice(z)) * rhod(this->hrzntl_slice(z)); 
         }
-        res *= rhod * this->map["dz"] * L_evap;
+        res *= -1 * this->map["dz"] * L_evap;
       }
       catch(...)
       {
