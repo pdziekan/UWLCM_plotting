@@ -108,8 +108,9 @@ class PlotterMicro_t : public Plotter_t<NDims>
     {
       res = this->h5load_timestep("precip_rate", at)
               *  4./3 * 3.14 * 1e3 // to get mass
-              / this->CellVol    // averaged over cell volume, TODO: make precip rate return specific moment? wouldnt need the dx and dy
+              / this->dv   // averaged over cell volume, TODO: make precip rate return specific moment? wouldnt need the dx and dy
               * L_evap;
+              //CellVol all having the same volume, this multiplication below include 0.5 * CellVol on the domain boredrs and 0.25 * CellVol on the domain corners
     }
     else if(this->micro == "blk_1m")
       try
