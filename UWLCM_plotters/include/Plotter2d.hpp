@@ -179,7 +179,7 @@ class Plotter_t<2> : public PlotterCommon
     this->map["y"] = 1;
     this->map["z"] = n[1]-1;
     tmp.resize(n[0], n[1]);
-    dv.resize(n[0], n[1]);
+    dv.resize(n[0]-1, n[1]-1);
     k_i.resize(n[0]-1);
     tmp_int_hrzntl_slice.resize(n[0]-1);
     tmp_float_hrzntl_slice.resize(n[0]-1);
@@ -195,9 +195,11 @@ class Plotter_t<2> : public PlotterCommon
     this->DomainVol = this->map["dx"] * this->map["dz"] * this->map["x"] * this->map["z"];
 
     dv = this->CellVol;
-    // edge cells are smaller
+    // edge cells are 0.5*CellVol and corners are 0.25*CellVol
     dv(blitz::Range(0,0),blitz::Range::all()) /= 2.;
     dv(blitz::Range::all(),blitz::Range(0,0)) /= 2.;
+    dv(blitz::Range::all(),blitz::Range(dv.cols() - 1, dv.cols() - 1)) /= 2.;
+    dv(blitz::Range(dv.rows() - 1, dv.rows() - 1), blitz::Range::all()) /= 2.;
 
     // other dataset are of the size x*z, resize tmp
     tmp.resize(n[0]-1, n[1]-1);
