@@ -231,10 +231,10 @@ class Plotter_t<3> : public PlotterCommon
     dv(blitz::Range(0,0), blitz::Range::all(), blitz::Range::all()) /= 2.;
     dv(blitz::Range::all(), blitz::Range(0,0), blitz::Range::all()) /= 2.;
     dv(blitz::Range::all(), blitz::Range::all(), blitz::Range(0,0)) /= 2.;
-    dv(blitz::Range::all(), blitz::Range::all(), blitz::Range(dv.cols() - 1, dv.cols() - 1)) /= 2.;
-    dv(blitz::Range::all(), blitz::Range(dv.rows() - 1, dv.rows() - 1), blitz::Range::all()) /= 2.;
-    dv(blitz::Range(dv.rows() - 1, dv.rows() - 1), blitz::Range::all(), blitz::Range::all()) /= 2.;
-
+    dv(blitz::Range(n[0] - 2, n[0] - 2), blitz::Range::all(), blitz::Range::all()) /= 2.;
+    dv(blitz::Range::all(), blitz::Range(n[1] - 2, n[1] - 2), blitz::Range::all()) /= 2.;
+    dv(blitz::Range::all(), blitz::Range::all(), blitz::Range(n[2] - 2, n[2] - 2)) /= 2.;
+    
     // other dataset are of the size x*z, resize tmp
     tmp.resize(n[0]-1, n[1]-1, n[2]-1);
     tmp_srfc.resize(n[0]-1, n[1]-1, 1);
