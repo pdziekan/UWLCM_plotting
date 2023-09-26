@@ -117,8 +117,7 @@ class PlotterMicro_t : public Plotter_t<NDims>
       {
         res = this->h5load_timestep("precip_rate", at); // precip_rate is the difference between influx and outflux
         // uppermost cell
-        top = this->hrzntl_slice(this->map["z"] - 1);
-        res(top) *= rhod(top);
+        res(this->hrzntl_slice(this->map["z"] - 1)) *= rhod(this->hrzntl_slice(this->map["z"] - 1));
         // cells below
         for(int z = this->map["z"] - 2; z>=0; --z)
         {
