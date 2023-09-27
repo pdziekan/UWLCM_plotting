@@ -363,7 +363,7 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
   {
     gp << "set title 'latent surf flux [W/m^2]'\n";
   }
-  else if (plt == "er dycoms")
+  else if (plt == "er_dycoms")
   {
     gp << "set title 'entrainment rate [cm / s]'\n";
     gp << "set xlabel ''\n";
