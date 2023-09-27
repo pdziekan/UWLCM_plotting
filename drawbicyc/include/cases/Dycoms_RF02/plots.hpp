@@ -4,12 +4,15 @@ const std::vector<std::string> series_dycoms({
 // "cl_nr",
 //"cl_acnv25_dycoms",
 //"cl_accr25_dycoms",
-//"wvarmax", "cloud_cover_dycoms", 
+"wvarmax", "cloud_cover_dycoms", 
  "lwp",
- "er",
+ "er_dycoms",
  "surf_precip",
 // "acc_precip",
  "cl_nc"
+ , "surf_flux_latent"
+ , "surf_flux_sensible"
+ , "RH"
 // "cloud_base_dycoms",
 // "cloud_base_precip_dycoms"
 
