@@ -5,7 +5,7 @@ CONTENTS
 
 plotting:
 
-- /drawbicyc - C++ program for processing UWLCM output; can calculate and plot series, profiles, variable snapshots and spectra; also has C++ programs for averaging and comparing series or profiles from multiple runs, although this is probably better done in Python
+- /drawbicyc - C++ program for processing UWLCM output; can calculate and plot series, profiles and snapshots for multiple parameters; also has C++ programs for averaging and comparing series or profiles from multiple runs, although this is probably better done in Python (e.g. /cases)
 
 - /cases - Python scripts for comparing series and profiles calculated using drawbicyc; specific to each LES case
 
