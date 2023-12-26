@@ -48,6 +48,20 @@ class PlotterMicro_t : public Plotter_t<NDims>
     return blitz::safeToReturn(res + 0);
   }
 
+  // ice mixing ratio
+  auto h5load_ri_timestep(
+    int at
+  ) -> decltype(blitz::safeToReturn(arr_t() + 0))
+  {
+    if(this->micro == "lgrngn")
+      res = this->h5load_timestep("ice_rw_mom3", at) * 4./3. * 3.1416 * 910;
+    else if(this->micro == "blk_1m")
+      res = 0;
+    else if(this->micro == "blk_2m")
+      res = 0;
+    return blitz::safeToReturn(res + 0);
+  }
+
   // rain droplets mixing ratio
   auto h5load_rr_timestep(
     int at

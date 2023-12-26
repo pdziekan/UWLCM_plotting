@@ -78,8 +78,10 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
 
   double prec_vol = 0.;
   double prec_vol_prev;
-  double removed_particles = 0.;
-  double removed_particles_prev;
+  double removed_droplets = 0.;
+  double removed_droplets_prev;
+  double removed_ice = 0.;
+  double removed_ice_prev;
 
   double tot_acc_acnv_prev = 0;
   double tot_acc_accr_prev = 0;
@@ -103,10 +105,12 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
     catch(...){;}
 
     // store accumulated number of removed droplets
-    removed_particles_prev = removed_particles;
+    removed_droplets_prev = removed_droplets;
+    removed_ice_prev = removed_ice;
     try
     {
-      removed_particles = plotter.h5load_attr_timestep(at * n["outfreq"], "particle_number", "puddle");
+      removed_droplets = plotter.h5load_attr_timestep(at * n["outfreq"], "water_number", "puddle");
+      removed_ice = plotter.h5load_attr_timestep(at * n["outfreq"], "ice_number", "puddle");
     }
     catch(...){;}
 
@@ -1563,6 +1567,17 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
 
+      else if (plt == "IWC_gm-3")
+      {
+        try
+        {
+          typename Plotter_t::arr_t iwc(plotter.h5load_ri_timestep(at * n["outfreq"])); // cloud water, no rain water in pi chamber icmw
+          iwc *= rhod;
+          res_series[plt](at) = blitz::mean(iwc);
+        }
+        catch(...) {if(at==first_timestep) data_found[plt]=0;}
+      }
+
       else if (plt == "RH")
       {
         try
@@ -1580,6 +1595,17 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
           typename Plotter_t::arr_t nc(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           nc *= rhod; // 1/kg -> 1/m^3
           res_series[plt](at) = blitz::mean(nc);
+        }
+        catch(...) {if(at==first_timestep) data_found[plt]=0;}
+      }
+
+      else if (plt == "N_ice")
+      {
+        try
+        {
+          typename Plotter_t::arr_t ni(plotter.h5load_timestep("ice_rw_mom0", at * n["outfreq"]));
+          ni *= rhod; // 1/kg -> 1/m^3
+          res_series[plt](at) = blitz::mean(ni);
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
@@ -1653,13 +1679,29 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
-      else if (plt == "r_mean1")
+      else if (plt == "r_dmean")
       {
         // droplets mean radius away from walls
         try
         {
           typename Plotter_t::arr_t m0(plotter.h5load_timestep("cloud_rw_mom0", at * n["outfreq"]));
           typename Plotter_t::arr_t m1(plotter.h5load_timestep("cloud_rw_mom1", at * n["outfreq"]));
+          //auto tot_m0 = blitz::sum(typename Plotter_t::arr_t(plotter.nowall(m0, distance_from_walls)));
+          auto tot_m0 = blitz::sum(m0);
+          if(tot_m0 > 0)
+            res_series[plt](at) = blitz::sum(m1) / tot_m0; 
+          else
+            res_series[plt](at) = 0;
+        }
+        catch(...) {if(at==first_timestep) data_found[plt]=0;}
+      }
+      else if (plt == "r_imean")
+      {
+        // ice mean radius away from walls
+        try
+        {
+          typename Plotter_t::arr_t m0(plotter.h5load_timestep("ice_rw_mom0", at * n["outfreq"]));
+          typename Plotter_t::arr_t m1(plotter.h5load_timestep("ice_rw_mom1", at * n["outfreq"]));
           //auto tot_m0 = blitz::sum(typename Plotter_t::arr_t(plotter.nowall(m0, distance_from_walls)));
           auto tot_m0 = blitz::sum(m0);
           if(tot_m0 > 0)
@@ -1766,12 +1808,21 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
-      else if (plt == "N_removal")
+      else if (plt == "N_drop_removal")
       {
         // droplet removal rate [1/(cm^3 * min)]
         try
         {
-          res_series[plt](at) = plotter.calc_prtcl_removal(removed_particles - removed_particles_prev);
+          res_series[plt](at) = plotter.calc_prtcl_removal(removed_droplets - removed_droplets_prev);
+        }
+        catch(...) {if(at==first_timestep) data_found[plt]=0;}
+      }
+      else if (plt == "N_ice_removal")
+      {
+        // ice removal rate [1/(cm^3 * min)]
+        try
+        {
+          res_series[plt](at) = plotter.calc_prtcl_removal(removed_ice - removed_ice_prev);
         }
         catch(...) {if(at==first_timestep) data_found[plt]=0;}
       }
@@ -1967,12 +2018,22 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       res_pos *= 3600.;
       res_series[plt] *= 1e3; // g/kg
     }
-    else if (plt == "N_removal")
+    else if (plt == "N_drop_removal")
+    {
+      res_pos *= 3600.;
+      res_series[plt] *= 60; // per minute
+    }
+    else if (plt == "N_ice_removal")
     {
       res_pos *= 3600.;
       res_series[plt] *= 60; // per minute
     }
     else if (plt == "LWC_gm-3")
+    {
+      res_pos *= 3600.;
+      res_series[plt] *= 1e3; // g/m^3
+    }
+    else if (plt == "IWC_gm-3")
     {
       res_pos *= 3600.;
       res_series[plt] *= 1e3; // g/m^3
@@ -1994,12 +2055,22 @@ void plot_series(Plotter_t plotter, Plots plots, std::string type)
       res_pos *= 3600.;
       res_series[plt] /= 1e6; // 1/m^3 -> 1/cm^3
     }
+    else if (plt == "N_ice")
+    {
+      res_pos *= 3600.;
+      res_series[plt] /= 1e6; // 1/m^3 -> 1/cm^3
+    }
     else if (plt == "N_aerosol")
     {
       res_pos *= 3600.;
       res_series[plt] /= 1e6; // 1/m^3 -> 1/cm^3
     }
-    else if (plt == "r_mean1")
+    else if (plt == "r_dmean")
+    {
+      res_pos *= 3600.;
+      res_series[plt] *= 1e6; // m -> um
+    }
+    else if (plt == "r_imean")
     {
       res_pos *= 3600.;
       res_series[plt] *= 1e6; // m -> um

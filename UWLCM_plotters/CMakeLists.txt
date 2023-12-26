@@ -14,20 +14,20 @@ endif()
 ############################################################################################
 # Blitz++
 # with pkgconfig
-#find_package(PkgConfig)
-#pkg_check_modules(BLITZ blitz>=0.10)
-#if (NOT BLITZ_FOUND)
-#  message(FATAL_ERROR "Blitz++ library not found or Blitz++ version requirement not met (>=0.10)
-#
-#* To insall Blitz++, please try:
-#*   Debian/Ubuntu: sudo apt-get install libblitz0-dev
-#*   Fedora: sudo yum install blitz-devel
-#*   Homebrew: brew install blitz
-#  ")
-#endif()
+find_package(PkgConfig)
+pkg_check_modules(BLITZ blitz>=0.10)
+if (NOT BLITZ_FOUND)
+  message(FATAL_ERROR "Blitz++ library not found or Blitz++ version requirement not met (>=0.10)
+
+* To insall Blitz++, please try:
+*   Debian/Ubuntu: sudo apt-get install libblitz0-dev
+*   Fedora: sudo yum install blitz-devel
+*   Homebrew: brew install blitz
+  ")
+endif()
 
 # with CMake
-find_package(blitz REQUIRED)
+#find_package(blitz REQUIRED)
 ############################################################################################
 
 add_library(UWLCM_plotters INTERFACE)

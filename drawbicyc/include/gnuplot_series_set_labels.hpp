@@ -442,9 +442,21 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
+  else if (plt == "IWC_gm-3")
+  {
+    gp << "set title 'IWC [g/m^3]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
   else if (plt == "N_drop")
   {
     gp << "set title 'N_{drop} [cm^{-3}]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "N_ice")
+  {
+    gp << "set title 'N_{ice} [cm^{-3}]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
@@ -454,9 +466,15 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
-  else if (plt == "r_mean1")
+  else if (plt == "r_dmean")
   {
     gp << "set title '<r>_{drop} [um]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "r_imean")
+  {
+    gp << "set title '<r>_{ice} [um]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
@@ -472,9 +490,15 @@ void gnuplot_series_set_labels(Gnuplot &gp, std::string plt)
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
-  else if (plt == "N_removal")
+  else if (plt == "N_drop_removal")
   {
     gp << "set title 'N_{drop} removal rate [cm^{-3} min^{-1}]'\n";
+    gp << "set xlabel ''\n";
+    gp << "set ylabel ''\n";
+  }
+  else if (plt == "N_ice_removal")
+  {
+    gp << "set title 'N_{ice} removal rate [cm^{-3} min^{-1}]'\n";
     gp << "set xlabel ''\n";
     gp << "set ylabel ''\n";
   }
