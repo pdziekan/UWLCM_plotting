@@ -431,7 +431,7 @@ class PlotterMicro_t : public Plotter_t<NDims>
       tot_th_diff *= pow(this->map_prof["p_e"](z_idx) / p_1000, R_d / c_pd); // tht -> T
       double ret = tot_th_diff * c_pd * this->map_prof["rhod"](z_idx)         // sum of th diff over boundary cells since last output (K) * c_pd * density 
                    * this->map["dz"] / ((this->map["x"]-1) * (this->map["y"]-1)) // multiply by cell volume and divide by domain surface area (without walls)
-                   * (double(this->map["outfreq"]) * this->map["dt"]);    // divide by time since last output
+                   / (double(this->map["outfreq"]) * this->map["dt"]);    // divide by time since last output
       return ret;
     }
     if(this->micro == "blk_1m")
@@ -466,7 +466,7 @@ class PlotterMicro_t : public Plotter_t<NDims>
     if(this->micro == "lgrngn")
     {
       return tot_rv_diff * this->map["dz"]
-             * (double(this->map["outfreq"]) * this->map["dt"]);    // divide by time since last output
+             / (double(this->map["outfreq"]) * this->map["dt"]);    // divide by time since last output
     }
     if(this->micro == "blk_1m")
       return 0;
